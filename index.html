@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frutería, Verdulería y Lácteos - Catálogo</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --bg-color: #f4f9f4;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .section-title {
+            color: #1b5e20;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        /* Cuadrícula de productos */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary-light);
+        }
+        .product-card h3 { margin: 0 0 10px 0; color: #1b5e20; }
+        .price { font-size: 20px; font-weight: bold; color: #2e7d32; margin-bottom: 8px; }
+        .stock { font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🥦🥛 FrescoMarket - Catálogo</h1>
+            <p>Productos frescos disponibles en tiempo real</p>
+        </header>
+
+        <!-- Sección de Verduras -->
+        <h2 class="section-title">🥕 Verduras</h2>
+        <div id="grid-verduras" class="grid">
+            <p>Cargando verduras...</p>
+        </div>
+
+        <!-- Sección de Lácteos -->
+        <h2 class="section-title">🧀 Lácteos</h2>
+        <div id="grid-lacteos" class="grid">
+            <p>Cargando lácteos...</p>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Tus credenciales configuradas
+        const SUPABASE_URL = 'https://kwfqjieynfxxkfycqbom.supabase.co';
+        const SUPABASE_ANON_KEY = 'TU_LLAVE_ANON_JWT_AQUI'; // Recuerda poner tu llave 'anon'
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Función auxiliar para renderizar tarjetas en un grid específico
+        function renderizarProductos(productos, elementId) {
+            const grid = document.getElementById(elementId);
+            grid.innerHTML = '';
+
+            if (productos.length === 0) {
+                grid.innerHTML = '<p>No hay productos disponibles en esta sección.</p>';
+                return;
+            }
+
+            productos.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <h3>${prod.nombre}</h3>
+                    <div class="price">$${Number(prod.precio).toFixed(2)}</div>
+                    <div class="stock">Disponibilidad: <strong>${prod.stock}</strong> unidades</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Función para cargar y separar el inventario por categorías desde Supabase
+        async function cargarInventario() {
+            const { data, error } = await supabaseClient
+                .from('productos')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error('Error al cargar el catálogo:', error);
+                document.getElementById('grid-verduras').innerHTML = '<p>Error al cargar el catálogo.</p>';
+                document.getElementById('grid-lacteos').innerHTML = '<p>Error al cargar el catálogo.</p>';
+                return;
+            }
+
+            // Filtramos según el valor de la columna 'categoria' en tu base de datos
+            // (Asegúrate de que en Supabase la columna se llame 'categoria' y sus valores sean 'verdura' y 'lacteo')
+            const verduras = data.filter(p => p.categoria && p.categoria.toLowerCase() === 'verdura');
+            const lacteos = data.filter(p => p.categoria && p.categoria.toLowerCase() === 'lacteo');
+
+            renderizarProductos(verduras, 'grid-verduras');
+            renderizarProductos(lacteos, 'grid-lacteos');
+        }
+
+        // Cargar al abrir la página
+        cargarInventario();
+    </script>
+</body>
+</html>
