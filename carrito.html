@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Carrito | El Mercadito de Emily</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        🛒 <span>El Mercadito de Emily</span>
+    </div>
+
+    <nav>
+
+        <a href="index.html">🏠 Inicio</a>
+
+        <a href="frutas.html">🍎 Frutas</a>
+
+        <a href="verduras.html">🥕 Verduras</a>
+
+        <a href="granos.html">🌽 Granos Básicos</a>
+
+        <a href="lacteos.html">🥛 Lácteos</a>
+
+        <a href="canastas.html">🧺 Canastas</a>
+
+        <a href="carrito.html">🛒 Carrito</a>
+
+    </nav>
+
+</header>
+
+<main class="productos-page">
+
+    <h1>🛒 Mi carrito</h1>
+
+    <div id="lista-carrito"></div>
+
+    <div class="total-carrito">
+
+        <h2>
+            Total:
+            $<span id="total-carrito">0.00</span>
+        </h2>
+
+        <button class="btn">
+            Finalizar compra
+        </button>
+
+    </div>
+
+</main>
+
+<footer>
+
+    <p>© 2026 El Mercadito de Emily Online</p>
+
+</footer>
+
+<script src="js/app.js"></script>
+
+<script>
+    mostrarCarrito();
+</script>
+
+</body>
+</html>
