@@ -1,136 +1,954 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FrescoMarket - Catálogo de Productos</title>
+
+    <title>El Mercadito de Emily Online</title>
+
     <style>
+
         :root {
-            --primary: #2e7d32;
-            --primary-light: #4caf50;
-            --bg-color: #f4f9f4;
+            --primary: #6fa875;
+            --primary-dark: #4f8055;
+            --primary-light: #a8d5ad;
+            --secondary: #f6c98d;
+            --bg-color: #f8fbf7;
             --card-bg: #ffffff;
             --text-color: #333333;
+            --price-color: #4f8055;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
         }
+
+
+        /* ==========================
+           ENCABEZADO
+        ========================== */
+
         header {
             text-align: center;
-            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
         }
-        h1 {
-            color: var(--primary);
-            margin-bottom: 5px;
+
+        header h1 {
+            color: var(--primary-dark);
+            margin: 0 0 8px 0;
+            font-size: 34px;
         }
+
+        header p {
+            margin: 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+
+        /* ==========================
+           MENÚ PRINCIPAL
+        ========================== */
+
+        nav {
+            background: var(--primary);
+            padding: 15px 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        nav a:hover {
+            color: #fff3d6;
+        }
+
+
+        /* ==========================
+           CONTENEDOR
+        ========================== */
+
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
+            padding: 20px;
         }
+
+
+        /* ==========================
+           TÍTULOS
+        ========================== */
+
         .section-title {
-            color: #1b5e20;
+            color: var(--primary-dark);
             border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 5px;
-            margin-top: 40px;
+            padding-bottom: 8px;
+            margin-top: 45px;
             margin-bottom: 20px;
         }
-        /* Cuadrícula de productos */
+
+
+        /* ==========================
+           CUADRÍCULA DE PRODUCTOS
+        ========================== */
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(220px, 1fr)
+            );
+
             gap: 20px;
         }
+
+
+        /* ==========================
+           TARJETA
+        ========================== */
+
         .product-card {
             background: var(--card-bg);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.06);
+
             border-top: 4px solid var(--primary-light);
+
+            transition: transform 0.2s,
+                        box-shadow 0.2s;
         }
-        .product-card h3 { margin: 0 0 10px 0; color: #1b5e20; }
-        .price { font-size: 20px; font-weight: bold; color: #2e7d32; margin-bottom: 8px; }
-        .stock { font-size: 14px; color: #666; }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 7px 15px rgba(0,0,0,0.10);
+        }
+
+        .product-card h3 {
+            margin: 0 0 12px 0;
+            color: var(--primary-dark);
+        }
+
+
+        /* ==========================
+           PRECIO
+        ========================== */
+
+        .price {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--price-color);
+            margin-bottom: 8px;
+        }
+
+
+        /* ==========================
+           STOCK
+        ========================== */
+
+        .stock {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+
+        /* ==========================
+           BOTÓN
+        ========================== */
+
+        .btn-carrito {
+            width: 100%;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+
+            background: var(--primary);
+            color: white;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .btn-carrito:hover {
+            background: var(--primary-dark);
+        }
+
+
+        /* ==========================
+           CARRITO
+        ========================== */
+
+        #carrito {
+            margin-top: 50px;
+            margin-bottom: 40px;
+
+            background: white;
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.06);
+        }
+
+        #carrito h2 {
+            color: var(--primary-dark);
+            margin-top: 0;
+        }
+
+        .item-carrito {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid #eee;
+        }
+
+        .total {
+            margin-top: 20px;
+
+            font-size: 23px;
+            font-weight: bold;
+
+            color: var(--primary-dark);
+
+            text-align: right;
+        }
+
+
+        /* ==========================
+           FOOTER
+        ========================== */
+
+        footer {
+            background: var(--primary-dark);
+            color: white;
+
+            text-align: center;
+
+            padding: 25px 15px;
+
+            margin-top: 40px;
+        }
+
+
+        /* ==========================
+           MÓVILES
+        ========================== */
+
+        @media (max-width: 700px) {
+
+            header h1 {
+                font-size: 26px;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 5px 6px;
+                font-size: 13px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
     </style>
+
 </head>
+
+
 <body>
 
+
+    <!-- =================================
+         ENCABEZADO
+    ================================== -->
+
+    <header id="inicio">
+
+        <h1>
+            🛒 El Mercadito de Emily Online
+        </h1>
+
+        <p>
+            Productos frescos y básicos hasta la puerta de tu casa
+        </p>
+
+    </header>
+
+
+
+    <!-- =================================
+         MENÚ PRINCIPAL
+    ================================== -->
+
+    <nav>
+
+        <a href="#inicio">
+            🏠 Inicio
+        </a>
+
+        <a href="#frutas">
+            🍎 Frutas
+        </a>
+
+        <a href="#verduras">
+            🥕 Verduras
+        </a>
+
+        <a href="#granos">
+            🌽 Granos Básicos
+        </a>
+
+        <a href="#lacteos">
+            🥛 Lácteos
+        </a>
+
+        <a href="#canastas">
+            🧺 Canastas
+        </a>
+
+        <a href="#carrito">
+            🛒 Carrito
+        </a>
+
+    </nav>
+
+
+
     <div class="container">
-        <header>
-            <h1>🍎 FrescoMarket</h1>
-            <p>Catálogo de productos disponibles en tiempo real</p>
-        </header>
 
-        <!-- Sección de Verduras -->
-        <h2 class="section-title">🥕 Verduras</h2>
-        <div id="grid-verduras" class="grid">
-            <p>Cargando verduras...</p>
-        </div>
 
-        <!-- Sección de Lácteos -->
-        <h2 class="section-title">🧀 Lácteos</h2>
-        <div id="grid-lacteos" class="grid">
-            <p>Cargando lácteos...</p>
-        </div>
+        <!-- =================================
+             FRUTAS
+        ================================== -->
+
+        <section id="frutas">
+
+            <h2 class="section-title">
+                🍎 Frutas
+            </h2>
+
+            <div id="grid-frutas" class="grid">
+
+                <p>
+                    Cargando frutas...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             VERDURAS
+        ================================== -->
+
+        <section id="verduras">
+
+            <h2 class="section-title">
+                🥕 Verduras
+            </h2>
+
+            <div id="grid-verduras" class="grid">
+
+                <p>
+                    Cargando verduras...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             GRANOS BÁSICOS
+        ================================== -->
+
+        <section id="granos">
+
+            <h2 class="section-title">
+                🌽 Granos Básicos
+            </h2>
+
+            <div id="grid-granos" class="grid">
+
+                <p>
+                    Cargando granos básicos...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             LÁCTEOS
+        ================================== -->
+
+        <section id="lacteos">
+
+            <h2 class="section-title">
+                🥛 Lácteos
+            </h2>
+
+            <div id="grid-lacteos" class="grid">
+
+                <p>
+                    Cargando lácteos...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             CANASTAS
+        ================================== -->
+
+        <section id="canastas">
+
+            <h2 class="section-title">
+                🧺 Canastas
+            </h2>
+
+            <div id="grid-canastas" class="grid">
+
+                <p>
+                    Cargando canastas...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             CARRITO
+        ================================== -->
+
+        <section id="carrito">
+
+            <h2>
+                🛒 Mi Carrito
+            </h2>
+
+            <div id="lista-carrito">
+
+                <p>
+                    Tu carrito está vacío.
+                </p>
+
+            </div>
+
+            <div class="total">
+
+                Total:
+                $<span id="total">
+                    0.00
+                </span>
+
+            </div>
+
+        </section>
+
+
     </div>
 
-    <!-- Librería de Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- =================================
+         PIE DE PÁGINA
+    ================================== -->
+
+    <footer>
+
+        <p>
+            🛒 El Mercadito de Emily Online
+        </p>
+
+        <p>
+            Productos frescos y básicos para tu hogar.
+        </p>
+
+    </footer>
+
+
+
+    <!-- =================================
+         SUPABASE
+    ================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
+
+
     <script>
-        // Tus credenciales configuradas
-        const SUPABASE_URL = 'https://kwfqjieynfxxkfycqbom.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnFqaWV5bmZ4eGtmeWNxYm9tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDI0NzUsImV4cCI6MjEwNjM3ODQ3NX0.saMfKrL2D385JFytxZm4s2ZhKZmfnoti14Lx2e2t-_0'; 
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // =================================
+        // CONEXIÓN CON SUPABASE
+        // =================================
 
-        // Función auxiliar para renderizar tarjetas en un grid específico
-        function renderizarProductos(productos, elementId) {
-            const grid = document.getElementById(elementId);
+        const SUPABASE_URL =
+            'https://kwfqjieynfxxkfycqbom.supabase.co';
+
+
+        const SUPABASE_ANON_KEY =
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnFqaWV5bmZ4eGtmeWNxYm9tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDI0NzUsImV4cCI6MjEwNjM3ODQ3NX0.saMfKrL2D385JFytxZm4s2ZhKZmfnoti14Lx2e2t-_0';
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+
+
+        // =================================
+        // CARRITO
+        // =================================
+
+        let carrito = [];
+
+
+
+        // =================================
+        // MOSTRAR PRODUCTOS
+        // =================================
+
+        function renderizarProductos(
+            productos,
+            elementId
+        ) {
+
+            const grid =
+                document.getElementById(elementId);
+
+
             grid.innerHTML = '';
 
+
             if (productos.length === 0) {
-                grid.innerHTML = '<p>No hay productos disponibles en esta sección.</p>';
+
+                grid.innerHTML =
+                    '<p>No hay productos disponibles en esta sección.</p>';
+
                 return;
             }
+
+
 
             productos.forEach(prod => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
+
+                const card =
+                    document.createElement('div');
+
+
+                card.className =
+                    'product-card';
+
+
+
                 card.innerHTML = `
-                    <h3>${prod.nombre}</h3>
-                    <div class="price">$${Number(prod.precio).toFixed(2)}</div>
-                    <div class="stock">Disponibilidad: <strong>${prod.stock}</strong> unidades</div>
+
+                    <h3>
+                        ${prod.nombre}
+                    </h3>
+
+                    <div class="price">
+
+                        $${Number(prod.precio).toFixed(2)}
+
+                    </div>
+
+                    <div class="stock">
+
+                        Disponibilidad:
+
+                        <strong>
+                            ${prod.stock}
+                        </strong>
+
+                        unidades
+
+                    </div>
+
+
+                    <button
+                        class="btn-carrito"
+                        onclick="agregarAlCarrito(
+                            ${prod.id},
+                            '${prod.nombre.replace(/'/g, "\\'")}',
+                            ${prod.precio}
+                        )">
+
+                        🛒 Agregar al carrito
+
+                    </button>
+
                 `;
+
+
                 grid.appendChild(card);
+
             });
+
         }
 
-        // Función para cargar y separar el inventario por categorías desde Supabase
+
+
+        // =================================
+        // CARGAR INVENTARIO
+        // =================================
+
         async function cargarInventario() {
-            const { data, error } = await supabaseClient
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
                 .from('productos')
+
                 .select('*')
-                .order('id', { ascending: false });
+
+                .order(
+                    'id',
+                    {
+                        ascending: false
+                    }
+                );
+
+
+
+            // =================================
+            // MANEJAR ERROR
+            // =================================
 
             if (error) {
-                console.error('Error al cargar el catálogo:', error);
-                document.getElementById('grid-verduras').innerHTML = '<p>Error al cargar el catálogo.</p>';
-                document.getElementById('grid-lacteos').innerHTML = '<p>Error al cargar el catálogo.</p>';
+
+                console.error(
+                    'Error al cargar el catálogo:',
+                    error
+                );
+
+
+                const secciones = [
+                    'grid-frutas',
+                    'grid-verduras',
+                    'grid-granos',
+                    'grid-lacteos',
+                    'grid-canastas'
+                ];
+
+
+                secciones.forEach(id => {
+
+                    document.getElementById(id).innerHTML =
+                        '<p>Error al cargar el catálogo.</p>';
+
+                });
+
+
                 return;
             }
 
-            const verduras = data.filter(p => p.categoria && p.categoria.toLowerCase() === 'verdura');
-            const lacteos = data.filter(p => p.categoria && p.categoria.toLowerCase() === 'lacteo');
 
-            renderizarProductos(verduras, 'grid-verduras');
-            renderizarProductos(lacteos, 'grid-lacteos');
+
+            // =================================
+            // SEPARAR CATEGORÍAS
+            // =================================
+
+            const frutas =
+                data.filter(
+                    p =>
+                        p.categoria &&
+                        p.categoria
+                            .toLowerCase()
+                            .trim()
+                        === 'fruta'
+                );
+
+
+
+            const verduras =
+                data.filter(
+                    p =>
+                        p.categoria &&
+                        p.categoria
+                            .toLowerCase()
+                            .trim()
+                        === 'verdura'
+                );
+
+
+
+            const granos =
+                data.filter(
+                    p =>
+                        p.categoria &&
+                        p.categoria
+                            .toLowerCase()
+                            .trim()
+                        === 'grano'
+                );
+
+
+
+            const lacteos =
+                data.filter(
+                    p =>
+                        p.categoria &&
+                        p.categoria
+                            .toLowerCase()
+                            .trim()
+                        === 'lacteo'
+                );
+
+
+
+            const canastas =
+                data.filter(
+                    p =>
+                        p.categoria &&
+                        p.categoria
+                            .toLowerCase()
+                            .trim()
+                        === 'canasta'
+                );
+
+
+
+            // =================================
+            // MOSTRAR CATEGORÍAS
+            // =================================
+
+            renderizarProductos(
+                frutas,
+                'grid-frutas'
+            );
+
+
+            renderizarProductos(
+                verduras,
+                'grid-verduras'
+            );
+
+
+            renderizarProductos(
+                granos,
+                'grid-granos'
+            );
+
+
+            renderizarProductos(
+                lacteos,
+                'grid-lacteos'
+            );
+
+
+            renderizarProductos(
+                canastas,
+                'grid-canastas'
+            );
+
         }
 
-        // Cargar al abrir la página
+
+
+        // =================================
+        // AGREGAR AL CARRITO
+        // =================================
+
+        function agregarAlCarrito(
+            id,
+            nombre,
+            precio
+        ) {
+
+            const productoExistente =
+                carrito.find(
+                    producto =>
+                        producto.id === id
+                );
+
+
+            if (productoExistente) {
+
+                productoExistente.cantidad++;
+
+            } else {
+
+                carrito.push({
+
+                    id: id,
+
+                    nombre: nombre,
+
+                    precio: Number(precio),
+
+                    cantidad: 1
+
+                });
+
+            }
+
+
+            mostrarCarrito();
+
+
+            // Llevar al carrito
+
+            document.getElementById(
+                'carrito'
+            ).scrollIntoView({
+                behavior: 'smooth'
+            });
+
+        }
+
+
+
+        // =================================
+        // MOSTRAR CARRITO
+        // =================================
+
+        function mostrarCarrito() {
+
+            const lista =
+                document.getElementById(
+                    'lista-carrito'
+                );
+
+
+            const totalElemento =
+                document.getElementById(
+                    'total'
+                );
+
+
+            lista.innerHTML = '';
+
+
+            if (carrito.length === 0) {
+
+                lista.innerHTML =
+                    '<p>Tu carrito está vacío.</p>';
+
+                totalElemento.textContent =
+                    '0.00';
+
+                return;
+            }
+
+
+
+            let total = 0;
+
+
+
+            carrito.forEach(producto => {
+
+                const subtotal =
+                    producto.precio *
+                    producto.cantidad;
+
+
+                total += subtotal;
+
+
+
+                const item =
+                    document.createElement('div');
+
+
+                item.className =
+                    'item-carrito';
+
+
+                item.innerHTML = `
+
+                    <span>
+
+                        ${producto.nombre}
+
+                        x ${producto.cantidad}
+
+                    </span>
+
+
+                    <strong>
+
+                        $${subtotal.toFixed(2)}
+
+                    </strong>
+
+                `;
+
+
+                lista.appendChild(item);
+
+            });
+
+
+
+            totalElemento.textContent =
+                total.toFixed(2);
+
+        }
+
+
+
+        // =================================
+        // CARGAR AL ABRIR LA PÁGINA
+        // =================================
+
         cargarInventario();
+
     </script>
+
+
 </body>
+
 </html>
+```
