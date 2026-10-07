@@ -1,100 +1,382 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>El Mercadito de Emily Online</title>
+
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 
 <body>
 
-<header class="header">
-    <div class="logo">
-        🛒 <span>El Mercadito de Emily Online</span>
-    </div>
+    <!-- ================= HEADER ================= -->
 
-    <nav>
-        <a href="index.html">🏠 Inicio</a>
-        <a href="frutas.html">🍎 Frutas</a>
-        <a href="verduras.html">🥕 Verduras</a>
-        <a href="granos.html">🌽 Granos Básicos</a>
-        <a href="lacteos.html">🥛 Lácteos</a>
-        <a href="canastas.html">🧺 Canastas</a>
-        <a href="carrito.html">🛒 Carrito</a>
-    </nav>
-</header>
+    <header class="header">
 
-<section class="hero">
-    <div>
-        <h1>El Mercadito de Emily Online</h1>
+        <div class="logo">
+            <span class="logo-icon">🛒</span>
 
-        <p>
-            Todo lo que necesitas para tu hogar,
-            ahora hasta la puerta de tu casa.
-        </p>
+            <div>
+                <strong>El Mercadito de Emily</strong>
+                <small>Online</small>
+            </div>
+        </div>
 
-        <a href="frutas.html" class="btn">
-            🛍️ Comprar ahora
+        <!-- BOTÓN PARA CELULAR -->
+
+        <button class="menu-btn" onclick="toggleMenu()">
+            ☰
+        </button>
+
+        <!-- MENÚ -->
+
+        <nav id="menu">
+
+            <a href="index.html" class="activo">
+                🏠 Inicio
+            </a>
+
+            <a href="frutas.html">
+                🍎 Frutas
+            </a>
+
+            <a href="verduras.html">
+                🥕 Verduras
+            </a>
+
+            <a href="granos.html">
+                🌽 Granos
+            </a>
+
+            <a href="lacteos.html">
+                🥛 Lácteos
+            </a>
+
+            <a href="canastas.html">
+                🧺 Canastas
+            </a>
+
+            <a href="carrito.html" class="carrito-menu">
+                🛒 Carrito
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <div class="hero-contenido">
+
+            <span class="etiqueta">
+                🥬 Productos frescos
+            </span>
+
+            <h1>
+                Todo lo que necesitas,
+                <span>hasta tu casa.</span>
+            </h1>
+
+            <p>
+                Compra frutas, verduras, granos básicos,
+                lácteos y canastas desde la comodidad de tu hogar.
+            </p>
+
+            <div class="hero-botones">
+
+                <a href="frutas.html" class="btn-principal">
+                    🛍️ Comprar ahora
+                </a>
+
+                <a href="#categorias" class="btn-secundario">
+                    Ver categorías
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-imagen">
+
+            <div class="circulo-productos">
+                🍎 🥕 🍌
+                <br>
+                🥛 🌽 🍅
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= BENEFICIOS ================= -->
+
+    <section class="beneficios">
+
+        <div class="beneficio">
+
+            <div class="beneficio-icono">
+                🚚
+            </div>
+
+            <div>
+                <h3>Entrega a domicilio</h3>
+                <p>Recibe tus compras en casa.</p>
+            </div>
+
+        </div>
+
+
+        <div class="beneficio">
+
+            <div class="beneficio-icono">
+                🥬
+            </div>
+
+            <div>
+                <h3>Productos frescos</h3>
+                <p>Seleccionados para ti.</p>
+            </div>
+
+        </div>
+
+
+        <div class="beneficio">
+
+            <div class="beneficio-icono">
+                💳
+            </div>
+
+            <div>
+                <h3>Compra fácil</h3>
+                <p>Elige tus productos y listo.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= CATEGORÍAS ================= -->
+
+    <section class="categorias" id="categorias">
+
+        <div class="titulo-seccion">
+
+            <span>🛍️</span>
+
+            <h2>
+                Compra por categoría
+            </h2>
+
+            <p>
+                Encuentra rápidamente lo que estás buscando.
+            </p>
+
+        </div>
+
+
+        <div class="categoria-grid">
+
+
+            <a href="frutas.html" class="categoria-card frutas">
+
+                <div class="categoria-icono">
+                    🍎
+                </div>
+
+                <h3>Frutas</h3>
+
+                <p>
+                    Frutas frescas y deliciosas.
+                </p>
+
+                <span class="ver-mas">
+                    Ver productos →
+                </span>
+
+            </a>
+
+
+            <a href="verduras.html" class="categoria-card verduras">
+
+                <div class="categoria-icono">
+                    🥕
+                </div>
+
+                <h3>Verduras</h3>
+
+                <p>
+                    Ingredientes frescos para tus comidas.
+                </p>
+
+                <span class="ver-mas">
+                    Ver productos →
+                </span>
+
+            </a>
+
+
+            <a href="granos.html" class="categoria-card granos">
+
+                <div class="categoria-icono">
+                    🌽
+                </div>
+
+                <h3>Granos Básicos</h3>
+
+                <p>
+                    Lo esencial para tu despensa.
+                </p>
+
+                <span class="ver-mas">
+                    Ver productos →
+                </span>
+
+            </a>
+
+
+            <a href="lacteos.html" class="categoria-card lacteos">
+
+                <div class="categoria-icono">
+                    🥛
+                </div>
+
+                <h3>Lácteos</h3>
+
+                <p>
+                    Productos para toda la familia.
+                </p>
+
+                <span class="ver-mas">
+                    Ver productos →
+                </span>
+
+            </a>
+
+
+            <a href="canastas.html" class="categoria-card canastas">
+
+                <div class="categoria-icono">
+                    🧺
+                </div>
+
+                <h3>Canastas</h3>
+
+                <p>
+                    Compras completas y prácticas.
+                </p>
+
+                <span class="ver-mas">
+                    Ver productos →
+                </span>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= LLAMADO ================= -->
+
+    <section class="llamado">
+
+        <div>
+
+            <h2>
+                🛒 ¿Ya sabes qué quieres comprar?
+            </h2>
+
+            <p>
+                Explora nuestros productos y arma tu carrito.
+            </p>
+
+        </div>
+
+        <a href="frutas.html" class="btn-principal">
+            Empezar compra
         </a>
-    </div>
-</section>
 
-<section class="bienvenida">
+    </section>
 
-    <h2>Bienvenidos a nuestro mercadito 🛒</h2>
 
-    <p>
-        Encuentra frutas, verduras, granos básicos,
-        lácteos y nuestras diferentes canastas.
-    </p>
+    <!-- ================= FOOTER ================= -->
 
-</section>
+    <footer>
 
-<section class="categorias">
+        <div class="footer-contenido">
 
-    <h2>Compra por categoría</h2>
+            <div>
 
-    <div class="categoria-grid">
+                <h3>
+                    🛒 El Mercadito de Emily
+                </h3>
 
-        <a href="frutas.html" class="categoria-card">
-            <span>🍎</span>
-            <h3>Frutas</h3>
-            <p>Frutas frescas para tu hogar.</p>
-        </a>
+                <p>
+                    Todo lo que necesitas, hasta tu casa.
+                </p>
 
-        <a href="verduras.html" class="categoria-card">
-            <span>🥕</span>
-            <h3>Verduras</h3>
-            <p>Verduras frescas y seleccionadas.</p>
-        </a>
+            </div>
 
-        <a href="granos.html" class="categoria-card">
-            <span>🌽</span>
-            <h3>Granos Básicos</h3>
-            <p>Lo esencial para tu despensa.</p>
-        </a>
 
-        <a href="lacteos.html" class="categoria-card">
-            <span>🥛</span>
-            <h3>Lácteos</h3>
-            <p>Productos para toda la familia.</p>
-        </a>
+            <div>
 
-        <a href="canastas.html" class="categoria-card">
-            <span>🧺</span>
-            <h3>Canastas</h3>
-            <p>Opciones listas para tu hogar.</p>
-        </a>
+                <h4>
+                    Categorías
+                </h4>
 
-    </div>
+                <a href="frutas.html">Frutas</a>
+                <a href="verduras.html">Verduras</a>
+                <a href="granos.html">Granos Básicos</a>
 
-</section>
+            </div>
 
-<footer>
-    <p>© 2026 El Mercadito de Emily Online</p>
-    <p>Todo lo que necesitas, hasta tu casa 🏠</p>
-</footer>
+
+            <div>
+
+                <h4>
+                    Compra
+                </h4>
+
+                <a href="lacteos.html">Lácteos</a>
+                <a href="canastas.html">Canastas</a>
+                <a href="carrito.html">Carrito</a>
+
+            </div>
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 El Mercadito de Emily Online
+
+        </div>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        function toggleMenu() {
+
+            const menu = document.getElementById("menu");
+
+            menu.classList.toggle("menu-abierto");
+
+        }
+
+    </script>
 
 </body>
+
 </html>
