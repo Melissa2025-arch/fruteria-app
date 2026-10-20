@@ -25,7 +25,7 @@
         </nav>
     </header>
 
-    <!-- ================= HERO / BIENVENIDA ================= -->
+    <!-- ================= HERO ================= -->
     <section class="hero">
         <div class="hero-contenido">
             <span class="etiqueta">🥬 Distribución y Calidad Garantizada</span>
@@ -34,19 +34,19 @@
         </div>
     </section>
 
-    <!-- ================= SECCIÓN DE BÚSQUEDA Y PRODUCTOS ================= -->
+    <!-- ================= CATÁLOGO Y BUSCADOR ================= -->
     <main class="productos-page">
-        <!-- Buscador -->
+        <!-- Buscador en tiempo real -->
         <div class="buscador-contenedor">
             <input type="text" id="input-busqueda" placeholder="🔍 Buscar producto (ej. Queso, Leche, Manzana)..." oninput="buscarProductos()">
         </div>
 
         <div style="text-align: center; margin-bottom: 25px;">
-            <h2 id="titulo-catalogo">Catálogo General</h2>
-            <p class="descripcion" id="subtitulo-catalogo">Explora todos nuestros productos o utiliza el buscador para encontrar un artículo en específico.</p>
+            <h2>Catálogo General</h2>
+            <p class="descripcion">Explora todos nuestros productos o utiliza el buscador para encontrar un artículo en específico.</p>
         </div>
 
-        <!-- Grid dinámico donde aparecen los productos -->
+        <!-- Grid dinámico donde se renderizan los productos de Supabase -->
         <div id="grid-busqueda" class="productos-grid"></div>
     </main>
 
@@ -58,7 +58,7 @@
     <!-- ================= SCRIPTS ================= -->
     <script src="js/app.js"></script>
     <script>
-        // Cargar todo el catálogo al inicio
+        // Cargar todo el catálogo de Supabase al entrar
         cargarCatalogoBuscador();
     </script>
 </body>
