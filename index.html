@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribuidora Éxodo Online</title>
+    <title>Distribuidora Éxodo | Inicio</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -25,30 +25,46 @@
         </nav>
     </header>
 
-    <!-- ================= HERO / SECCIÓN PRINCIPAL ================= -->
-    <section class="hero" style="min-height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center;">
-        <div class="hero-contenido" style="max-width: 800px; margin: auto;">
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+        <div class="hero-contenido">
             <span class="etiqueta">🥬 Distribución y Calidad Garantizada</span>
-            <h1 style="font-size: clamp(35px, 5vw, 55px); margin-bottom: 20px;">
-                Productos frescos con <span style="color: #26733a;">crédito de hasta 30 días.</span>
-            </h1>
-            <p style="font-size: 19px; line-height: 1.6; color: #59645c; margin-bottom: 30px;">
-                Somos una distribuidora con productos frescos y garantizados. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.
-            </p>
-            <div class="hero-botones">
-                <a href="lacteos.html" class="btn-principal" style="font-size: 16px; padding: 15px 30px;">
-                    🛍️ Ver Catálogo de Productos
-                </a>
-            </div>
+            <h1>Productos frescos con <span>crédito de hasta 30 días.</span></h1>
+            <p>Somos una distribuidora con productos frescos y garantizados. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
         </div>
     </section>
 
+    <!-- ================= CATÁLOGO CON FILTROS EN VIVO ================= -->
+    <main class="productos-page" style="padding-top: 20px;">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2>Catálogo de Productos</h2>
+            <p class="descripcion">Selecciona una categoría para filtrar los productos disponibles.</p>
+        </div>
+
+        <!-- Barra de Botones de Filtro -->
+        <div class="filtros-contenedor">
+            <button class="btn-filtro activo" onclick="filtrarCatalogo('todos', this)">✨ Todos</button>
+            <button class="btn-filtro" onclick="filtrarCatalogo('lacteo', this)">🥛 Lácteos</button>
+            <button class="btn-filtro" onclick="filtrarCatalogo('fruta', this)">🍎 Frutas</button>
+            <button class="btn-filtro" onclick="filtrarCatalogo('verdura', this)">🥕 Verduras</button>
+            <button class="btn-filtro" onclick="filtrarCatalogo('granos', this)">🌽 Granos</button>
+            <button class="btn-filtro" onclick="filtrarCatalogo('canastas', this)">🧺 Canastas</button>
+        </div>
+
+        <!-- Grid dinámico donde aparecen los productos -->
+        <div id="grid-inicio" class="productos-grid"></div>
+    </main>
+
     <!-- ================= FOOTER ================= -->
-    <footer style="position: absolute; bottom: 0; width: 100%;">
+    <footer>
         <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
     </footer>
 
     <!-- ================= SCRIPTS ================= -->
     <script src="js/app.js"></script>
+    <script>
+        // Cargar todo el catálogo al abrir el inicio
+        cargarCatalogoInicio('todos');
+    </script>
 </body>
 </html>

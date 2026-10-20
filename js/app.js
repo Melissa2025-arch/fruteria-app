@@ -5,7 +5,7 @@ const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
 // ==========================================
-// CARGAR PRODUCTOS DESDE SUPABASE
+// CARGAR PRODUCTOS EN PÁGINAS ESPECÍFICAS
 // ==========================================
 async function cargarProductos(categoria, contenedorId) {
     const contenedor = document.getElementById(contenedorId);
@@ -25,48 +25,97 @@ async function cargarProductos(categoria, contenedorId) {
         if (!respuesta.ok) throw new Error("Error al conectar con Supabase.");
         
         const productos = await respuesta.json();
-        contenedor.innerHTML = "";
-        
-        if (productos.length === 0) {
-            contenedor.innerHTML = `<p>No hay productos disponibles en esta categoría.</p>`;
-            return;
-        }
-        
-        productos.forEach(producto => {
-            const tarjeta = document.createElement("div");
-            tarjeta.className = "producto-card";
-            
-            const imgUrl = producto.imagen || "img/logo.png";
-            
-            tarjeta.innerHTML = `
-                <div>
-                    <div class="producto-imagen-container">
-                        <img src="${imgUrl}" alt="${producto.nombre}">
-                    </div>
-                    <div class="categoria-tag">${producto.categoria}</div>
-                    <h3>${producto.nombre}</h3>
-                    <div class="producto-desc-corta">${producto.descripcion || ''}</div>
-                </div>
-                <div>
-                    <div class="precio-y-controles">
-                        <div class="precio">$${Number(producto.precio).toFixed(2)}</div>
-                        <div class="contador-acciones">
-                            <button onclick="cambiarCantidadInput('qty-${producto.id}', -1)">-</button>
-                            <span id="qty-${producto.id}">1</span>
-                            <button onclick="cambiarCantidadInput('qty-${producto.id}', 1)">+</button>
-                        </div>
-                    </div>
-                    <button class="btn-principal" style="width: 100%; margin-top: 12px; padding: 10px;" onclick='agregarAlCarritoConCantidad(${JSON.stringify(producto)}, "qty-${producto.id}")'>
-                        🛒 Agregar
-                    </button>
-                </div>
-            `;
-            contenedor.appendChild(tarjeta);
-        });
+        renderizarProductos(productos, contenedorId);
     } catch (error) {
         console.error(error);
         contenedor.innerHTML = `<p>❌ No fue posible cargar los productos desde Supabase.</p>`;
     }
+}
+
+// ==========================================
+// CARGAR CATÁLOGO GENERAL Y FILTROS EN INICIO
+// ==========================================
+async function cargarCatalogoInicio(categoriaSeleccionada = 'todos') {
+    const contenedorId = "grid-inicio";
+    const contenedor = document.getElementById(contenedorId);
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1/-1;'>Cargando productos...</p>";
+
+    try {
+        let url = `${SUPABASE_URL}/rest/v1/productos?select=*`;
+        if (categoriaSeleccionada !== 'todos') {
+            url = `${SUPABASE_URL}/rest/v1/productos?categoria=eq.${categoriaSeleccionada}&select=*`;
+        }
+
+        const respuesta = await fetch(url, {
+            headers: {
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        });
+
+        if (!respuesta.ok) throw new Error("Error al conectar con Supabase.");
+
+        const productos = await respuesta.json();
+        renderizarProductos(productos, contenedorId);
+    } catch (error) {
+        console.error(error);
+        contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1;'>❌ No fue posible cargar los productos.</p>`;
+    }
+}
+
+function filtrarCatalogo(categoria, botonPresionado) {
+    document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+    botonPresionado.classList.add('activo');
+    cargarCatalogoInicio(categoria);
+}
+
+// ==========================================
+// RENDERIZAR TARJETAS DE PRODUCTOS
+// ==========================================
+function renderizarProductos(productos, contenedorId) {
+    const contenedor = document.getElementById(contenedorId);
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+
+    if (productos.length === 0) {
+        contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1; color:#777;'>No hay productos disponibles en esta categoría.</p>`;
+        return;
+    }
+
+    productos.forEach(producto => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "producto-card";
+
+        const imgUrl = producto.imagen || "img/logo.png";
+
+        tarjeta.innerHTML = `
+            <div>
+                <div class="producto-imagen-container">
+                    <img src="${imgUrl}" alt="${producto.nombre}">
+                </div>
+                <div class="categoria-tag">${producto.categoria}</div>
+                <h3>${producto.nombre}</h3>
+                <div class="producto-desc-corta">${producto.descripcion || ''}</div>
+            </div>
+            <div>
+                <div class="precio-y-controles">
+                    <div class="precio">$${Number(producto.precio).toFixed(2)}</div>
+                    <div class="contador-acciones">
+                        <button onclick="cambiarCantidadInput('qty-${producto.id}', -1)">-</button>
+                        <span id="qty-${producto.id}">1</span>
+                        <button onclick="cambiarCantidadInput('qty-${producto.id}', 1)">+</button>
+                    </div>
+                </div>
+                <button class="btn-principal" style="width: 100%; margin-top: 12px; padding: 10px;" onclick='agregarAlCarritoConCantidad(${JSON.stringify(producto)}, "qty-${producto.id}")'>
+                    🛒 Agregar
+                </button>
+            </div>
+        `;
+        contenedor.appendChild(tarjeta);
+    });
 }
 
 function cambiarCantidadInput(idElemento, cambio) {
@@ -154,7 +203,7 @@ function eliminarDelCarrito(index) {
 }
 
 // ==========================================
-// ENVÍO DE PEDIDO A CRÉDITO POR ENLACE WHATSAPP
+// ENVÍO DE PEDIDO A CRÉDITO POR WHATSAPP
 // ==========================================
 function enviarPedidoWhatsApp() {
     const carrito = obtenerCarrito();
@@ -176,12 +225,10 @@ function enviarPedidoWhatsApp() {
     mensaje += `\n📄 *Condición de Pago:* Crédito a 30 días`;
     mensaje += `\n\nPor favor confirmar hora y lugar de entrega. ¡Gracias!`;
     
-    // REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS (ej: 50370000000)
+    // REEMPLAZA CON TU NÚMERO REAL CON CÓDIGO DE PAÍS (ej: 50370000000)
     const numeroWhatsApp = "50363114191"; 
-    
     const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
     
-    // Abre el enlace directo hacia la API de WhatsApp
     window.open(urlWhatsApp, '_blank');
 }
 

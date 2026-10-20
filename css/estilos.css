@@ -90,18 +90,17 @@ nav .carrito-menu:hover {
    HERO / INICIO RESPONSIVE
 ========================================= */
 .hero {
-    min-height: calc(100vh - 150px);
     padding: 40px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #f0f9e9, #fffdf0);
+    text-align: center;
 }
 .hero-contenido {
-    max-width: 800px;
+    max-width: 750px;
     width: 100%;
     margin: auto;
-    text-align: center;
 }
 .etiqueta {
     display: inline-block;
@@ -115,19 +114,48 @@ nav .carrito-menu:hover {
     box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
 .hero h1 {
-    font-size: clamp(26px, 5vw, 48px);
+    font-size: clamp(26px, 4.5vw, 44px);
     line-height: 1.25;
-    margin-bottom: 18px;
+    margin-bottom: 15px;
     color: #213126;
 }
 .hero h1 span {
     color: #26733a;
 }
 .hero p {
-    font-size: clamp(15px, 2.5vw, 18px);
+    font-size: clamp(15px, 2vw, 17px);
     line-height: 1.6;
     color: #59645c;
-    margin-bottom: 25px;
+}
+
+/* =========================================
+   BOTONES DE FILTRO (INICIO)
+========================================= */
+.filtros-contenedor {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+.btn-filtro {
+    background: white;
+    border: 1px solid #d5ded5;
+    color: #26332a;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+.btn-filtro:hover,
+.btn-filtro.activo {
+    background: #26733a;
+    color: white;
+    border-color: #26733a;
+    box-shadow: 0 4px 12px rgba(38, 115, 58, 0.25);
 }
 
 /* =========================================
@@ -137,15 +165,15 @@ nav .carrito-menu:hover {
     max-width: 1200px;
     margin: auto;
     padding: 30px 16px;
-    min-height: 70vh;
+    min-height: 60vh;
 }
-.productos-page h1 {
-    font-size: clamp(24px, 4vw, 32px);
-    margin-bottom: 8px;
+.productos-page h2 {
+    font-size: clamp(24px, 4vw, 30px);
+    margin-bottom: 6px;
     color: #213126;
 }
 .descripcion {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: #666;
     font-size: clamp(14px, 2vw, 16px);
 }
@@ -346,7 +374,7 @@ footer {
 }
 
 /* =========================================
-   REGLAS EXCLUSIVAS PARA MÓVILES (SMARTPHONES)
+   REGLAS PARA MÓVILES (SMARTPHONES)
 ========================================= */
 @media (max-width: 850px) {
     .header {
@@ -357,7 +385,7 @@ footer {
         display: block; 
     }
     
-    /* Menú desplegable móvil */
+    /* Menú desplegable hamburguesa */
     nav {
         display: none;
         width: 100%;
@@ -376,7 +404,6 @@ footer {
         font-size: 15px;
     }
 
-    /* Adaptación del carrito */
     .carrito-layout {
         grid-template-columns: 1fr;
     }
@@ -387,7 +414,7 @@ footer {
 
 @media (max-width: 520px) {
     .productos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+        grid-template-columns: 1fr;
         gap: 16px;
     }
     .producto-card {
