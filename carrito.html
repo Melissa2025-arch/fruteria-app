@@ -28,28 +28,22 @@
     <!-- ================= CONTENIDO DEL CARRITO ================= -->
     <main class="productos-page">
         <h1>🛒 Mi Carrito de Compras</h1>
-        <p class="descripcion">Revisa los productos seleccionados y elige tu método de pago preferido.</p>
+        <p class="descripcion">Revisa los productos seleccionados antes de enviar tu pedido a crédito por WhatsApp.</p>
         
         <div class="carrito-layout">
-            <!-- Columna Izquierda: Lista de productos seleccionados -->
+            <!-- Lista de productos -->
             <div>
                 <div id="lista-carrito"></div>
             </div>
 
-            <!-- Columna Derecha: Resumen de totales y pago -->
+            <!-- Resumen solo con Total y Enlace/Botón de WhatsApp -->
             <div class="resumen-card">
                 <h2>Resumen del Pedido</h2>
-                <p style="font-size: 16px; margin-bottom: 15px; color: #333;">
+                <p style="font-size: 18px; margin-bottom: 20px; color: #333;">
                     Total a pagar: <strong>$<span id="total-carrito-txt">0.00</span></strong>
                 </p>
-                
-                <div class="metodo-pago">
-                    <p style="font-weight: bold; font-size: 14px; color: #213126;">Método de Pago:</p>
-                    <label><input type="radio" name="pago" value="Efectivo" checked> Efectivo al recibir</label>
-                    <label><input type="radio" name="pago" value="Transferencia bancaria"> Transferencia bancaria</label>
-                    <label><input type="radio" name="pago" value="Cheque"> Cheque</label>
-                </div>
 
+                <!-- Botón con el enlace dinámico a WhatsApp -->
                 <button class="btn-whatsapp" onclick="enviarPedidoWhatsApp()">
                     📲 Enviar pedido por WhatsApp
                 </button>

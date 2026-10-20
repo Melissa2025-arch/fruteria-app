@@ -69,7 +69,6 @@ async function cargarProductos(categoria, contenedorId) {
     }
 }
 
-// Control numérico local en la tarjeta
 function cambiarCantidadInput(idElemento, cambio) {
     const span = document.getElementById(idElemento);
     if (!span) return;
@@ -155,7 +154,7 @@ function eliminarDelCarrito(index) {
 }
 
 // ==========================================
-// ENVÍO DE PEDIDO POR WHATSAPP
+// ENVÍO DE PEDIDO A CRÉDITO POR ENLACE WHATSAPP
 // ==========================================
 function enviarPedidoWhatsApp() {
     const carrito = obtenerCarrito();
@@ -164,9 +163,7 @@ function enviarPedidoWhatsApp() {
         return;
     }
     
-    const metodoPago = document.querySelector('input[name="pago"]:checked')?.value || "Efectivo";
-    
-    let mensaje = "🛒 *NUEVO PEDIDO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
+    let mensaje = "🛒 *NUEVO PEDIDO A CRÉDITO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
     let total = 0;
     
     carrito.forEach(item => {
@@ -175,14 +172,17 @@ function enviarPedidoWhatsApp() {
         mensaje += `• ${item.cantidad}x ${item.nombre} - $${subtotal.toFixed(2)}\n`;
     });
     
-    mensaje += `\n💰 *Total a pagar:* $${total.toFixed(2)}`;
-    mensaje += `\n💳 *Método de pago:* ${metodoPago}`;
-    mensaje += `\n\nPor favor confirmar entrega y dirección. ¡Gracias!`;
+    mensaje += `\n💰 *Total del pedido:* $${total.toFixed(2)}`;
+    mensaje += `\n📄 *Condición de Pago:* Crédito a 30 días`;
+    mensaje += `\n\nPor favor confirmar hora y lugar de entrega. ¡Gracias!`;
     
-    const numeroWhatsApp = "50300000000"; // Reemplaza por tu número real con código de país
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    // REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL DE WHATSAPP CON CÓDIGO DE PAÍS (ej: 50370000000)
+    const numeroWhatsApp = "50363114191"; 
     
-    window.open(url, '_blank');
+    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    
+    // Abre el enlace directo hacia la API de WhatsApp
+    window.open(urlWhatsApp, '_blank');
 }
 
 function toggleMenu() {
