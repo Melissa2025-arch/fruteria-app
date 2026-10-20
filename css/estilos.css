@@ -84,6 +84,134 @@ nav .carrito-menu:hover {
 }
 
 /* =========================================
+   HERO / INICIO
+========================================= */
+.hero {
+    min-height: 400px;
+    padding: 60px 8%;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f0f9e9, #fffdf0);
+}
+.hero-contenido {
+    max-width: 650px;
+}
+.etiqueta {
+    display: inline-block;
+    background: white;
+    color: #26733a;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+.hero h1 {
+    font-size: clamp(32px, 4vw, 50px);
+    line-height: 1.15;
+    margin-bottom: 20px;
+    color: #213126;
+}
+.hero h1 span {
+    color: #26733a;
+}
+.hero p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #59645c;
+    margin-bottom: 25px;
+}
+.btn-principal {
+    display: inline-block;
+    background: #26733a;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-principal:hover {
+    background: #1d5c2d;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   CATEGORÍAS (CUADRÍCULA DE TARJETAS)
+========================================= */
+.categorias {
+    max-width: 1200px;
+    margin: auto;
+    padding: 60px 20px;
+}
+.titulo-seccion {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.titulo-seccion h2 {
+    font-size: 32px;
+    color: #213126;
+    margin-bottom: 10px;
+}
+.titulo-seccion p {
+    color: #666;
+    font-size: 16px;
+}
+
+.categoria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.categoria-card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    border: 1px solid #edf1ed;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.categoria-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    border-color: #82bc38;
+}
+
+.categoria-icono {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.categoria-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #213126;
+}
+
+.categoria-card p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.ver-mas {
+    color: #26733a;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* =========================================
    GRID Y TARJETAS DE PRODUCTOS
 ========================================= */
 .productos-page {
@@ -202,25 +330,8 @@ nav .carrito-menu:hover {
     color: #333;
 }
 
-.btn-principal {
-    display: inline-block;
-    background: #26733a;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    transition: 0.2s;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-}
-.btn-principal:hover {
-    background: #1d5c2d;
-    transform: translateY(-2px);
-}
-
 /* =========================================
-   DISEÑO DEL CARRITO DE COMPRAS
+   CARRITO DE COMPRAS
 ========================================= */
 .carrito-layout {
     display: grid;
