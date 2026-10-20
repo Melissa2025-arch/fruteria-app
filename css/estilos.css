@@ -84,73 +84,7 @@ nav .carrito-menu:hover {
 }
 
 /* =========================================
-   HERO / INICIO
-========================================= */
-.hero {
-    min-height: 450px;
-    padding: 50px 8%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(135deg, #f0f9e9, #fffdf0);
-}
-.hero-contenido {
-    max-width: 650px;
-}
-.etiqueta {
-    display: inline-block;
-    background: white;
-    color: #26733a;
-    padding: 8px 14px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-}
-.hero h1 {
-    font-size: clamp(32px, 4vw, 55px);
-    line-height: 1.1;
-    margin-bottom: 20px;
-    color: #213126;
-}
-.hero h1 span {
-    color: #26733a;
-}
-.hero p {
-    font-size: 18px;
-    line-height: 1.6;
-    color: #59645c;
-    margin-bottom: 25px;
-}
-.btn-principal {
-    display: inline-block;
-    background: #26733a;
-    color: white;
-    padding: 14px 24px;
-    border-radius: 10px;
-    font-weight: bold;
-    transition: 0.2s;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-}
-.btn-principal:hover {
-    background: #1d5c2d;
-    transform: translateY(-2px);
-}
-.btn-secundario {
-    display: inline-block;
-    background: white;
-    color: #26733a;
-    padding: 14px 24px;
-    border-radius: 10px;
-    font-weight: bold;
-    border: 1px solid #d8e8da;
-}
-
-/* =========================================
-   GRID Y TARJETAS DE PRODUCTOS (CONTROL DE TAMAÑOS)
+   GRID Y TARJETAS DE PRODUCTOS
 ========================================= */
 .productos-page {
     max-width: 1200px;
@@ -168,14 +102,12 @@ nav .carrito-menu:hover {
     color: #666;
 }
 
-/* Cuadrícula adaptable */
 .productos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 25px;
 }
 
-/* Tarjeta individual */
 .producto-card {
     background: white;
     border-radius: 16px;
@@ -192,7 +124,6 @@ nav .carrito-menu:hover {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-/* Contenedor estricto para que la imagen no crezca de más */
 .producto-imagen-container {
     width: 100%;
     height: 160px;
@@ -229,7 +160,6 @@ nav .carrito-menu:hover {
     margin-bottom: 12px;
 }
 
-/* Fila de precio y contador */
 .precio-y-controles {
     display: flex;
     align-items: center;
@@ -245,7 +175,6 @@ nav .carrito-menu:hover {
     color: #213126;
 }
 
-/* Botones de cantidad (+ y -) */
 .contador-acciones {
     display: flex;
     align-items: center;
@@ -273,45 +202,100 @@ nav .carrito-menu:hover {
     color: #333;
 }
 
-/* =========================================
-   CATEGORÍAS (INDEX)
-========================================= */
-.categorias {
-    max-width: 1200px;
-    margin: auto;
-    padding: 60px 20px;
-}
-.titulo-seccion {
-    text-align: center;
-    margin-bottom: 40px;
-}
-.categoria-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-.categoria-card {
-    background: white;
-    border-radius: 18px;
-    padding: 30px 20px;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-    border: 1px solid #edf1ed;
-    transition: 0.25s;
-}
-.categoria-card:hover {
-    transform: translateY(-5px);
-}
-.categoria-icono {
-    font-size: 50px;
-    margin-bottom: 15px;
-}
-.ver-mas {
+.btn-principal {
     display: inline-block;
-    margin-top: 15px;
-    color: #26733a;
+    background: #26733a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
     font-weight: bold;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-principal:hover {
+    background: #1d5c2d;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   DISEÑO DEL CARRITO DE COMPRAS
+========================================= */
+.carrito-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.carrito-item {
+    background: white;
+    padding: 18px 20px;
+    margin-bottom: 15px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    border: 1px solid #edf1ed;
+}
+
+.resumen-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #edf1ed;
+    position: sticky;
+    top: 100px;
+}
+
+.resumen-card h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #213126;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.metodo-pago {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.metodo-pago label {
     font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+    background: #1EBE5D;
+    transform: translateY(-2px);
 }
 
 /* =========================================
@@ -336,5 +320,7 @@ footer {
         padding-top: 10px;
     }
     nav.menu-abierto { display: flex; }
-    .hero { flex-direction: column; text-align: center; }
+    .carrito-layout {
+        grid-template-columns: 1fr;
+    }
 }
