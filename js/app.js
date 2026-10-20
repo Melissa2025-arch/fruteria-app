@@ -36,8 +36,7 @@ async function cargarProductos(categoria, contenedorId) {
             const tarjeta = document.createElement("div");
             tarjeta.className = "producto-card";
             
-            // Imagen por defecto si no viene de la BD
-            const imgUrl = producto.imagen || "https://i.ibb.co/68v8z89/crema-lactolac.png";
+            const imgUrl = producto.imagen || "img/logo.png";
             
             tarjeta.innerHTML = `
                 <div>
@@ -165,7 +164,7 @@ function enviarPedidoWhatsApp() {
         return;
     }
     
-    const metodoPago = document.querySelector('input[name="pago"]:checked')?.value || "Efectivo / Cheque";
+    const metodoPago = document.querySelector('input[name="pago"]:checked')?.value || "Efectivo";
     
     let mensaje = "🛒 *NUEVO PEDIDO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
     let total = 0;
@@ -180,8 +179,7 @@ function enviarPedidoWhatsApp() {
     mensaje += `\n💳 *Método de pago:* ${metodoPago}`;
     mensaje += `\n\nPor favor confirmar entrega y dirección. ¡Gracias!`;
     
-    // Reemplaza este número por tu número de WhatsApp de pedidos (ej: 503XXXXXXXX)
-    const numeroWhatsApp = "50363114191"; 
+    const numeroWhatsApp = "50300000000"; // Reemplaza por tu número real con código de país
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
     
     window.open(url, '_blank');
