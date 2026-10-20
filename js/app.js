@@ -2,7 +2,7 @@
 // CONEXIÓN CON SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
-const SUPABASE_ANON_KEY = "TU_ANON_KEY_ACTUAL"; // Reemplaza por tu anon key real
+const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
 // ==========================================
 // CARGAR PRODUCTOS DESDE SUPABASE
