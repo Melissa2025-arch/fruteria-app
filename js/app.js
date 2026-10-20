@@ -1,31 +1,18 @@
 // ==========================================
 // CONEXIÓN CON SUPABASE
 // ==========================================
-
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
-
-// IMPORTANTE:
-// Coloca aquí la misma anon key que ya tienes
-// actualmente en tu proyecto.
-const SUPABASE_ANON_KEY = "TU_ANON_KEY_ACTUAL";
-
+const SUPABASE_ANON_KEY = "TU_ANON_KEY_ACTUAL"; // Reemplaza por tu anon key real
 
 // ==========================================
-// CARGAR PRODUCTOS
+// CARGAR PRODUCTOS DESDE SUPABASE
 // ==========================================
-
 async function cargarProductos(categoria, contenedorId) {
-
     const contenedor = document.getElementById(contenedorId);
-
-    if (!contenedor) {
-        return;
-    }
-
+    if (!contenedor) return;
+    
     contenedor.innerHTML = "<p>Cargando productos...</p>";
-
     try {
-
         const respuesta = await fetch(
             `${SUPABASE_URL}/rest/v1/productos?categoria=eq.${categoria}&select=*`,
             {
@@ -35,263 +22,172 @@ async function cargarProductos(categoria, contenedorId) {
                 }
             }
         );
-
-        if (!respuesta.ok) {
-            throw new Error("No se pudieron cargar los productos.");
-        }
-
+        if (!respuesta.ok) throw new Error("Error al conectar con Supabase.");
+        
         const productos = await respuesta.json();
-
         contenedor.innerHTML = "";
-
+        
         if (productos.length === 0) {
-
-            contenedor.innerHTML = `
-                <p>
-                    No hay productos disponibles en esta categoría.
-                </p>
-            `;
-
+            contenedor.innerHTML = `<p>No hay productos disponibles en esta categoría.</p>`;
             return;
         }
-
+        
         productos.forEach(producto => {
-
             const tarjeta = document.createElement("div");
-
             tarjeta.className = "producto-card";
-
+            
+            // Imagen por defecto si no viene de la BD
+            const imgUrl = producto.imagen || "https://i.ibb.co/68v8z89/crema-lactolac.png";
+            
             tarjeta.innerHTML = `
-
-                <div class="producto-icono">
-                    ${obtenerIcono(categoria)}
+                <div>
+                    <div class="producto-imagen-container">
+                        <img src="${imgUrl}" alt="${producto.nombre}">
+                    </div>
+                    <div class="categoria-tag">${producto.categoria}</div>
+                    <h3>${producto.nombre}</h3>
+                    <div class="producto-desc-corta">${producto.descripcion || ''}</div>
                 </div>
-
-                <h3>${producto.nombre}</h3>
-
-                <div class="precio">
-                    $${Number(producto.precio).toFixed(2)}
+                <div>
+                    <div class="precio-y-controles">
+                        <div class="precio">$${Number(producto.precio).toFixed(2)}</div>
+                        <div class="contador-acciones">
+                            <button onclick="cambiarCantidadInput('qty-${producto.id}', -1)">-</button>
+                            <span id="qty-${producto.id}">1</span>
+                            <button onclick="cambiarCantidadInput('qty-${producto.id}', 1)">+</button>
+                        </div>
+                    </div>
+                    <button class="btn-principal" style="width: 100%; margin-top: 12px; padding: 10px;" onclick='agregarAlCarritoConCantidad(${JSON.stringify(producto)}, "qty-${producto.id}")'>
+                        🛒 Agregar
+                    </button>
                 </div>
-
-                <div class="stock">
-                    Stock disponible: ${producto.stock}
-                </div>
-
-                <button
-                    class="btn"
-                    onclick='agregarAlCarrito(${JSON.stringify(producto)})'
-                >
-                    🛒 Agregar al carrito
-                </button>
-
             `;
-
             contenedor.appendChild(tarjeta);
-
         });
-
     } catch (error) {
-
         console.error(error);
-
-        contenedor.innerHTML = `
-            <p>
-                ❌ No fue posible cargar los productos.
-            </p>
-        `;
-
+        contenedor.innerHTML = `<p>❌ No fue posible cargar los productos desde Supabase.</p>`;
     }
 }
 
-
-// ==========================================
-// ICONOS
-// ==========================================
-
-function obtenerIcono(categoria) {
-
-    const iconos = {
-
-        fruta: "🍎",
-
-        verdura: "🥕",
-
-        grano: "🌽",
-
-        lacteo: "🥛",
-
-        canasta: "🧺"
-
-    };
-
-    return iconos[categoria] || "🛒";
+// Control numérico local en la tarjeta
+function cambiarCantidadInput(idElemento, cambio) {
+    const span = document.getElementById(idElemento);
+    if (!span) return;
+    let actual = parseInt(span.textContent) + cambio;
+    if (actual < 1) actual = 1;
+    span.textContent = actual;
 }
 
-
 // ==========================================
-// CARRITO
+// GESTIÓN DEL CARRITO
 // ==========================================
-
 function obtenerCarrito() {
-
     const carrito = localStorage.getItem("carrito");
-
     return carrito ? JSON.parse(carrito) : [];
-
 }
 
-
-// ==========================================
-// AGREGAR PRODUCTO
-// ==========================================
-
-function agregarAlCarrito(producto) {
-
+function agregarAlCarritoConCantidad(producto, idInputCantidad) {
+    const spanQty = document.getElementById(idInputCantidad);
+    const cantidadSeleccionada = spanQty ? parseInt(spanQty.textContent) : 1;
+    
     let carrito = obtenerCarrito();
-
-    const productoExistente = carrito.find(
-        item => item.id === producto.id
-    );
-
-    if (productoExistente) {
-
-        productoExistente.cantidad++;
-
+    const existente = carrito.find(item => item.id === producto.id);
+    
+    if (existente) {
+        existente.cantidad += cantidadSeleccionada;
     } else {
-
         carrito.push({
-
             id: producto.id,
-
             nombre: producto.nombre,
-
             precio: Number(producto.precio),
-
-            cantidad: 1
-
+            cantidad: cantidadSeleccionada
         });
-
     }
-
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(carrito)
-    );
-
-    alert(
-        `${producto.nombre} fue agregado al carrito 🛒`
-    );
-
+    
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    alert(`¡${cantidadSeleccionada}x ${producto.nombre} agregado(s) al carrito 🛒!`);
 }
-
-
-// ==========================================
-// MOSTRAR CARRITO
-// ==========================================
 
 function mostrarCarrito() {
-
-    const contenedor =
-        document.getElementById("lista-carrito");
-
-    const totalElemento =
-        document.getElementById("total-carrito");
-
-    if (!contenedor) {
-        return;
-    }
-
+    const contenedor = document.getElementById("lista-carrito");
+    const totalElemento = document.getElementById("total-carrito-txt");
+    if (!contenedor) return;
+    
     const carrito = obtenerCarrito();
-
     contenedor.innerHTML = "";
-
     let total = 0;
-
+    
     if (carrito.length === 0) {
-
-        contenedor.innerHTML = `
-            <p>
-                🛒 Tu carrito está vacío.
-            </p>
-        `;
-
-        if (totalElemento) {
-            totalElemento.textContent = "0.00";
-        }
-
+        contenedor.innerHTML = `<p>🛒 Tu carrito está vacío.</p>`;
+        if (totalElemento) totalElemento.textContent = "0.00";
         return;
     }
-
+    
     carrito.forEach((producto, index) => {
-
-        const subtotal =
-            producto.precio * producto.cantidad;
-
+        const subtotal = producto.precio * producto.cantidad;
         total += subtotal;
-
-        const item =
-            document.createElement("div");
-
+        
+        const item = document.createElement("div");
         item.className = "carrito-item";
-
         item.innerHTML = `
-
             <div>
-
-                <strong>
-                    ${producto.nombre}
-                </strong>
-
-                <p>
-                    $${producto.precio.toFixed(2)}
-                    ×
-                    ${producto.cantidad}
-                </p>
-
+                <strong>${producto.nombre}</strong>
+                <p style="color: #666; font-size: 13px;">$${producto.precio.toFixed(2)} × ${producto.cantidad}</p>
             </div>
-
-            <strong>
-                $${subtotal.toFixed(2)}
-            </strong>
-
-            <button
-                class="btn"
-                onclick="eliminarDelCarrito(${index})"
-            >
-                🗑️
-            </button>
-
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <strong>$${subtotal.toFixed(2)}</strong>
+                <button style="background: #ffdddd; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;" onclick="eliminarDelCarrito(${index})">🗑️</button>
+            </div>
         `;
-
         contenedor.appendChild(item);
-
     });
-
+    
     if (totalElemento) {
-
-        totalElemento.textContent =
-            total.toFixed(2);
-
+        totalElemento.textContent = total.toFixed(2);
     }
-
 }
 
-
-// ==========================================
-// ELIMINAR PRODUCTO
-// ==========================================
-
 function eliminarDelCarrito(index) {
-
     let carrito = obtenerCarrito();
-
     carrito.splice(index, 1);
-
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(carrito)
-    );
-
+    localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
+}
 
+// ==========================================
+// ENVÍO DE PEDIDO POR WHATSAPP
+// ==========================================
+function enviarPedidoWhatsApp() {
+    const carrito = obtenerCarrito();
+    if (carrito.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+    }
+    
+    const metodoPago = document.querySelector('input[name="pago"]:checked')?.value || "Efectivo / Cheque";
+    
+    let mensaje = "🛒 *NUEVO PEDIDO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
+    let total = 0;
+    
+    carrito.forEach(item => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+        mensaje += `• ${item.cantidad}x ${item.nombre} - $${subtotal.toFixed(2)}\n`;
+    });
+    
+    mensaje += `\n💰 *Total a pagar:* $${total.toFixed(2)}`;
+    mensaje += `\n💳 *Método de pago:* ${metodoPago}`;
+    mensaje += `\n\nPor favor confirmar entrega y dirección. ¡Gracias!`;
+    
+    // Reemplaza este número por tu número de WhatsApp de pedidos (ej: 503XXXXXXXX)
+    const numeroWhatsApp = "50363114191"; 
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    
+    window.open(url, '_blank');
+}
+
+function toggleMenu() {
+    const menu = document.getElementById("menu");
+    menu.classList.toggle("menu-abierto");
 }
