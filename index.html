@@ -20,12 +20,11 @@
             <a href="verduras.html">🥕 Verduras</a>
             <a href="granos.html">🌽 Granos</a>
             <a href="lacteos.html">🥛 Lácteos</a>
-            <a href="canastas.html">🧺 Canastas</a>
             <a href="carrito.html" class="carrito-menu">🛒 Carrito</a>
         </nav>
     </header>
 
-    <!-- ================= HERO ================= -->
+    <!-- ================= HERO / BIENVENIDA ================= -->
     <section class="hero">
         <div class="hero-contenido">
             <span class="etiqueta">🥬 Distribución y Calidad Garantizada</span>
@@ -34,20 +33,15 @@
         </div>
     </section>
 
-    <!-- ================= CATÁLOGO Y BUSCADOR ================= -->
-    <main class="productos-page">
-        <!-- Buscador en tiempo real -->
-        <div class="buscador-contenedor">
-            <input type="text" id="input-busqueda" placeholder="🔍 Buscar producto (ej. Queso, Leche, Manzana)..." oninput="buscarProductos()">
+    <!-- ================= SECCIÓN DE BÚSQUEDA RÁPIDA ================= -->
+    <main class="productos-page" style="min-height: 40vh;">
+        <!-- Buscador -->
+        <div class="buscador-contenedor" style="margin-top: 10px;">
+            <input type="text" id="input-busqueda" placeholder="🔍 ¿Qué producto buscas? (ej. Queso, Leche, Manzana)..." oninput="buscarProductosInicio()">
         </div>
 
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h2>Catálogo General</h2>
-            <p class="descripcion">Explora todos nuestros productos o utiliza el buscador para encontrar un artículo en específico.</p>
-        </div>
-
-        <!-- Grid dinámico donde se renderizan los productos de Supabase -->
-        <div id="grid-busqueda" class="productos-grid"></div>
+        <!-- Grid donde SÓLO aparecerán los resultados si el usuario escribe en el buscador -->
+        <div id="grid-busqueda" class="productos-grid" style="margin-top: 25px;"></div>
     </main>
 
     <!-- ================= FOOTER ================= -->
@@ -58,8 +52,8 @@
     <!-- ================= SCRIPTS ================= -->
     <script src="js/app.js"></script>
     <script>
-        // Cargar todo el catálogo de Supabase al entrar
-        cargarCatalogoBuscador();
+        // Precargar los datos en memoria para que el buscador funcione al instante al escribir
+        inicializarBuscadorInicio();
     </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
-let todosLosProductosCache = []; // Almacén en memoria para el buscador
+let productosBusquedaCache = []; // Almacén en memoria para el buscador del inicio
 
 // ==========================================
 // CARGAR PRODUCTOS DESDE SUPABASE POR CATEGORÍA
@@ -35,15 +35,9 @@ async function cargarProductos(categoria, contenedorId) {
 }
 
 // ==========================================
-// CARGAR Y BUSCAR EN EL CATÁLOGO PRINCIPAL
+// BUSCADOR LIMPIO EN EL INICIO (SIN MOSTRAR NADA AL ENTRAR)
 // ==========================================
-async function cargarCatalogoBuscador() {
-    const contenedorId = "grid-busqueda";
-    const contenedor = document.getElementById(contenedorId);
-    if (!contenedor) return;
-
-    contenedor.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1/-1;'>Cargando productos...</p>";
-
+async function inicializarBuscadorInicio() {
     try {
         const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/productos?select=*`, {
             headers: {
@@ -51,24 +45,27 @@ async function cargarCatalogoBuscador() {
                 "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
             }
         });
-
         if (!respuesta.ok) throw new Error("Error al conectar con Supabase.");
-
-        todosLosProductosCache = await respuesta.json();
-        renderizarProductos(todosLosProductosCache, contenedorId);
+        productosBusquedaCache = await respuesta.json();
     } catch (error) {
         console.error(error);
-        contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1;'>❌ No fue posible cargar los productos.</p>`;
     }
 }
 
-function buscarProductos() {
+function buscarProductosInicio() {
     const input = document.getElementById("input-busqueda");
-    if (!input) return;
+    const contenedor = document.getElementById("grid-busqueda");
+    if (!input || !contenedor) return;
 
     const texto = input.value.toLowerCase().trim();
     
-    const filtrados = todosLosProductosCache.filter(producto => 
+    // Si la barra de búsqueda está vacía, no mostramos ningún producto abajo
+    if (texto === "") {
+        contenedor.innerHTML = "";
+        return;
+    }
+
+    const filtrados = productosBusquedaCache.filter(producto => 
         producto.nombre.toLowerCase().includes(texto) ||
         producto.categoria.toLowerCase().includes(texto) ||
         (producto.descripcion && producto.descripcion.toLowerCase().includes(texto))
@@ -231,8 +228,7 @@ function enviarPedidoWhatsApp() {
     mensaje += `\n📄 *Condición de Pago:* Crédito a 30 días`;
     mensaje += `\n\nPor favor confirmar hora y lugar de entrega. ¡Gracias!`;
     
-    // REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL (ej: 50370000000)
-    const numeroWhatsApp = "50300000000"; 
+    const numeroWhatsApp = "50363114191"; // Reemplaza con tu número real
     const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
     
     window.open(urlWhatsApp, '_blank');
@@ -252,11 +248,9 @@ function generarPDFPedido() {
     const totalPdf = document.getElementById("pdf-total");
     const fechaPdf = document.getElementById("pdf-fecha");
 
-    // Fecha actual formateada
     const hoy = new Date();
     fechaPdf.textContent = `Fecha: ${hoy.toLocaleDateString('es-ES')} ${hoy.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}`;
 
-    // Llenar datos en la plantilla del PDF
     tablaBody.innerHTML = "";
     let total = 0;
 
@@ -276,9 +270,8 @@ function generarPDFPedido() {
 
     totalPdf.textContent = total.toFixed(2);
 
-    // Configuración y guardado del PDF
     const elemento = document.getElementById("plantilla-pdf");
-    elemento.style.display = "block"; // Mostrar temporalmente para la captura
+    elemento.style.display = "block";
 
     const opciones = {
         margin:       10,
@@ -289,7 +282,7 @@ function generarPDFPedido() {
     };
 
     html2pdf().set(opciones).from(elemento).save().then(() => {
-        elemento.style.display = "none"; // Ocultar plantilla nuevamente
+        elemento.style.display = "none";
     });
 }
 
