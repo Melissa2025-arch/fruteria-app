@@ -4,8 +4,10 @@
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
+let todosLosProductosCache = []; // Almacén en memoria para el buscador
+
 // ==========================================
-// CARGAR PRODUCTOS EN PÁGINAS ESPECÍFICAS
+// CARGAR PRODUCTOS DESDE SUPABASE POR CATEGORÍA
 // ==========================================
 async function cargarProductos(categoria, contenedorId) {
     const contenedor = document.getElementById(contenedorId);
@@ -33,22 +35,17 @@ async function cargarProductos(categoria, contenedorId) {
 }
 
 // ==========================================
-// CARGAR CATÁLOGO GENERAL Y FILTROS EN INICIO
+// CARGAR Y BUSCAR EN EL CATÁLOGO PRINCIPAL
 // ==========================================
-async function cargarCatalogoInicio(categoriaSeleccionada = 'todos') {
-    const contenedorId = "grid-inicio";
+async function cargarCatalogoBuscador() {
+    const contenedorId = "grid-busqueda";
     const contenedor = document.getElementById(contenedorId);
     if (!contenedor) return;
 
     contenedor.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1/-1;'>Cargando productos...</p>";
 
     try {
-        let url = `${SUPABASE_URL}/rest/v1/productos?select=*`;
-        if (categoriaSeleccionada !== 'todos') {
-            url = `${SUPABASE_URL}/rest/v1/productos?categoria=eq.${categoriaSeleccionada}&select=*`;
-        }
-
-        const respuesta = await fetch(url, {
+        const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/productos?select=*`, {
             headers: {
                 "apikey": SUPABASE_ANON_KEY,
                 "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
@@ -57,18 +54,27 @@ async function cargarCatalogoInicio(categoriaSeleccionada = 'todos') {
 
         if (!respuesta.ok) throw new Error("Error al conectar con Supabase.");
 
-        const productos = await respuesta.json();
-        renderizarProductos(productos, contenedorId);
+        todosLosProductosCache = await respuesta.json();
+        renderizarProductos(todosLosProductosCache, contenedorId);
     } catch (error) {
         console.error(error);
         contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1;'>❌ No fue posible cargar los productos.</p>`;
     }
 }
 
-function filtrarCatalogo(categoria, botonPresionado) {
-    document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
-    botonPresionado.classList.add('activo');
-    cargarCatalogoInicio(categoria);
+function buscarProductos() {
+    const input = document.getElementById("input-busqueda");
+    if (!input) return;
+
+    const texto = input.value.toLowerCase().trim();
+    
+    const filtrados = todosLosProductosCache.filter(producto => 
+        producto.nombre.toLowerCase().includes(texto) ||
+        producto.categoria.toLowerCase().includes(texto) ||
+        (producto.descripcion && producto.descripcion.toLowerCase().includes(texto))
+    );
+
+    renderizarProductos(filtrados, "grid-busqueda");
 }
 
 // ==========================================
@@ -81,7 +87,7 @@ function renderizarProductos(productos, contenedorId) {
     contenedor.innerHTML = "";
 
     if (productos.length === 0) {
-        contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1; color:#777;'>No hay productos disponibles en esta categoría.</p>`;
+        contenedor.innerHTML = `<p style='text-align:center; width:100%; grid-column: 1/-1; color:#777; padding: 20px;'>🔍 No se encontraron productos.</p>`;
         return;
     }
 
@@ -225,11 +231,66 @@ function enviarPedidoWhatsApp() {
     mensaje += `\n📄 *Condición de Pago:* Crédito a 30 días`;
     mensaje += `\n\nPor favor confirmar hora y lugar de entrega. ¡Gracias!`;
     
-    // REEMPLAZA CON TU NÚMERO REAL CON CÓDIGO DE PAÍS (ej: 50370000000)
-    const numeroWhatsApp = "50363114191"; 
+    // REEMPLAZA ESTE NÚMERO POR TU NÚMERO REAL (ej: 50370000000)
+    const numeroWhatsApp = "50300000000"; 
     const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
     
     window.open(urlWhatsApp, '_blank');
+}
+
+// ==========================================
+// GENERAR HOJA DE PEDIDO EN PDF
+// ==========================================
+function generarPDFPedido() {
+    const carrito = obtenerCarrito();
+    if (carrito.length === 0) {
+        alert("Tu carrito está vacío. Agrega productos para generar la hoja de pedido.");
+        return;
+    }
+
+    const tablaBody = document.getElementById("pdf-tabla-body");
+    const totalPdf = document.getElementById("pdf-total");
+    const fechaPdf = document.getElementById("pdf-fecha");
+
+    // Fecha actual formateada
+    const hoy = new Date();
+    fechaPdf.textContent = `Fecha: ${hoy.toLocaleDateString('es-ES')} ${hoy.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}`;
+
+    // Llenar datos en la plantilla del PDF
+    tablaBody.innerHTML = "";
+    let total = 0;
+
+    carrito.forEach(item => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td style="padding: 8px; border: 1px solid #eee;">${item.nombre}</td>
+            <td style="padding: 8px; border: 1px solid #eee; text-align: center;">${item.cantidad}</td>
+            <td style="padding: 8px; border: 1px solid #eee; text-align: right;">$${item.precio.toFixed(2)}</td>
+            <td style="padding: 8px; border: 1px solid #eee; text-align: right;">$${subtotal.toFixed(2)}</td>
+        `;
+        tablaBody.appendChild(fila);
+    });
+
+    totalPdf.textContent = total.toFixed(2);
+
+    // Configuración y guardado del PDF
+    const elemento = document.getElementById("plantilla-pdf");
+    elemento.style.display = "block"; // Mostrar temporalmente para la captura
+
+    const opciones = {
+        margin:       10,
+        filename:     `Pedido_Exodo_${hoy.toISOString().slice(0,10)}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opciones).from(elemento).save().then(() => {
+        elemento.style.display = "none"; // Ocultar plantilla nuevamente
+    });
 }
 
 function toggleMenu() {

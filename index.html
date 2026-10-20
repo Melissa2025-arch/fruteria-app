@@ -25,7 +25,7 @@
         </nav>
     </header>
 
-    <!-- ================= HERO ================= -->
+    <!-- ================= HERO / BIENVENIDA ================= -->
     <section class="hero">
         <div class="hero-contenido">
             <span class="etiqueta">🥬 Distribución y Calidad Garantizada</span>
@@ -34,25 +34,20 @@
         </div>
     </section>
 
-    <!-- ================= CATÁLOGO CON FILTROS EN VIVO ================= -->
-    <main class="productos-page" style="padding-top: 20px;">
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h2>Catálogo de Productos</h2>
-            <p class="descripcion">Selecciona una categoría para filtrar los productos disponibles.</p>
+    <!-- ================= SECCIÓN DE BÚSQUEDA Y PRODUCTOS ================= -->
+    <main class="productos-page">
+        <!-- Buscador -->
+        <div class="buscador-contenedor">
+            <input type="text" id="input-busqueda" placeholder="🔍 Buscar producto (ej. Queso, Leche, Manzana)..." oninput="buscarProductos()">
         </div>
 
-        <!-- Barra de Botones de Filtro -->
-        <div class="filtros-contenedor">
-            <button class="btn-filtro activo" onclick="filtrarCatalogo('todos', this)">✨ Todos</button>
-            <button class="btn-filtro" onclick="filtrarCatalogo('lacteo', this)">🥛 Lácteos</button>
-            <button class="btn-filtro" onclick="filtrarCatalogo('fruta', this)">🍎 Frutas</button>
-            <button class="btn-filtro" onclick="filtrarCatalogo('verdura', this)">🥕 Verduras</button>
-            <button class="btn-filtro" onclick="filtrarCatalogo('granos', this)">🌽 Granos</button>
-            <button class="btn-filtro" onclick="filtrarCatalogo('canastas', this)">🧺 Canastas</button>
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 id="titulo-catalogo">Catálogo General</h2>
+            <p class="descripcion" id="subtitulo-catalogo">Explora todos nuestros productos o utiliza el buscador para encontrar un artículo en específico.</p>
         </div>
 
         <!-- Grid dinámico donde aparecen los productos -->
-        <div id="grid-inicio" class="productos-grid"></div>
+        <div id="grid-busqueda" class="productos-grid"></div>
     </main>
 
     <!-- ================= FOOTER ================= -->
@@ -63,8 +58,8 @@
     <!-- ================= SCRIPTS ================= -->
     <script src="js/app.js"></script>
     <script>
-        // Cargar todo el catálogo al abrir el inicio
-        cargarCatalogoInicio('todos');
+        // Cargar todo el catálogo al inicio
+        cargarCatalogoBuscador();
     </script>
 </body>
 </html>

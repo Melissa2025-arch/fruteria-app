@@ -91,9 +91,6 @@ nav .carrito-menu:hover {
 ========================================= */
 .hero {
     padding: 40px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background: linear-gradient(135deg, #f0f9e9, #fffdf0);
     text-align: center;
 }
@@ -114,7 +111,7 @@ nav .carrito-menu:hover {
     box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
 .hero h1 {
-    font-size: clamp(26px, 4.5vw, 44px);
+    font-size: clamp(28px, 4.5vw, 46px);
     line-height: 1.25;
     margin-bottom: 15px;
     color: #213126;
@@ -123,39 +120,35 @@ nav .carrito-menu:hover {
     color: #26733a;
 }
 .hero p {
-    font-size: clamp(15px, 2vw, 17px);
+    font-size: clamp(15px, 2vw, 18px);
     line-height: 1.6;
     color: #59645c;
 }
 
 /* =========================================
-   BOTONES DE FILTRO (INICIO)
+   BARRA DE BÚSQUEDA
 ========================================= */
-.filtros-contenedor {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
+.buscador-contenedor {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    padding: 0 10px;
 }
-.btn-filtro {
+
+.buscador-contenedor input {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: 2px solid #d5ded5;
+    border-radius: 30px;
+    outline: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     background: white;
-    border: 1px solid #d5ded5;
-    color: #26332a;
-    padding: 10px 18px;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
-.btn-filtro:hover,
-.btn-filtro.activo {
-    background: #26733a;
-    color: white;
+
+.buscador-contenedor input:focus {
     border-color: #26733a;
-    box-shadow: 0 4px 12px rgba(38, 115, 58, 0.25);
+    box-shadow: 0 6px 18px rgba(38, 115, 58, 0.15);
 }
 
 /* =========================================
@@ -165,15 +158,15 @@ nav .carrito-menu:hover {
     max-width: 1200px;
     margin: auto;
     padding: 30px 16px;
-    min-height: 60vh;
+    min-height: 65vh;
 }
-.productos-page h2 {
-    font-size: clamp(24px, 4vw, 30px);
+.productos-page h1, .productos-page h2 {
+    font-size: clamp(24px, 4vw, 32px);
     margin-bottom: 6px;
     color: #213126;
 }
 .descripcion {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #666;
     font-size: clamp(14px, 2vw, 16px);
 }
@@ -385,7 +378,6 @@ footer {
         display: block; 
     }
     
-    /* Menú desplegable hamburguesa */
     nav {
         display: none;
         width: 100%;
