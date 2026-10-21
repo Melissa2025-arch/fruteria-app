@@ -6,13 +6,13 @@ ESTILOS OPTIMIZADOS COMPACTOS Y VIBRANTES (PC & MÓVIL)
 :root {
 --primary-green: #65a30d;       /* Verde manzana fresco vibrante /
 --primary-hover: #4d7c0f;
---card-bg-top: #2c5e1a;         / Fondo tarjeta: Verde Esmeralda Rico /
---card-bg-bottom: #18380d;      / Degradado profundo /
---accent-lime: #a3e635;         / Amarillo-verde brillante para acentos y precios */
+--card-bg-top: #ffffff;         / Fondo tarjeta claro para legibilidad /
+--card-bg-bottom: #f8faf6;
+--accent-lime: #4d7c0f;         / Verde oscuro para precios y resaltados */
 --light-bg: #f8faf6;
 --text-dark: #0f172a;
 --border-radius: 14px;
---shadow-card: 0 8px 20px -4px rgba(0, 0, 0, 0.25);
+--shadow-card: 0 8px 20px -4px rgba(0, 0, 0, 0.15);
 }
 
 {
@@ -118,7 +118,7 @@ margin: 0 auto;
 .hero .etiqueta {
 display: inline-block;
 background: rgba(163, 230, 53, 0.2);
-color: var(--accent-lime);
+color: #a3e635;
 border: 1px solid rgba(163, 230, 53, 0.4);
 font-size: 0.8rem;
 font-weight: 700;
@@ -136,7 +136,7 @@ color: #ffffff;
 }
 
 .hero h1 span {
-color: var(--accent-lime);
+color: #a3e635;
 }
 
 .hero p {
@@ -206,27 +206,27 @@ grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 gap: 18px;
 }
 
-/* Tarjeta Verde Esmeralda Compacta */
+/* Tarjeta Compacta */
 .producto-card,
 .card,
 article.producto-card {
-background: linear-gradient(180deg, var(--card-bg-top) 0%, var(--card-bg-bottom) 100%) !important;
+background: #ffffff !important;
 border-radius: var(--border-radius) !important;
 padding: 12px !important;
-color: #ffffff !important;
+color: #000000 !important;
 display: flex !important;
 flex-direction: column !important;
 justify-content: space-between !important;
 box-shadow: var(--shadow-card) !important;
 transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 position: relative !important;
-border: 1px solid rgba(255, 255, 255, 0.15) !important;
+border: 1px solid #e2e8f0 !important;
 overflow: hidden;
 }
 
 .producto-card:hover {
 transform: translateY(-4px);
-box-shadow: 0 12px 24px rgba(24, 56, 13, 0.45) !important;
+box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* Recuadro Blanco Limpio para la Imagen del Producto */
@@ -242,7 +242,7 @@ justify-content: center !important;
 overflow: hidden !important;
 margin-bottom: 10px !important;
 padding: 8px !important;
-box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+border: 1px solid #f1f5f9;
 }
 
 .producto-imagen-container img,
@@ -263,7 +263,7 @@ transform: scale(1.06);
 font-size: 0.68rem !important;
 font-weight: 800 !important;
 text-transform: uppercase !important;
-color: var(--accent-lime) !important;
+color: #65a30d !important;
 letter-spacing: 0.6px !important;
 margin-bottom: 4px !important;
 display: block !important;
@@ -275,7 +275,7 @@ display: block !important;
 .producto-card .titulo-producto {
 font-size: 0.95rem !important;
 font-weight: 800 !important;
-color: #ffffff !important;
+color: #0f172a !important;
 margin-bottom: 4px !important;
 line-height: 1.25 !important;
 display: -webkit-box;
@@ -285,12 +285,13 @@ overflow: hidden;
 min-height: 2.4em;
 }
 
-/* Descripción Corta */
+/* Descripción Corta - COLOR NEGRO ABSOLUTO /
 .producto-desc-corta,
 .producto-card p,
 .producto-card .descripcion {
 font-size: 0.78rem !important;
-color: #cbd5e1 !important;
+color: #000000 !important; / <--- Color negro para visibilidad total */
+font-weight: 500 !important;
 line-height: 1.3 !important;
 margin-bottom: 10px !important;
 display: -webkit-box;
@@ -309,19 +310,18 @@ align-items: center !important;
 margin-top: auto !important;
 padding-top: 8px !important;
 padding-bottom: 8px !important;
-border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+border-top: 1px solid #f1f5f9 !important;
 gap: 6px !important;
 width: 100% !important;
 }
 
-/* Precio del Producto en Lima Brillante */
+/* Precio del Producto */
 .precio,
 .producto-card .precio,
 .producto-card span.precio {
 font-size: 1.15rem !important;
 font-weight: 800 !important;
-color: var(--accent-lime) !important;
-text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+color: #2b5314 !important;
 white-space: nowrap !important;
 }
 
@@ -333,10 +333,10 @@ flex-direction: row !important;
 align-items: center !important;
 justify-content: center !important;
 gap: 4px !important;
-background: rgba(0, 0, 0, 0.4) !important;
+background: #f1f5f9 !important;
 padding: 3px 8px !important;
 border-radius: 16px !important;
-border: 1px solid rgba(255,255,255,0.2);
+border: 1px solid #cbd5e1;
 }
 
 .contador-acciones button,
@@ -346,7 +346,7 @@ height: 22px !important;
 min-width: 22px !important;
 border: none !important;
 background: #ffffff !important;
-color: #152d0a !important;
+color: #0f172a !important;
 border-radius: 50% !important;
 font-weight: 800 !important;
 font-size: 0.85rem !important;
@@ -356,19 +356,20 @@ align-items: center !important;
 justify-content: center !important;
 line-height: 1 !important;
 padding: 0 !important;
+box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 transition: background 0.15s !important;
 }
 
 .contador-acciones button:hover,
 .controles-cantidad button:hover {
-background: var(--accent-lime) !important;
-color: #0d1e05 !important;
+background: var(--primary-green) !important;
+color: #ffffff !important;
 }
 
 .contador-acciones span,
 .controles-cantidad span {
 font-weight: 800 !important;
-color: #ffffff !important;
+color: #0f172a !important;
 font-size: 0.82rem !important;
 min-width: 14px !important;
 text-align: center !important;
@@ -378,8 +379,8 @@ text-align: center !important;
 .btn-principal,
 .producto-card button.btn-agregar,
 .producto-card .btn-carrito {
-background: #ffffff !important;
-color: #1c3b0f !important;
+background: var(--primary-green) !important;
+color: #ffffff !important;
 border: none !important;
 padding: 8px 12px !important;
 border-radius: 8px !important;
@@ -387,7 +388,7 @@ font-weight: 800 !important;
 font-size: 0.85rem !important;
 cursor: pointer !important;
 transition: all 0.2s !important;
-box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+box-shadow: 0 2px 8px rgba(101, 163, 13, 0.3) !important;
 width: 100% !important;
 margin-top: 6px !important;
 display: flex !important;
@@ -398,8 +399,7 @@ gap: 6px !important;
 
 .btn-principal:hover,
 .producto-card button.btn-agregar:hover {
-background: var(--accent-lime) !important;
-color: #0f2408 !important;
+background: var(--primary-hover) !important;
 }
 
 /* ================= CARRITO ================= */
