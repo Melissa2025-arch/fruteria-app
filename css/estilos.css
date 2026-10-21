@@ -1,507 +1,80 @@
-/\* STREAMING_CHUNK:Definiendo variables globales y reseteo básico... \*/
-:root {
-\--primary: #4d7c0f;
-\--primary-hover: #3f6212;
-\--primary-light: #f0fdf4;
-\--accent: #ca8a04;
-\--bg-main: #f8faf6;
-\--text-dark: #1e293b;
-\--text-muted: #64748b;
-\--white: #ffffff;
-\--radius-card: 16px;
-\--radius-pill: 50px;
-\--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-\--shadow-md: 0 6px 18px rgba(0, 0, 0, 0.08);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
-body {
-background-color: var(--bg-main);
-color: var(--text-dark);
-line-height: 1.5;
-display: flex;
-flex-direction: column;
-min-height: 100vh;
-}
-
-/\* STREAMING_CHUNK:Estilizando la cabecera y navegación principal... \*/
-.header {
-background: var(--white);
-padding: 14px 28px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: sticky;
-top: 0;
-z-index: 1000;
-box-shadow: var(--shadow-sm);
-border-bottom: 1px solid #e2e8f0;
-}
-
-.logo {
-display: flex;
-align-items: center;
-gap: 12px;
-}
-
-.logo img {
-height: 42px;
-width: auto;
-object-fit: contain;
-}
-
-.logo span {
-font-weight: 800;
-font-size: 1.2rem;
-color: #2d500a;
-letter-spacing: -0.02em;
-}
-
-nav {
-display: flex;
-align-items: center;
-gap: 8px;
-flex-wrap: wrap;
-}
-
-nav a {
-text-decoration: none;
-color: #374151;
-padding: 8px 14px;
-border-radius: var(--radius-pill);
-font-weight: 600;
-font-size: 0.88rem;
-transition: all 0.2s ease;
-display: flex;
-align-items: center;
-gap: 6px;
-white-space: nowrap;
-}
-
-nav a:hover {
-background: var(--primary-light);
-color: var(--primary);
-}
-
-nav a.activo {
-background: #e6f4d7;
-color: #2d500a;
-font-weight: 700;
-}
-
-.carrito-menu {
-background: linear-gradient(135deg, #65a30d 0%, #4d7c0f 100%) !important;
-color: #ffffff !important;
-font-weight: 700;
-box-shadow: 0 4px 10px rgba(77, 124, 15, 0.3);
-padding: 8px 18px !important;
-}
-
-.carrito-menu:hover {
-transform: translateY(-1px);
-box-shadow: 0 6px 14px rgba(77, 124, 15, 0.4);
-}
-
-.menu-btn {
-display: none;
-background: none;
-border: none;
-font-size: 1.8rem;
-cursor: pointer;
-color: var(--primary);
-}
-
-/\* STREAMING_CHUNK:Estilizando sección Hero y Buscador... \*/
+/* ... existing code ... */
+/* STREAMING_CHUNK:Estilizando sección Hero y Buscador con fondo de imagen... */
 .hero {
-background: linear-gradient(135deg, #2d500a 0%, #4d7c0f 100%);
-color: white;
-padding: 50px 20px 60px 20px;
-text-align: center;
+  background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+              url('https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+  color: white;
+  padding: 60px 20px 80px 20px;
+  text-align: center;
+  position: relative;
 }
 
 .hero-contenido {
-max-width: 800px;
-margin: 0 auto;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .etiqueta {
-display: inline-block;
-background: rgba(255, 255, 255, 0.15);
-padding: 6px 16px;
-border-radius: 20px;
-font-size: 0.85rem;
-font-weight: 600;
-margin-bottom: 14px;
+  display: inline-block;
+  background: rgba(101, 163, 13, 0.85);
+  color: #ffffff;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  backdrop-filter: blur(4px);
 }
 
 .hero h1 {
-font-size: 2.5rem;
-font-weight: 800;
-margin-bottom: 10px;
-letter-spacing: -0.03em;
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .hero h1 span {
-color: #a3e635;
+  color: #84cc16;
 }
 
 .hero p {
-font-size: 1.05rem;
-opacity: 0.9;
+  font-size: 1.1rem;
+  opacity: 0.95;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
 .productos-page {
-max-width: 1200px;
-margin: 0 auto;
-padding: 30px 20px;
-width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px 30px 20px;
+  width: 100%;
 }
 
 .buscador-contenedor {
-max-width: 650px;
-margin: -30px auto 35px auto;
-position: relative;
-z-index: 10;
+  max-width: 500px;
+  margin: -32px auto 40px auto;
+  position: relative;
+  z-index: 20;
 }
 
 .buscador-contenedor input {
-width: 100%;
-padding: 16px 24px;
-border-radius: 50px;
-border: 2px solid #e2e8f0;
-font-size: 1rem;
-outline: none;
-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-transition: all 0.3s ease;
-background: #ffffff;
+  width: 100%;
+  padding: 14px 28px;
+  border-radius: 50px;
+  border: 2px solid #84cc16;
+  font-size: 0.95rem;
+  outline: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  background: #ffffff;
+  text-align: center;
 }
 
 .buscador-contenedor input:focus {
-border-color: var(--primary);
-box-shadow: 0 8px 24px rgba(77, 124, 15, 0.2);
+  border-color: #4d7c0f;
+  box-shadow: 0 12px 28px rgba(77, 124, 15, 0.25);
 }
-
-/\* STREAMING_CHUNK:Estilizando tarjetas de productos en Grid... \*/
-.productos-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-gap: 22px;
-}
-
-.producto-card {
-background: var(--white);
-border-radius: var(--radius-card);
-padding: 18px;
-box-shadow: var(--shadow-sm);
-border: 1px solid #f1f5f9;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.producto-card:hover {
-transform: translateY(-4px);
-box-shadow: var(--shadow-md);
-}
-
-.producto-imagen-container {
-width: 100%;
-height: 160px;
-border-radius: 12px;
-overflow: hidden;
-background: #f1f5f9;
-margin-bottom: 12px;
-}
-
-.producto-imagen-container img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-}
-
-.categoria-tag {
-font-size: 0.75rem;
-font-weight: 700;
-text-transform: uppercase;
-color: var(--primary);
-background: var(--primary-light);
-padding: 4px 8px;
-border-radius: 6px;
-display: inline-block;
-margin-bottom: 6px;
-}
-
-.producto-card h3 {
-font-size: 1.1rem;
-color: var(--text-dark);
-font-weight: 700;
-margin-bottom: 4px;
-}
-
-.producto-desc-corta {
-font-size: 0.82rem;
-color: var(--text-muted);
-margin-bottom: 14px;
-}
-
-.precio-y-controles {
-display: flex;
-align-items: center;
-justify-content: space-between;
-margin-bottom: 12px;
-}
-
-.precio {
-font-weight: 800;
-font-size: 1.25rem;
-color: #2d500a;
-}
-
-.contador-acciones {
-display: flex;
-align-items: center;
-gap: 8px;
-background: #f1f5f9;
-padding: 4px 10px;
-border-radius: 20px;
-}
-
-.contador-acciones button {
-border: none;
-background: transparent;
-font-weight: 800;
-font-size: 1rem;
-cursor: pointer;
-color: var(--text-dark);
-width: 20px;
-height: 20px;
-}
-
-.btn-principal {
-width: 100%;
-background: var(--primary);
-color: white;
-border: none;
-padding: 10px;
-border-radius: 10px;
-font-weight: 700;
-cursor: pointer;
-transition: background 0.2s ease;
-}
-
-.btn-principal:hover {
-background: var(--primary-hover);
-}
-
-/\* STREAMING_CHUNK:Estilizando sección informativa Tríptico DEX... \*/
-.seccion-nosotros {
-max-width: 1200px;
-margin: 40px auto;
-padding: 0 20px;
-}
-
-.nosotros-grid-triptico {
-display: grid;
-grid-template-columns: 1fr 320px 280px;
-gap: 20px;
-align-items: stretch;
-}
-
-.triptico-col {
-border-radius: 18px;
-padding: 28px;
-box-shadow: var(--shadow-sm);
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-}
-
-.col-blanca {
-background: var(--white);
-border: 1px solid #e2e8f0;
-}
-
-.col-verde {
-background: linear-gradient(135deg, #2d500a 0%, #4d7c0f 100%);
-color: white;
-text-align: center;
-justify-content: center;
-gap: 24px;
-}
-
-.triptico-titulo {
-color: #2d500a;
-font-size: 1.4rem;
-font-weight: 800;
-margin-bottom: 12px;
-}
-
-.triptico-titulo-centro {
-font-size: 1.6rem;
-font-weight: 800;
-color: #ffffff;
-}
-
-.triptico-subtitulo {
-color: var(--text-dark);
-font-weight: 700;
-margin: 14px 0 10px 0;
-}
-
-.triptico-texto {
-font-size: 0.92rem;
-color: #475569;
-margin-bottom: 10px;
-}
-
-.triptico-pills {
-display: flex;
-flex-direction: column;
-gap: 8px;
-margin-bottom: 14px;
-}
-
-.pill-item {
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-.pill-bar {
-width: 4px;
-height: 18px;
-background: var(--primary);
-border-radius: 4px;
-}
-
-.pill-text {
-font-size: 0.88rem;
-font-weight: 600;
-color: var(--text-dark);
-}
-
-.verde-resaltado {
-color: var(--primary);
-}
-
-.triptico-destacado {
-font-weight: 700;
-background: var(--primary-light);
-padding: 10px 14px;
-border-radius: 10px;
-margin: 10px 0;
-}
-
-.contacto-item-centro a, .contacto-item-centro p {
-color: white;
-text-decoration: none;
-font-weight: 700;
-font-size: 0.95rem;
-}
-
-.icono-svg {
-font-size: 2rem;
-margin-bottom: 6px;
-}
-
-.logo-dex-container img {
-max-width: 140px;
-height: auto;
-}
-
-.lema-dex {
-font-style: italic;
-font-weight: 700;
-color: #2d500a;
-font-size: 1.05rem;
-text-align: center;
-}
-
-.patron-frutas-bottom {
-text-align: center;
-font-size: 1.1rem;
-margin-top: 15px;
-}
-
-footer {
-margin-top: auto;
-background: #1e293b;
-color: #94a3b8;
-text-align: center;
-padding: 20px;
-font-size: 0.85rem;
-}
-
-/\* STREAMING_CHUNK:Reglas de diseño adaptativo para móviles y tablets... \*/
-@media (max-width: 1080px) {
-.header {
-flex-wrap: wrap;
-padding: 12px 18px;
-}
-
-.menu-btn {
-display: block;
-}
-
-nav {
-display: none;
-width: 100%;
-flex-direction: column;
-align-items: stretch;
-padding-top: 14px;
-gap: 8px;
-}
-
-nav.menu-abierto {
-display: flex;
-}
-
-nav a {
-padding: 10px 16px;
-border-radius: 8px;
-}
-
-.nosotros-grid-triptico {
-grid-template-columns: 1fr;
-}
-}
-
-@media (max-width: 768px) {
-.hero {
-padding: 35px 16px 45px 16px;
-}
-
-.hero h1 {
-font-size: 1.8rem;
-}
-
-.buscador-contenedor {
-margin: -20px auto 25px auto;
-}
-
-.productos-grid {
-grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-gap: 16px;
-}
-
-.producto-card {
-padding: 14px;
-}
-
-.producto-imagen-container {
-height: 130px;
-}
-}
-
-@media (max-width: 480px) {
-.productos-grid {
-grid-template-columns: 1fr;
-}
-}
+/* ... existing code ... */
