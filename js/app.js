@@ -1,11 +1,62 @@
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
-const supabase = (window.supabase && !SUPABASE_URL.includes('TU_PROYECTO')) 
+const supabase = (window.supabase && typeof window.supabase.createClient === 'function') 
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
   : null;
 
-// Memoria caché para búsquedas y catálogo
+// Productos de respaldo garantizados si la BD externa no conecta
+const PRODUCTOS_BACKUP = [
+  // FRUTAS
+  { id: '1', nombre: 'Melón', categoria: 'frutas', unidad: 'Unidad', precio: 2.25, imagen: 'img/melon.jpg', descripcion: 'Melón fresco dulce por unidad.' },
+  { id: '2', nombre: 'Naranjas', categoria: 'frutas', unidad: 'Unidad', precio: 0.98, imagen: 'img/naranjas.jpg', descripcion: 'Naranja jugosa por unidad.' },
+  { id: '3', nombre: 'Tamarindo', categoria: 'frutas', unidad: 'Libra', precio: 3.85, imagen: 'img/tamarindo.jpg', descripcion: 'Tamarindo natural por libra.' },
+  { id: '4', nombre: 'Maracuyá (Libra)', categoria: 'frutas', unidad: 'Libra', precio: 3.85, imagen: 'img/maracuya.jpg', descripcion: 'Maracuyá fresco por libra.' },
+  { id: '5', nombre: 'Maracuyá (Unidad)', categoria: 'frutas', unidad: 'Unidad', precio: 0.75, imagen: 'img/maracuya.jpg', descripcion: 'Maracuyá por unidad.' },
+  { id: '6', nombre: 'Mandarina', categoria: 'frutas', unidad: 'Unidad', precio: 0.98, imagen: 'img/mandarina.jpg', descripcion: 'Mandarina dulce por unidad.' },
+  { id: '7', nombre: 'Manzana', categoria: 'frutas', unidad: 'Unidad', precio: 0.45, imagen: 'img/manzana.jpg', descripcion: 'Manzana fresca por unidad.' },
+  { id: '8', nombre: 'Guineo', categoria: 'frutas', unidad: 'Unidad', precio: 0.25, imagen: 'img/guineo.jpg', descripcion: 'Guineo maduro por unidad.' },
+  { id: '9', nombre: 'Uva Roja', categoria: 'frutas', unidad: 'Libra', precio: 4.80, imagen: 'img/uva-roja.jpg', descripcion: 'Uva roja seleccionada por libra.' },
+  { id: '10', nombre: 'Sandía', categoria: 'frutas', unidad: 'Unidad', precio: 4.00, imagen: 'img/sandia.jpg', descripcion: 'Sandía entera dulce.' },
+  
+  // VERDURAS
+  { id: '20', nombre: 'Cebolla', categoria: 'verduras', unidad: 'Unidad', precio: 0.95, imagen: 'img/cebolla.jpg', descripcion: 'Cebolla fresca por unidad.' },
+  { id: '21', nombre: 'Chile Verde', categoria: 'verduras', unidad: 'Unidad', precio: 0.65, imagen: 'img/chile.jpg', descripcion: 'Chile verde dulce por unidad.' },
+  { id: '22', nombre: 'Lechuga', categoria: 'verduras', unidad: 'Unidad', precio: 2.25, imagen: 'img/lechuga.jpg', descripcion: 'Lechuga fresca por unidad.' },
+  { id: '23', nombre: 'Zanahoria', categoria: 'verduras', unidad: 'Unidad', precio: 0.90, imagen: 'img/zanahoria.jpg', descripcion: 'Zanahoria fresca por unidad.' },
+  { id: '24', nombre: 'Tomate', categoria: 'verduras', unidad: 'Bolsa', precio: 1.25, imagen: 'img/tomate.jpg', descripcion: 'Tomate de cocina en bolsa.' },
+  { id: '25', nombre: 'Cilantro (Manojo)', categoria: 'verduras', unidad: 'Manojo', precio: 4.00, imagen: 'img/cilantro.jpg', descripcion: 'Manojo de cilantro fresco.' },
+  { id: '26', nombre: 'Papa', categoria: 'verduras', unidad: 'Libra', precio: 1.10, imagen: 'img/papa.jpg', descripcion: 'Papa lavada por libra.' },
+
+  // GRANOS
+  { id: '40', nombre: 'Azúcar Blanca', categoria: 'granos', unidad: 'Libra', precio: 0.90, imagen: 'img/azucar-blanca.jpg', descripcion: 'Azúcar refinada blanca por libra.' },
+  { id: '41', nombre: 'Frijoles Seda', categoria: 'granos', unidad: 'Libra', precio: 1.95, imagen: 'img/frijol-seda.jpg', descripcion: 'Frijol rojo seda de primera calidad.' },
+  { id: '42', nombre: 'Arroz Precocido', categoria: 'granos', unidad: 'Libra', precio: 0.98, imagen: 'img/arroz-precocido.jpg', descripcion: 'Arroz precocido suelto por libra.' },
+
+  // HARINAS Y CEREALES
+  { id: '50', nombre: 'Harina Maseca 820g', categoria: 'harinas', unidad: 'Bolsa', precio: 2.50, imagen: 'img/maseca.jpg', descripcion: 'Harina de maíz Maseca 820g.' },
+  { id: '51', nombre: 'Avena Molida', categoria: 'harinas', unidad: 'Bolsa', precio: 3.85, imagen: 'img/avena-molida.jpg', descripcion: 'Avena molida fina en bolsa.' },
+  { id: '52', nombre: 'Corn Flakes', categoria: 'harinas', unidad: 'Caja', precio: 8.20, imagen: 'img/corn-flakes.jpg', descripcion: 'Cereal hojuelas de maíz en caja.' },
+
+  // LÁCTEOS
+  { id: '60', nombre: 'Quesillo', categoria: 'lacteos', unidad: 'Libra', precio: 4.25, imagen: 'img/quesillo.jpg', descripcion: 'Quesillo especial ideal para pupusas.' },
+  { id: '61', nombre: 'Crema Lactolac 380g', categoria: 'lacteos', unidad: 'Libra', precio: 4.85, imagen: 'img/crema-lactolac.jpg', descripcion: 'Crema pasteurizada Lactolac.' },
+  { id: '62', nombre: 'Queso Fresco', categoria: 'lacteos', unidad: 'Maqueta', precio: 4.95, imagen: 'img/queso-fresco.jpg', descripcion: 'Maqueta de queso fresco artesanal.' },
+
+  // CARNES
+  { id: '70', nombre: 'Carne de Res', categoria: 'carnes', unidad: 'Libra', precio: 6.60, imagen: 'img/carne-res.jpg', descripcion: 'Carne de res de primera por libra.' },
+  { id: '71', nombre: 'Pollo Pechuga', categoria: 'carnes', unidad: 'Libra', precio: 2.30, imagen: 'img/pechuga-pollo.jpg', descripcion: 'Pechuga de pollo fresca por libra.' },
+  { id: '72', nombre: 'Cartón de Huevo', categoria: 'carnes', unidad: 'Cartón', precio: 6.65, imagen: 'img/huevo.jpg', descripcion: 'Cartón de huevos frescos (30 unidades).' },
+
+  // BEBIDAS
+  { id: '80', nombre: 'Agua Purificada', categoria: 'bebidas', unidad: 'Fardo', precio: 3.98, imagen: 'img/agua-fardo.jpg', descripcion: 'Fardo de agua purificada.' },
+
+  // EXTRAS
+  { id: '90', nombre: 'Aceite Orisol', categoria: 'extras', unidad: 'Bolsa', precio: 3.90, imagen: 'img/aceite-orisol.jpg', descripcion: 'Aceite vegetal Orisol en bolsa.' },
+  { id: '91', nombre: 'Mayonesa', categoria: 'extras', unidad: 'Bolsa', precio: 6.50, imagen: 'img/mayonesa.jpg', descripcion: 'Mayonesa en bolsa.' },
+  { id: '92', nombre: 'Canela', categoria: 'extras', unidad: 'Bolsa', precio: 1.25, imagen: 'img/canela.jpg', descripcion: 'Canela en rama o molida en bolsa.' }
+];
+
 let productosBusquedaCache = [];
 let carrito = JSON.parse(localStorage.getItem("carrito_exodo")) || {};
 
@@ -33,29 +84,33 @@ async function obtenerTodosProductos() {
     });
 
     if (respuesta.ok) {
-      productosBusquedaCache = await respuesta.json();
-      return productosBusquedaCache;
+      const data = await respuesta.json();
+      if (Array.isArray(data) && data.length > 0) {
+        productosBusquedaCache = data;
+        return productosBusquedaCache;
+      }
     }
   } catch (err) {
-    console.warn("Fetch directo falló, intentando SDK Supabase o Respaldo...", err);
+    console.warn("Conexión con la base de datos externa no disponible, cargando lista de respaldo...", err);
   }
 
-  if (supabase) {
-    const { data } = await supabase.from('productos').select('*').order('nombre', { ascending: true });
-    if (data && data.length > 0) {
-      productosBusquedaCache = data;
-      return productosBusquedaCache;
-    }
-  }
-
-  return [];
+  // Si falla la API REST de Supabase, usaremos los datos locales
+  productosBusquedaCache = PRODUCTOS_BACKUP;
+  return productosBusquedaCache;
 }
 
 async function inicializarBuscadorInicio() {
   actualizarBadgeCarrito();
   await obtenerTodosProductos();
   const contenedor = document.getElementById("grid-busqueda");
-  if (contenedor) contenedor.innerHTML = ""; // Inicio limpio
+  if (contenedor) contenedor.innerHTML = "";
+}
+
+async function cargarCategoriaEspecifica(cat) {
+  actualizarBadgeCarrito();
+  const todos = await obtenerTodosProductos();
+  const filtrados = todos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+  renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
 function buscarProductosInicio() {
@@ -65,7 +120,6 @@ function buscarProductosInicio() {
 
   const texto = input.value.toLowerCase().trim();
 
-  // Si la barra está vacía, no muestra productos en inicio
   if (texto === "") {
     contenedor.innerHTML = "";
     return;
@@ -77,13 +131,6 @@ function buscarProductosInicio() {
     (p.descripcion && p.descripcion.toLowerCase().includes(texto))
   );
 
-  renderizarTarjetas(filtrados, "grid-busqueda");
-}
-
-async function cargarCategoriaEspecifica(cat) {
-  actualizarBadgeCarrito();
-  const todos = await obtenerTodosProductos();
-  const filtrados = todos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
@@ -105,7 +152,7 @@ function renderizarTarjetas(productos, contenedorId) {
   if (!contenedor) return;
 
   if (!productos || productos.length === 0) {
-    contenedor.innerHTML = `<p style='grid-column: 1/-1; text-align:center; color:#64748b; padding: 20px; font-weight:700;'>🔍 No se encontraron productos.</p>`;
+    contenedor.innerHTML = `<div style='grid-column: 1/-1; text-align:center; color:#64748b; padding: 30px; font-weight:700; background:#fff; border-radius:12px; border:1px solid #e2e8f0;'>🔍 No se encontraron productos disponibles en esta sección.</div>`;
     return;
   }
 
