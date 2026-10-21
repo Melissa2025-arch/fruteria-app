@@ -1,20 +1,20 @@
 /* =========================================================
-ESTILOS BASADOS EXACTAMENTE EN LA IMAGEN DE REFERENCIA
+ESTILOS CORREGIDOS CON MAXIMO CONTRASTE Y LECTURA
 ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
---primary-green: #689f1d;       /* Verde manzana brillante de botones /
+--primary-green: #689f1d;       /* Verde manzana brillante /
 --primary-hover: #548313;
---card-bg-green: #58791b;      / Verde de las tarjetas de la imagen /
---card-gradient: linear-gradient(180deg, #62881e 0%, #4a6815 100%);
---dark-hero-bg: #111612;        / Fondo oscuro tipo pizarra/madera /
---light-bg: #f8faf6;            / Fondo gris verdoso muy suave */
---text-dark: #1e293b;
---text-light: #ffffff;
---text-muted: #64748b;
+--card-bg-green: #58791b;      / Verde oscuro de las tarjetas /
+--card-gradient: linear-gradient(180deg, #58791b 0%, #3e5812 100%);
+--dark-hero-bg: #111612;
+--light-bg: #f8faf6;
+--text-dark: #0f172a;           / Texto oscuro para fondos claros /
+--text-light: #ffffff;          / Texto blanco para las tarjetas verdes */
+--text-muted: #475569;
 --border-radius: 18px;
---shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+--shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 {
@@ -30,7 +30,7 @@ color: var(--text-dark);
 line-height: 1.5;
 }
 
-/* ================= HEADER ESTILO FOTO ================= */
+/* ================= HEADER ================= */
 .header {
 background: #ffffff;
 padding: 16px 32px;
@@ -40,7 +40,7 @@ align-items: center;
 position: sticky;
 top: 0;
 z-index: 1000;
-box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .logo {
@@ -70,8 +70,8 @@ gap: 12px;
 
 nav a {
 text-decoration: none;
-color: #334155;
-font-weight: 600;
+color: #1e293b;
+font-weight: 700;
 font-size: 0.95rem;
 padding: 8px 16px;
 border-radius: 30px;
@@ -83,7 +83,6 @@ color: var(--primary-green);
 background: #f0fdf4;
 }
 
-/* Botón destacado Verde Manzana como "Order Order" en la imagen */
 nav a.carrito-menu {
 background: var(--primary-green);
 color: #ffffff !important;
@@ -108,12 +107,12 @@ color: var(--text-dark);
 cursor: pointer;
 }
 
-/* ================= HERO BANNER ESTILO FOTO DE REFERENCIA ================= */
+/* ================= HERO BANNER ================= */
 .hero {
 position: relative;
-background: linear-gradient(rgba(17, 22, 18, 0.82), rgba(17, 22, 18, 0.88)),
+background: linear-gradient(rgba(17, 22, 18, 0.85), rgba(17, 22, 18, 0.90)),
 url('https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-padding: 85px 20px;
+padding: 75px 20px;
 text-align: center;
 color: #ffffff;
 border-bottom: 5px solid var(--primary-green);
@@ -126,9 +125,9 @@ margin: 0 auto;
 
 .hero .etiqueta {
 display: inline-block;
-background: rgba(104, 159, 29, 0.25);
+background: rgba(104, 159, 29, 0.3);
 color: #a3e635;
-border: 1px solid rgba(163, 230, 53, 0.4);
+border: 1px solid rgba(163, 230, 53, 0.5);
 font-size: 0.85rem;
 font-weight: 700;
 padding: 6px 20px;
@@ -138,7 +137,7 @@ backdrop-filter: blur(4px);
 }
 
 .hero h1 {
-font-size: 3rem;
+font-size: 2.8rem;
 font-weight: 800;
 line-height: 1.2;
 margin-bottom: 16px;
@@ -150,8 +149,8 @@ color: #a3e635;
 }
 
 .hero p {
-color: #cbd5e1;
-font-size: 1.15rem;
+color: #f1f5f9;
+font-size: 1.1rem;
 max-width: 680px;
 margin: 0 auto 30px auto;
 }
@@ -183,20 +182,20 @@ padding: 0 20px;
 
 .buscador-contenedor {
 background: #ffffff;
-border: 2px solid #e2e8f0;
+border: 2px solid #cbd5e1;
 border-radius: 16px;
 padding: 6px 20px;
 display: flex;
 align-items: center;
-box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 max-width: 720px;
-margin: 0 auto;
+margin: 0 auto 30px auto;
 transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .buscador-contenedor:focus-within {
 border-color: var(--primary-green);
-box-shadow: 0 0 0 4px rgba(104, 159, 29, 0.18);
+box-shadow: 0 0 0 4px rgba(104, 159, 29, 0.2);
 }
 
 .buscador-contenedor input {
@@ -206,154 +205,195 @@ padding: 12px;
 font-size: 1.05rem;
 outline: none;
 background: transparent;
-color: var(--text-dark);
+color: #0f172a;
+font-weight: 600;
 }
 
-/* ================= TARJETAS VERDES IDÉNTICAS A LA CAPTURA ================= */
+/* ================= TARJETAS CON FONDO VERDE Y MÁXIMO CONTRASTE ================= */
 .productos-grid {
 display: grid;
-grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 gap: 26px;
 }
 
-.producto-card {
-background: var(--card-gradient);
-border-radius: var(--border-radius);
-padding: 18px;
-color: var(--text-light);
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-box-shadow: var(--shadow-card);
-transition: transform 0.25s ease, box-shadow 0.25s ease;
-position: relative;
-border: 1px solid rgba(255, 255, 255, 0.15);
+/* Tarjeta Verde Oliva / Manzana */
+.producto-card,
+.card,
+article.producto-card {
+background: linear-gradient(180deg, #58791b 0%, #3a530f 100%) !important;
+border-radius: var(--border-radius) !important;
+padding: 18px !important;
+color: #ffffff !important;
+display: flex !important;
+flex-direction: column !important;
+justify-content: space-between !important;
+box-shadow: 0 12px 28px rgba(0,0,0,0.2) !important;
+transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+position: relative !important;
+border: 1px solid rgba(255, 255, 255, 0.2) !important;
+overflow: hidden;
 }
 
 .producto-card:hover {
 transform: translateY(-8px);
-box-shadow: 0 18px 35px rgba(74, 104, 21, 0.4);
+box-shadow: 0 18px 36px rgba(58, 83, 15, 0.5) !important;
 }
 
-/* Recuadro blanco para resaltar la foto del producto */
-.producto-imagen-container {
-height: 160px;
-background: rgba(255, 255, 255, 0.96);
-border-radius: 14px;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
-margin-bottom: 14px;
-padding: 10px;
-box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+/* Recuadro blanco para resaltar la imagen del producto */
+.producto-imagen-container,
+.imagen-container,
+.producto-card figure {
+height: 165px;
+background: #ffffff !important;
+border-radius: 14px !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+overflow: hidden !important;
+margin-bottom: 14px !important;
+padding: 12px !important;
+box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.producto-imagen-container img {
-max-height: 100%;
-max-width: 100%;
-object-fit: contain;
+.producto-imagen-container img,
+.producto-card img {
+max-height: 100% !important;
+max-width: 100% !important;
+object-fit: contain !important;
 transition: transform 0.3s ease;
 }
 
-.producto-card:hover .producto-imagen-container img {
+.producto-card:hover img {
 transform: scale(1.08);
 }
 
-.categoria-tag {
-font-size: 0.72rem;
-font-weight: 800;
-text-transform: uppercase;
-color: #d9f99d;
-letter-spacing: 0.8px;
-margin-bottom: 4px;
+/* Etiqueta de Categoría /
+.categoria-tag,
+.producto-card .categoria {
+font-size: 0.75rem !important;
+font-weight: 800 !important;
+text-transform: uppercase !important;
+color: #d9f99d !important; / Verde lima brillante contrastado */
+letter-spacing: 0.8px !important;
+margin-bottom: 6px !important;
+display: block !important;
 }
 
-.producto-card h3 {
-font-size: 1.1rem;
-font-weight: 700;
-color: #ffffff;
-margin-bottom: 6px;
+/* Nombre del Producto /
+.producto-card h3,
+.producto-card h2,
+.producto-card .titulo-producto {
+font-size: 1.15rem !important;
+font-weight: 800 !important;
+color: #ffffff !important; / Texto totalmente blanco */
+margin-bottom: 8px !important;
+line-height: 1.3 !important;
+text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
-.producto-desc-corta {
-font-size: 0.84rem;
-color: #e2e8f0;
-line-height: 1.35;
-margin-bottom: 14px;
+/* Descripción Corta /
+.producto-desc-corta,
+.producto-card p,
+.producto-card .descripcion {
+font-size: 0.88rem !important;
+color: #f1f5f9 !important; / Gris claro muy legible */
+line-height: 1.4 !important;
+margin-bottom: 16px !important;
 display: -webkit-box;
 -webkit-line-clamp: 2;
 -webkit-box-orient: vertical;
 overflow: hidden;
 }
 
-.precio-y-controles {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: auto;
-padding-top: 12px;
-border-top: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.precio {
-font-size: 1.35rem;
-font-weight: 800;
-color: #ffffff;
-}
-
-.contador-acciones {
-display: flex;
-align-items: center;
+/* Sección Inferior: Precio y Botones */
+.precio-y-controles,
+.producto-card .acciones {
+display: flex !important;
+justify-content: space-between !important;
+align-items: center !important;
+margin-top: auto !important;
+padding-top: 14px !important;
+border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
 gap: 8px;
-background: rgba(0, 0, 0, 0.25);
-padding: 4px 8px;
-border-radius: 20px;
+}
+
+/* Precio del Producto /
+.precio,
+.producto-card .precio,
+.producto-card span.precio {
+font-size: 1.4rem !important;
+font-weight: 800 !important;
+color: #ffffff !important; / Precio en Blanco Puro resalta sobre el verde */
+text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Contadores de cantidad (- 1 +) */
+.contador-acciones,
+.controles-cantidad {
+display: flex !important;
+align-items: center !important;
+gap: 8px !important;
+background: rgba(0, 0, 0, 0.35) !important;
+padding: 5px 10px !important;
+border-radius: 20px !important;
 backdrop-filter: blur(4px);
+border: 1px solid rgba(255,255,255,0.2);
 }
 
-.contador-acciones button {
-width: 24px;
-height: 24px;
-border: none;
-background: #ffffff;
-color: var(--text-dark);
-border-radius: 50%;
-font-weight: 800;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: background 0.15s;
+.contador-acciones button,
+.controles-cantidad button {
+width: 26px !important;
+height: 26px !important;
+border: none !important;
+background: #ffffff !important;
+color: #0f172a !important;
+border-radius: 50% !important;
+font-weight: 800 !important;
+font-size: 1rem !important;
+cursor: pointer !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+transition: background 0.15s !important;
 }
 
-.contador-acciones button:hover {
-background: #d9f99d;
+.contador-acciones button:hover,
+.controles-cantidad button:hover {
+background: #d9f99d !important;
+color: #1e3a02 !important;
 }
 
-.contador-acciones span {
-font-weight: 700;
-color: #ffffff;
-font-size: 0.9rem;
-min-width: 16px;
-text-align: center;
+.contador-acciones span,
+.controles-cantidad span {
+font-weight: 800 !important;
+color: #ffffff !important;
+font-size: 0.95rem !important;
+min-width: 18px !important;
+text-align: center !important;
 }
 
-.btn-principal {
-background: #ffffff;
-color: var(--card-bg-green);
-border: none;
-border-radius: 10px;
-font-weight: 800;
-font-size: 0.92rem;
-cursor: pointer;
-transition: all 0.2s;
-box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+/* Botón Añadir al Carrito */
+.btn-principal,
+.producto-card button.btn-agregar,
+.producto-card .btn-carrito {
+background: #ffffff !important;
+color: #2e4706 !important;
+border: none !important;
+padding: 10px 16px !important;
+border-radius: 12px !important;
+font-weight: 800 !important;
+font-size: 0.95rem !important;
+cursor: pointer !important;
+transition: all 0.2s !important;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+width: 100%;
 }
 
-.btn-principal:hover {
-background: #d9f99d;
-color: #273909;
+.btn-principal:hover,
+.producto-card button.btn-agregar:hover {
+background: #d9f99d !important;
+color: #1a2e03 !important;
+transform: translateY(-2px);
 }
 
 /* ================= CARRITO ================= */
@@ -433,7 +473,7 @@ box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 
 nav.menu-abierto { display: flex; }
 
-.hero { padding: 55px 16px; }
+.hero { padding: 50px 16px; }
 .hero h1 { font-size: 2.1rem; }
 .carrito-layout { grid-template-columns: 1fr; }
 }
