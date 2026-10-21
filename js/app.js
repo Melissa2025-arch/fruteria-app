@@ -215,7 +215,7 @@ function enviarPedidoWhatsApp() {
         return;
     }
     
-    let mensaje = "🛒 *NUEVO PEDIDO A CRÉDITO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
+    let mensaje = "🛒 *NUEVO PEDIDO - DISTRIBUIDORA ÉXODO* 🛒\n\n";
     let total = 0;
     
     carrito.forEach(item => {
