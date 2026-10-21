@@ -12,7 +12,7 @@
     <!-- ================= HEADER ================= -->
     <header class="header">
         <div class="logo">
-            <img src="img/logo.png" alt="Distribuidora Éxodo" onerror="this.src='img/dex-logo.png'">
+            <img src="img/logo.png" alt="Dex" onerror="this.src='https://placehold.co/120x40/52b71d/ffffff?text=Dex'">
             <span>Distribuidora Éxodo</span>
         </div>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
@@ -21,113 +21,35 @@
             <a href="frutas.html">🍎 Frutas</a>
             <a href="verduras.html">🥕 Verduras</a>
             <a href="granos.html">🌽 Granos</a>
-            <a href="harinas.html">🌾 Harinas y Cereales</a>
             <a href="lacteos.html">🥛 Lácteos</a>
-            <a href="carnes.html">🥩 Embutidos y Carnes</a>
-            <a href="bebidas.html">🥤 Bebidas y Varios</a>
-            <a href="extras.html">✨ Productos Extras</a>
+            <a href="extras.html">🧺 Canastas</a>
             <a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a>
         </nav>
     </header>
 
-    <!-- ================= HERO ================= -->
+    <!-- ================= HERO REPARADO E IDENTICO ================= -->
     <section class="hero">
         <div class="hero-contenido">
-            <span class="etiqueta">🚚 Entregas A Domicilio</span>
-            <h1>Distribuidora <span>Éxodo</span></h1>
-            <p>Productos de primera calidad para centros de cuidado diario, instituciones y tu hogar.</p>
+            <span class="etiqueta">🛡️ Distribución & Calidad Garantizada</span>
+            <h1>Productos frescos con crédito de hasta 30 días.</h1>
+            <p>Somos una distribuidora comprometida con la frescura. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
+            <a href="#grid-busqueda" class="btn-ordenar-hero">🚚 Ordenar Ahora</a>
         </div>
     </section>
 
-    <!-- ================= BUSCADOR Y CATÁLOGO ================= -->
+    <!-- ================= BUSCADOR Y MUESTRA DIRECTA ================= -->
     <main class="productos-page">
         <div class="buscador-contenedor">
             <input 
                 type="text" 
                 id="input-busqueda" 
-                placeholder="🔍 Buscar en todo el catálogo" 
+                placeholder="🔍 ¿Qué producto buscas? (ej. Queso, Leche, Manzana)..." 
                 oninput="buscarProductosInicio()"
             >
         </div>
 
         <div id="grid-busqueda" class="productos-grid"></div>
     </main>
-
-    <!-- ================= SECCIÓN ACOPLAMIENTO Y CONTACTO (TRÍPTICO DEX) ================= -->
-    <section class="seccion-nosotros">
-        <div class="nosotros-grid-triptico">
-            <!-- PANEL 1: Nos acoplamos a tus necesidades -->
-            <div class="triptico-col col-blanca">
-                <div class="linea-decorativa-top"></div>
-                <h2 class="triptico-titulo">Nos acoplamos a tus necesidades</h2>
-                
-                <p class="triptico-texto">
-                    Nos diferenciamos porque contamos con <strong>entregas a domicilio</strong>, permitiéndole hacer pedidos desde donde esté, vía WhatsApp o por correo electrónico.
-                </p>
-
-                <h4 class="triptico-subtitulo">Características de nuestro servicio:</h4>
-                <div class="triptico-pills">
-                    <div class="pill-item">
-                        <span class="pill-bar"></span>
-                        <span class="pill-text">Crédito para 30 días</span>
-                    </div>
-                    <div class="pill-item">
-                        <span class="pill-bar"></span>
-                        <span class="pill-text">Asesoría y comunicación fluida</span>
-                    </div>
-                    <div class="pill-item">
-                        <span class="pill-bar"></span>
-                        <span class="pill-text">Servicio a domicilio</span>
-                    </div>
-                </div>
-
-                <p class="triptico-texto">
-                    Somos una distribuidora especializada en atender a nuestros clientes, con productos de primera calidad a <strong class="verde-resaltado">centros de cuidado diario, públicos y privados.</strong>
-                </p>
-
-                <p class="triptico-destacado verde-resaltado">
-                    Precios de contado y al crédito, nos adaptamos a su forma de pago.
-                </p>
-
-                <p class="triptico-texto">
-                    Ofrecemos variedades de marcas y presentaciones y si no lo tenemos en stock <strong class="verde-resaltado">¡lo conseguiremos para usted!</strong>
-                </p>
-                <div class="linea-decorativa-bottom"></div>
-            </div>
-
-            <!-- PANEL 2: Contáctanos (Panel Central Verde) -->
-            <div class="triptico-col col-verde">
-                <h2 class="triptico-titulo-centro">Contáctanos</h2>
-                
-                <div class="contacto-item-centro">
-                    <div class="icono-svg">✉️</div>
-                    <a href="mailto:distribuidoraexodo23@gmail.com">distribuidoraexodo23@gmail.com</a>
-                </div>
-
-                <div class="contacto-item-centro">
-                    <div class="icono-svg">💬</div>
-                    <p>2520 2726 | 7932 1963</p>
-                </div>
-            </div>
-
-            <!-- PANEL 3: Logo Dex + Lema -->
-            <div class="triptico-col col-blanca col-lema">
-                <div class="logo-dex-container">
-                    <img src="img/logo.png" alt="Dex Distribuidora Éxodo" onerror="this.src='img/dex-logo.png'">
-                </div>
-
-                <div class="linea-decorativa-top" style="margin-top: 15px;"></div>
-
-                <blockquote class="lema-dex">
-                    "Pedidos personalizados, entregas confiables."
-                </blockquote>
-
-                <div class="patron-frutas-bottom">
-                    🍋 🍎 🍊 🥒 🍋 🍎
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- ================= FOOTER ================= -->
     <footer>
@@ -138,8 +60,9 @@
     <script src="js/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            if (typeof inicializarBuscadorInicio === "function") {
-                inicializarBuscadorInicio();
+            // Carga y muestra automáticamente todos los productos al inicio
+            if (typeof inicializarPaginaInicio === "function") {
+                inicializarPaginaInicio();
             }
         });
     </script>

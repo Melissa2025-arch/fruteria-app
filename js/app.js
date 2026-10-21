@@ -1,11 +1,7 @@
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 
-const supabase = (window.supabase && typeof window.supabase.createClient === 'function') 
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-  : null;
-
-// Productos de respaldo garantizados si la BD externa no conecta
+// Lista completa de respaldo con todos los productos
 const PRODUCTOS_BACKUP = [
   // FRUTAS
   { id: '1', nombre: 'Melón', categoria: 'frutas', unidad: 'Unidad', precio: 2.25, imagen: 'img/melon.jpg', descripcion: 'Melón fresco dulce por unidad.' },
@@ -27,6 +23,9 @@ const PRODUCTOS_BACKUP = [
   { id: '24', nombre: 'Tomate', categoria: 'verduras', unidad: 'Bolsa', precio: 1.25, imagen: 'img/tomate.jpg', descripcion: 'Tomate de cocina en bolsa.' },
   { id: '25', nombre: 'Cilantro (Manojo)', categoria: 'verduras', unidad: 'Manojo', precio: 4.00, imagen: 'img/cilantro.jpg', descripcion: 'Manojo de cilantro fresco.' },
   { id: '26', nombre: 'Papa', categoria: 'verduras', unidad: 'Libra', precio: 1.10, imagen: 'img/papa.jpg', descripcion: 'Papa lavada por libra.' },
+  { id: '27', nombre: 'Apio', categoria: 'verduras', unidad: 'Manojo', precio: 3.50, imagen: 'img/apio.jpg', descripcion: 'Manojo de apio fresco.' },
+  { id: '28', nombre: 'Limones', categoria: 'verduras', unidad: 'Unidad', precio: 0.40, imagen: 'img/limon.jpg', descripcion: 'Limón jugoso por unidad.' },
+  { id: '29', nombre: 'Güisquil', categoria: 'verduras', unidad: 'Unidad', precio: 0.85, imagen: 'img/guisquil.jpg', descripcion: 'Güisquil tierno por unidad.' },
 
   // GRANOS
   { id: '40', nombre: 'Azúcar Blanca', categoria: 'granos', unidad: 'Libra', precio: 0.90, imagen: 'img/azucar-blanca.jpg', descripcion: 'Azúcar refinada blanca por libra.' },
@@ -78,38 +77,45 @@ async function obtenerTodosProductos() {
   try {
     const respuesta = await fetch(`${SUPABASE_URL}/rest/v1/productos?select=*`, {
       headers: {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
-
-    if (respuesta.ok) {
-      const data = await respuesta.json();
-      if (Array.isArray(data) && data.length > 0) {
-        productosBusquedaCache = data;
-        return productosBusquedaCache;
-      }
-    }
-  } catch (err) {
-    console.warn("Conexión con la base de datos externa no disponible, cargando lista de respaldo...", err);
-  }
-
-  // Si falla la API REST de Supabase, usaremos los datos locales
-  productosBusquedaCache = PRODUCTOS_BACKUP;
-  return productosBusquedaCache;
+async function inicializarPaginaInicio() {
+  actualizarBadgeCarrito();
+  const productos = await obtenerTodosProductos();
+  // Muestra todos los productos inmediatamente al entrar
+  renderizarTarjetas(productos, "grid-busqueda");
 }
 
-async function inicializarBuscadorInicio() {
-  actualizarBadgeCarrito();
-  await obtenerTodosProductos();
+function buscarProductosInicio() {
+  const input = document.getElementById("input-busqueda");
   const contenedor = document.getElementById("grid-busqueda");
-  if (contenedor) contenedor.innerHTML = "";
+  if (!input || !contenedor) return;
+
+  const texto = input.value.toLowerCase().trim();
+
+  if (texto === "") {
+    renderizarTarjetas(productosBusquedaCache, "grid-busqueda");
+    return;
+  }
+
+  const filtrados = productosBusquedaCache.filter(p => 
+    p.nombre.toLowerCase().includes(texto) ||
+    p.categoria.toLowerCase().includes(texto) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(texto))
+  );
+
+  renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
 async function cargarCategoriaEspecifica(cat) {
   actualizarBadgeCarrito();
   const todos = await obtenerTodosProductos();
-  const filtrados = todos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+  
+  const categoriaBuscada = cat.toLowerCase().trim();
+  const filtrados = todos.filter(p => {
+    if (!p.categoria) return false;
+    const catProd = p.categoria.toLowerCase().trim();
+    return catProd === categoriaBuscada || catProd.includes(categoriaBuscada);
+  });
+
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
@@ -140,7 +146,7 @@ function buscarProductosCategoria(cat) {
   const texto = input.value.toLowerCase().trim();
 
   const filtrados = productosBusquedaCache.filter(p => 
-    p.categoria.toLowerCase() === cat.toLowerCase() &&
+    p.categoria.toLowerCase().includes(cat.toLowerCase()) &&
     (p.nombre.toLowerCase().includes(texto) || (p.descripcion && p.descripcion.toLowerCase().includes(texto)))
   );
 
