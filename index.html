@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distribuidora Éxodo | Inicio</title>
-    <!-- Estilos Limpios -->
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
-    <!-- ================= HEADER / NAVEGACIÓN ================= -->
+    <!-- ================= HEADER ================= -->
     <header class="header">
         <div class="logo">
-            <img src="img/logo.png" alt="Distribuidora Éxodo" onerror="this.onerror=null; this.src='img/logo.png';">
+            <img src="img/logo.png" alt="Distribuidora Éxodo">
             <span>Distribuidora Éxodo</span>
         </div>
-        <button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir Menú">☰</button>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <nav id="menu">
             <a href="index.html" class="activo">🏠 Inicio</a>
             <a href="frutas.html">🍎 Frutas</a>
@@ -27,18 +26,18 @@
         </nav>
     </header>
 
-    <!-- ================= HERO / ENCABEZADO LIMPIO ================= -->
+    <!-- ================= HERO / BANNER PRINCIPAL ================= -->
     <section class="hero">
         <div class="hero-contenido">
             <span class="etiqueta">
                 🛡️ Distribución & Calidad Garantizada
             </span>
             <h1>Productos frescos con <span>crédito de hasta 30 días.</span></h1>
-            <p>Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
+            <p>Somos una distribuidora comprometida con la frescura. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
+            <a href="#input-busqueda" class="btn-hero">🛒 Ordenar Ahora</a>
         </div>
-        </section>
-
-    <!-- ================= BÚSQUEDA Y PRODUCTOS ================= -->
+    </section>
+     <!-- ================= BUSCADOR Y PRODUCTOS ================= -->
     <main class="productos-page" style="min-height: 40vh;">
         <div class="buscador-contenedor">
             <input 
@@ -49,17 +48,17 @@
             >
         </div>
 
-        <div id="grid-busqueda" class="productos-grid" style="margin-top: 25px;"></div>
+        <div id="grid-busqueda" class="productos-grid" style="margin-top: 30px;"></div>
     </main>
 
     <!-- ================= FOOTER ================= -->
     <footer>
         <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
     </footer>
-
-    <!-- ================= SCRIPTS ================= -->
+     <!-- ================= SCRIPTS ================= -->
     <script src="js/app.js"></script>
     <script>
+        // Inicializa el buscador en memoria para respuesta instantánea
         if (typeof inicializarBuscadorInicio === "function") {
             inicializarBuscadorInicio();
         }
