@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distribuidora Éxodo | Inicio</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -17,6 +18,40 @@
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <nav id="menu">
             <a href="index.html" class="activo">🏠 Inicio</a>
+            <a href="frutas.html">🍎 Frutas</a>
+            <a href="verduras.html">🥕 Verduras</a>
+            <a href="granos.html">🌽 Granos</a>
+            <a href="harinas.html">🌾 Harinas y Cereales</a>
+            <a href="lacteos.html">🥛 Lácteos</a>
+            <a href="carnes.html">🥩 Embutidos y Carnes</a>
+            <a href="extras.html">✨ Productos Extras</a>
+            <a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a>
+        </nav>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+        <div class="hero-contenido">
+            <span class="etiqueta">🚚 Entregas A Domicilio</span>
+            <h1>Distribuidora <span>Éxodo</span></h1>
+            <p>Productos de primera calidad para centros de cuidado diario, instituciones y tu hogar.</p>
+        </div>
+    </section>
+
+    <!-- ================= BUSCADOR Y CATÁLOGO ================= -->
+    <main class="productos-page">
+        <div class="buscador-contenedor">
+            <input 
+                type="text" 
+                id="input-busqueda" 
+                placeholder="🔍 Buscar en todo el catálogo (ej. Aceite, Quesillo, Carne)..." 
+                oninput="buscarProductosInicio()"
+            >
+        </div>
+
+        <div id="grid-busqueda" class="productos-grid"></div>
+    </main>
+
     <!-- ================= SECCIÓN ACOPLAMIENTO Y CONTACTO (TRÍPTICO DEX) ================= -->
     <section class="seccion-nosotros">
         <div class="nosotros-grid-triptico">
