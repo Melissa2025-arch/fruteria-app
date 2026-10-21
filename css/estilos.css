@@ -1,5 +1,4 @@
-/* STREAMING_CHUNK:Configuring root design variables and color theme... /
-/ =========================================================
+/* =========================================================
 ESTILOS OPTIMIZADOS COMPACTOS Y VIBRANTES (PC & MÓVIL)
 ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -29,8 +28,7 @@ color: var(--text-dark);
 line-height: 1.4;
 }
 
-/* STREAMING_CHUNK:Styling sticky header and navigation menu... /
-/ ================= HEADER ================= */
+/* ================= HEADER ================= */
 .header {
 background: #ffffff;
 padding: 12px 24px;
@@ -101,8 +99,7 @@ color: var(--text-dark);
 cursor: pointer;
 }
 
-/* STREAMING_CHUNK:Styling hero section and main layout containers... /
-/ ================= HERO BANNER ================= */
+/* ================= HERO BANNER ================= */
 .hero {
 position: relative;
 background: linear-gradient(rgba(18, 38, 12, 0.88), rgba(12, 26, 8, 0.92)),
@@ -167,8 +164,7 @@ background: var(--primary-hover);
 transform: translateY(-2px);
 }
 
-/* STREAMING_CHUNK:Styling main search bar... /
-/ ================= BUSCADOR PRINCIPAL ================= */
+/* ================= BUSCADOR PRINCIPAL ================= */
 .productos-page {
 max-width: 1200px;
 margin: 24px auto;
@@ -203,8 +199,7 @@ color: #0f172a;
 font-weight: 600;
 }
 
-/* STREAMING_CHUNK:Styling compact and vibrant product grid & cards... /
-/ ================= TARJETAS VIBRANTES Y COMPACTAS ================= */
+/* ================= TARJETAS VIBRANTES Y COMPACTAS ================= */
 .productos-grid {
 display: grid;
 grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -304,8 +299,7 @@ display: -webkit-box;
 overflow: hidden;
 }
 
-/* STREAMING_CHUNK:Styling price section and horizontal counter controls... /
-/ ================= PRECIO Y CONTROLES (EN UNA SOLA FILA) ================= */
+/* ================= PRECIO Y CONTROLES (EN UNA SOLA FILA) ================= */
 .precio-y-controles,
 .producto-card .acciones {
 display: flex !important;
@@ -408,8 +402,7 @@ background: var(--accent-lime) !important;
 color: #0f2408 !important;
 }
 
-/* STREAMING_CHUNK:Styling cart view and mobile responsive layout rules... /
-/ ================= CARRITO ================= */
+/* ================= CARRITO ================= */
 .carrito-layout {
 display: grid;
 grid-template-columns: 1fr 320px;
