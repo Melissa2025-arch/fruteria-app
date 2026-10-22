@@ -4,13 +4,14 @@
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 const CLAVE_CARRITO = "carrito_exodo";
+const TELEFONO_WHATSAPP = "50363114191";
 
 let productosBusquedaCache = [];
 let cargandoProductos = null;
 let carrito = cargarCarritoGuardado();
 
 /* =====================================================
-   CARRITO: CARGAR Y GUARDAR
+   CARRITO: CARGAR, GUARDAR Y CONTADOR
 ===================================================== */
 
 function cargarCarritoGuardado() {
@@ -55,16 +56,25 @@ function guardarCarrito() {
   }
 }
 
-function actualizarBadgeCarrito() {
-  const totalItems = Object.values(carrito).reduce(
+function contarUnidadesCarrito() {
+  return Object.values(carrito).reduce(
     (suma, producto) =>
-      suma + (parseInt(producto.cantidad, 10) || 0),
+      suma + Math.max(0, parseInt(producto.cantidad, 10) || 0),
     0
   );
+}
+
+function actualizarBadgeCarrito() {
+  const totalItems = contarUnidadesCarrito();
 
   document.querySelectorAll("#cant-carrito-badge").forEach(badge => {
     badge.textContent = `(${totalItems})`;
   });
+
+  const contadorResumen = document.getElementById("resumen-cantidad");
+  if (contadorResumen) {
+    contadorResumen.textContent = String(totalItems);
+  }
 }
 
 function toggleMenu() {
@@ -81,7 +91,7 @@ function toggleMenu() {
 }
 
 /* =====================================================
-   PRODUCTOS Y SUPABASE
+   PRODUCTOS Y CONEXIÓN CON SUPABASE
 ===================================================== */
 
 function normalizarProducto(producto) {
@@ -104,7 +114,7 @@ function normalizarProducto(producto) {
 }
 
 async function obtenerTodosProductos() {
-  if (productosBusquedaCache.length) {
+  if (productosBusquedaCache.length > 0) {
     return productosBusquedaCache;
   }
 
@@ -223,7 +233,7 @@ function buscarProductosCategoria(categoria) {
 }
 
 /* =====================================================
-   SEGURIDAD HTML
+   SEGURIDAD: ESCAPAR TEXTO HTML
 ===================================================== */
 
 function escaparHTML(valor) {
@@ -237,7 +247,7 @@ function escaparHTML(valor) {
 }
 
 /* =====================================================
-   TARJETAS DE PRODUCTOS
+   TARJETAS Y CONTROLES DE CANTIDAD
 ===================================================== */
 
 function renderizarTarjetas(productos, contenedorId) {
@@ -291,7 +301,6 @@ function renderizarTarjetas(productos, contenedorId) {
                 type="button"
                 class="btn-cantidad-menos"
                 aria-label="Disminuir cantidad"
-                data-delta="-1"
               >−</button>
 
               <span class="cantidad-seleccionada">${cantidad}</span>
@@ -300,7 +309,6 @@ function renderizarTarjetas(productos, contenedorId) {
                 type="button"
                 class="btn-cantidad-mas"
                 aria-label="Aumentar cantidad"
-                data-delta="1"
               >+</button>
             </div>
           </div>
@@ -313,11 +321,8 @@ function renderizarTarjetas(productos, contenedorId) {
       </article>`;
   }).join("");
 
-  // Asociamos los eventos a cada tarjeta.
-  // Esto evita depender de onclick y de IDs escapados.
   contenedor.querySelectorAll(".producto-card").forEach(tarjeta => {
     const id = tarjeta.dataset.productoId;
-    const contador = tarjeta.querySelector(".cantidad-seleccionada");
     const botonMenos = tarjeta.querySelector(".btn-cantidad-menos");
     const botonMas = tarjeta.querySelector(".btn-cantidad-mas");
     const botonAgregar = tarjeta.querySelector(".btn-agregar-carrito");
@@ -336,10 +341,6 @@ function renderizarTarjetas(productos, contenedorId) {
   });
 }
 
-/* =====================================================
-   CORRECCIÓN DE CANTIDADES EN LAS TARJETAS
-===================================================== */
-
 function cambiarCantCard(tarjetaOId, delta) {
   let tarjeta = null;
 
@@ -347,8 +348,7 @@ function cambiarCantCard(tarjetaOId, delta) {
     tarjeta = tarjetaOId;
   } else {
     tarjeta = [...document.querySelectorAll(".producto-card")].find(
-      elemento =>
-        elemento.dataset.productoId === String(tarjetaOId)
+      elemento => elemento.dataset.productoId === String(tarjetaOId)
     );
   }
 
@@ -379,15 +379,12 @@ function agregarAlCarrito(id, tarjeta) {
     return;
   }
 
-  // La cantidad se obtiene de la tarjeta exacta pulsada.
   const tarjetaProducto = tarjeta ||
     [...document.querySelectorAll(".producto-card")].find(
       elemento => elemento.dataset.productoId === String(id)
     );
 
-  const contador = tarjetaProducto?.querySelector(
-    ".cantidad-seleccionada"
-  );
+  const contador = tarjetaProducto?.querySelector(".cantidad-seleccionada");
 
   const cantidadSeleccionada = Math.max(
     1,
@@ -408,6 +405,7 @@ function agregarAlCarrito(id, tarjeta) {
   }
 
   guardarCarrito();
+  mostrarCarrito();
 
   const boton = tarjetaProducto?.querySelector(".btn-agregar-carrito");
 
@@ -434,6 +432,7 @@ function mostrarCarrito() {
 
   const contenedor = document.getElementById("lista-carrito");
   const totalElemento = document.getElementById("total-carrito-txt");
+  const contadorResumen = document.getElementById("resumen-cantidad");
 
   if (!contenedor) return;
 
@@ -446,20 +445,24 @@ function mostrarCarrito() {
       </div>`;
 
     if (totalElemento) totalElemento.textContent = "0.00";
+    if (contadorResumen) contadorResumen.textContent = "0";
     return;
   }
 
   let total = 0;
+  let totalUnidades = 0;
 
   const filas = items.map(producto => {
     const cantidad = Math.max(
       1,
       parseInt(producto.cantidad, 10) || 1
     );
+
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
     total += subtotal;
+    totalUnidades += cantidad;
 
     return `
       <tr>
@@ -505,6 +508,12 @@ function mostrarCarrito() {
   if (totalElemento) {
     totalElemento.textContent = total.toFixed(2);
   }
+
+  if (contadorResumen) {
+    contadorResumen.textContent = String(totalUnidades);
+  }
+
+  actualizarBadgeCarrito();
 }
 
 function eliminarDelCarrito(id) {
@@ -533,6 +542,7 @@ function construirTextoPedido() {
       1,
       parseInt(producto.cantidad, 10) || 1
     );
+
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
@@ -561,16 +571,14 @@ function enviarPedidoWhatsApp() {
     return;
   }
 
-  // Verifica que este sea el número comercial correcto.
-  const telefono = "50363114191";
-
-  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+  const url =
+    `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
   window.open(url, "_blank", "noopener");
 }
 
 /* =====================================================
-   GENERAR PDF
+   PREPARAR CONTENIDO DEL PDF
 ===================================================== */
 
 function prepararContenidoPDF() {
@@ -582,17 +590,23 @@ function prepararContenidoPDF() {
   }
 
   const plantilla = document.getElementById("plantilla-pdf");
-  const tbody = document.getElementById("pdf-tabla-body");
-  const totalElemento = document.getElementById("pdf-total");
-  const fecha = document.getElementById("pdf-fecha");
 
-  if (!plantilla || !tbody || !totalElemento) {
-    alert("No se encontró la plantilla completa del PDF.");
+  if (!plantilla) {
+    alert("No se encontró la plantilla del PDF en carrito.html.");
+    return null;
+  }
+
+  const tbody = plantilla.querySelector("#pdf-tabla-body");
+  const totalElemento = plantilla.querySelector("#pdf-total");
+  const fecha = plantilla.querySelector("#pdf-fecha");
+
+  if (!tbody || !totalElemento) {
+    alert("La plantilla del PDF está incompleta. Revisa sus identificadores.");
     return null;
   }
 
   if (typeof html2pdf === "undefined") {
-    alert("No se pudo cargar la biblioteca PDF. Revisa tu conexión.");
+    alert("No se pudo cargar la biblioteca PDF. Revisa tu conexión a internet.");
     return null;
   }
 
@@ -607,6 +621,7 @@ function prepararContenidoPDF() {
       1,
       parseInt(producto.cantidad, 10) || 1
     );
+
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
@@ -631,85 +646,135 @@ function prepararContenidoPDF() {
   }).join("");
 
   totalElemento.textContent = total.toFixed(2);
+
   return plantilla;
 }
+
+/* =====================================================
+   CREAR PDF COMO BLOB
+   Se usa una copia visible para evitar PDFs en blanco.
+===================================================== */
 
 async function crearBlobPDF() {
   const plantilla = prepararContenidoPDF();
   if (!plantilla) return null;
 
-  const estiloOriginal = plantilla.getAttribute("style");
-  const claseOriginal = plantilla.className;
+  if (typeof html2pdf === "undefined") {
+    alert("No se pudo cargar la biblioteca PDF. Revisa tu conexión.");
+    return null;
+  }
+
+  const copia = plantilla.cloneNode(true);
+
+  copia.removeAttribute("aria-hidden");
+  copia.classList.remove("pdf-fuera-pantalla");
+
+  Object.assign(copia.style, {
+    display: "block",
+    position: "fixed",
+    left: "0",
+    top: "0",
+    width: "800px",
+    maxWidth: "none",
+    height: "auto",
+    margin: "0",
+    padding: "30px",
+    background: "#ffffff",
+    color: "#222222",
+    zIndex: "99999",
+    overflow: "visible",
+    opacity: "1",
+    visibility: "visible",
+    boxSizing: "border-box"
+  });
+
+  document.body.appendChild(copia);
 
   try {
-    plantilla.classList.remove("pdf-fuera-pantalla");
-
-    Object.assign(plantilla.style, {
-      display: "block",
-      position: "fixed",
-      left: "0",
-      top: "0",
-      width: "800px",
-      maxWidth: "none",
-      background: "#ffffff",
-      color: "#222222",
-      zIndex: "99999",
-      overflow: "visible"
+    // Espera a que el navegador dibuje la copia antes de capturarla.
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
     });
 
-    await new Promise(resolve =>
-      requestAnimationFrame(() =>
-        requestAnimationFrame(resolve)
-      )
-    );
+    const opciones = {
+      margin: 10,
+      filename: "Pedido-Distribuidora-Exodo.pdf",
+      image: {
+        type: "jpeg",
+        quality: 0.98
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        scrollX: 0,
+        scrollY: 0,
+        logging: false
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
+      },
+      pagebreak: {
+        mode: ["css", "legacy"]
+      }
+    };
 
-    return await html2pdf()
-      .set({
-        margin: 10,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: "#ffffff",
-          scrollX: 0,
-          scrollY: 0
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait"
-        }
-      })
-      .from(plantilla)
-      .outputPdf("blob");
-  } finally {
-    if (estiloOriginal === null) {
-      plantilla.removeAttribute("style");
-    } else {
-      plantilla.setAttribute("style", estiloOriginal);
+    const blob = await new Promise((resolve, reject) => {
+      html2pdf()
+        .set(opciones)
+        .from(copia)
+        .outputPdf("blob")
+        .thenExternal(resolve)
+        .catchExternal(reject);
+    });
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error("El archivo PDF generado está vacío.");
     }
 
-    plantilla.className = claseOriginal;
+    return blob;
+  } finally {
+    copia.remove();
   }
+}
+
+/* =====================================================
+   DESCARGAR PDF
+===================================================== */
+
+function descargarBlobPDF(blob) {
+  if (!(blob instanceof Blob) || blob.size === 0) {
+    throw new Error("No hay contenido válido para descargar.");
+  }
+
+  const nombreArchivo =
+    `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement("a");
+
+  enlace.href = url;
+  enlace.download = nombreArchivo;
+  enlace.style.display = "none";
+
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 async function generarPDFPedido() {
   try {
     const blob = await crearBlobPDF();
+
     if (!blob) return;
 
-    const url = URL.createObjectURL(blob);
-    const enlace = document.createElement("a");
-
-    enlace.href = url;
-    enlace.download =
-      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`;
-
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    descargarBlobPDF(blob);
   } catch (error) {
     console.error("Error al generar PDF:", error);
     alert("No se pudo generar el PDF. Inténtalo nuevamente.");
@@ -722,41 +787,53 @@ async function generarPDFPedido() {
 
 async function compartirPDFWhatsApp() {
   try {
-    if (!navigator.share || !navigator.canShare) {
-      alert(
-        "Este navegador no permite compartir el PDF directamente. " +
-        "Descárgalo y adjúntalo en WhatsApp."
-      );
-      return;
-    }
-
     const blob = await crearBlobPDF();
+
     if (!blob) return;
+
+    const nombreArchivo =
+      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`;
 
     const archivo = new File(
       [blob],
-      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`,
+      nombreArchivo,
       { type: "application/pdf" }
     );
 
-    if (!navigator.canShare({ files: [archivo] })) {
-      alert(
-        "Este dispositivo no admite compartir el PDF directamente. " +
-        "Utiliza la opción de descarga."
-      );
+    // Los navegadores compatibles permiten elegir WhatsApp
+    // u otra aplicación desde el menú nativo para compartir.
+    if (
+      typeof navigator.share === "function" &&
+      typeof navigator.canShare === "function" &&
+      navigator.canShare({ files: [archivo] })
+    ) {
+      await navigator.share({
+        files: [archivo],
+        title: "Pedido - Distribuidora Éxodo",
+        text: "Te comparto mi hoja de pedido."
+      });
+
       return;
     }
 
-    await navigator.share({
-      files: [archivo],
-      title: "Pedido - Distribuidora Éxodo",
-      text: "Te comparto mi hoja de pedido."
-    });
+    // Alternativa para navegadores que no permiten compartir archivos.
+    descargarBlobPDF(blob);
+
+    alert(
+      "Tu PDF se ha descargado. Para enviarlo por WhatsApp, " +
+      "abre el chat y adjunta el archivo PDF descargado."
+    );
   } catch (error) {
-    if (error.name !== "AbortError") {
-      console.error("Error al compartir PDF:", error);
-      alert("No se pudo compartir el PDF. Prueba la opción de descarga.");
+    if (error.name === "AbortError") {
+      return;
     }
+
+    console.error("Error al compartir PDF:", error);
+
+    alert(
+      "No se pudo compartir el PDF directamente. " +
+      "Prueba el botón de descargar PDF."
+    );
   }
 }
 
@@ -773,5 +850,9 @@ document.addEventListener("DOMContentLoaded", () => {
     grid.innerHTML = `
       <div class="estado-vacio">Cargando productos...</div>`;
   }
-});
 
+  // Solo actualiza la vista si estamos en carrito.html.
+  if (document.getElementById("lista-carrito")) {
+    mostrarCarrito();
+  }
+});
