@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* =====================================================
@@ -602,19 +601,18 @@ function prepararContenidoPDF() {
 }
 
 /* =====================================================
-   PDF: CREAR ARCHIVO
+   PDF: CREAR ARCHIVO (CORREGIDO)
 ===================================================== */
 
 async function crearBlobPDF() {
   const plantilla = prepararContenidoPDF();
   if (!plantilla) return null;
 
-  // Clon independiente para no alterar el diseño de la página.
+  // Copia temporal: no modifica el diseño visible del carrito.
   const copia = plantilla.cloneNode(true);
 
   copia.removeAttribute("aria-hidden");
   copia.classList.remove("pdf-fuera-pantalla");
-  copia.removeAttribute("id");
 
   Object.assign(copia.style, {
     display: "block",
@@ -624,26 +622,30 @@ async function crearBlobPDF() {
     width: "800px",
     maxWidth: "none",
     height: "auto",
+    minHeight: "0",
     margin: "0",
     padding: "30px",
     background: "#ffffff",
     color: "#222222",
     opacity: "1",
     visibility: "visible",
-    zIndex: "99999",
+    zIndex: "999999",
     overflow: "visible",
     boxSizing: "border-box"
   });
 
-  // El clon se inserta en el documento para que html2canvas pueda capturarlo.
   document.body.appendChild(copia);
 
   try {
+    // Esperar a que el navegador renderice la copia.
     await new Promise(resolve => {
       requestAnimationFrame(() => {
         requestAnimationFrame(resolve);
       });
     });
+
+    const documentoPDF =
+      copia.querySelector(".pdf-documento") || copia;
 
     const opciones = {
       margin: 10,
@@ -656,9 +658,10 @@ async function crearBlobPDF() {
         scale: 2,
         backgroundColor: "#ffffff",
         useCORS: true,
-        logging: false,
+        logging: true,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        windowWidth: 1000
       },
       jsPDF: {
         unit: "mm",
@@ -672,18 +675,22 @@ async function crearBlobPDF() {
 
     const blob = await html2pdf()
       .set(opciones)
-      .from(copia)
+      .from(documentoPDF)
       .toPdf()
       .get("pdf")
       .then(pdf => pdf.output("blob"));
 
-    if (!(blob instanceof Blob) || blob.size < 100) {
-      throw new Error("El PDF generado está vacío o es demasiado pequeño.");
+    if (!(blob instanceof Blob) || blob.size < 500) {
+      throw new Error(
+        `El PDF generado parece vacío. Tamaño: ${blob?.size ?? 0} bytes.`
+      );
     }
 
     console.log("PDF generado correctamente:", blob.size, "bytes");
     return blob;
+
   } finally {
+    // Retirar la copia temporal, incluso si ocurre un error.
     copia.remove();
   }
 }
