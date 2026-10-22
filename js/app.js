@@ -19,18 +19,16 @@ function cargarCarritoGuardado() {
 
     const resultado = {};
 
-    Object.entries(guardado).forEach(([id, p]) => {
-      if (!p || typeof p !== "object") return;
-
-      const cantidad = Math.max(1, parseInt(p.cantidad, 10) || 1);
+    Object.entries(guardado).forEach(([id, producto]) => {
+      if (!producto || typeof producto !== "object") return;
 
       resultado[String(id)] = {
-        ...p,
-        id: String(p.id ?? id),
-        nombre: String(p.nombre || "Producto"),
-        precio: Math.max(0, Number(p.precio) || 0),
-        unidad: p.unidad || "Unidad",
-        cantidad
+        ...producto,
+        id: String(producto.id ?? id),
+        nombre: String(producto.nombre || "Producto"),
+        precio: Math.max(0, Number(producto.precio) || 0),
+        unidad: producto.unidad || "Unidad",
+        cantidad: Math.max(1, parseInt(producto.cantidad, 10) || 1)
       };
     });
 
@@ -66,7 +64,7 @@ function toggleMenu() {
 
 function actualizarBadgeCarrito() {
   const totalItems = Object.values(carrito).reduce(
-    (suma, p) => suma + (parseInt(p.cantidad, 10) || 0),
+    (suma, producto) => suma + (parseInt(producto.cantidad, 10) || 0),
     0
   );
 
@@ -75,25 +73,35 @@ function actualizarBadgeCarrito() {
   });
 }
 
-function normalizarProducto(p) {
-  const categoriaOriginal = String(p.categoria || "").toLowerCase().trim();
-  const categoria = categoriaOriginal === "bebidas" ? "extras" : categoriaOriginal;
+function normalizarProducto(producto) {
+  const categoriaOriginal = String(producto.categoria || "")
+    .toLowerCase()
+    .trim();
+
+  const categoria = categoriaOriginal === "bebidas"
+    ? "extras"
+    : categoriaOriginal;
 
   return {
-    ...p,
-    id: String(p.id),
-    nombre: String(p.nombre || "Producto"),
+    ...producto,
+    id: String(producto.id),
+    nombre: String(producto.nombre || "Producto"),
     categoria,
-    unidad: p.unidad || "Unidad",
-    precio: Number(p.precio) || 0,
-    imagen: p.imagen || "img/logo.png",
-    descripcion: p.descripcion || ""
+    unidad: producto.unidad || "Unidad",
+    precio: Number(producto.precio) || 0,
+    imagen: producto.imagen || "img/logo.png",
+    descripcion: producto.descripcion || ""
   };
 }
 
 async function obtenerTodosProductos() {
-  if (productosBusquedaCache.length) return productosBusquedaCache;
-  if (cargandoProductos) return cargandoProductos;
+  if (productosBusquedaCache.length) {
+    return productosBusquedaCache;
+  }
+
+  if (cargandoProductos) {
+    return cargandoProductos;
+  }
 
   cargandoProductos = (async () => {
     try {
@@ -109,7 +117,9 @@ async function obtenerTodosProductos() {
       );
 
       if (!respuesta.ok) {
-        throw new Error(`Supabase respondió ${respuesta.status}: ${await respuesta.text()}`);
+        throw new Error(
+          `Supabase respondió ${respuesta.status}: ${await respuesta.text()}`
+        );
       }
 
       const datos = await respuesta.json();
@@ -159,7 +169,8 @@ async function cargarCategoriaEspecifica(categoria) {
 
   const todos = await obtenerTodosProductos();
   const buscada = String(categoria || "").toLowerCase().trim();
-  const filtrados = todos.filter(p => p.categoria === buscada);
+
+  const filtrados = todos.filter(producto => producto.categoria === buscada);
 
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
@@ -170,10 +181,10 @@ function buscarProductosInicio() {
 
   const texto = input.value.toLowerCase().trim();
 
-  const filtrados = productosBusquedaCache.filter(p =>
-    p.nombre.toLowerCase().includes(texto) ||
-    p.categoria.toLowerCase().includes(texto) ||
-    p.descripcion.toLowerCase().includes(texto)
+  const filtrados = productosBusquedaCache.filter(producto =>
+    producto.nombre.toLowerCase().includes(texto) ||
+    producto.categoria.toLowerCase().includes(texto) ||
+    producto.descripcion.toLowerCase().includes(texto)
   );
 
   renderizarTarjetas(filtrados, "grid-busqueda");
@@ -186,11 +197,11 @@ function buscarProductosCategoria(categoria) {
   const texto = input.value.toLowerCase().trim();
   const cat = String(categoria || "").toLowerCase().trim();
 
-  const filtrados = productosBusquedaCache.filter(p =>
-    p.categoria === cat &&
+  const filtrados = productosBusquedaCache.filter(producto =>
+    producto.categoria === cat &&
     (
-      p.nombre.toLowerCase().includes(texto) ||
-      p.descripcion.toLowerCase().includes(texto)
+      producto.nombre.toLowerCase().includes(texto) ||
+      producto.descripcion.toLowerCase().includes(texto)
     )
   );
 
@@ -219,21 +230,30 @@ function renderizarTarjetas(productos, contenedorId) {
     return;
   }
 
-  contenedor.innerHTML = productos.map(p => {
-    const cantidad = Math.max(1, parseInt(carrito[p.id]?.cantidad, 10) || 1);
-    const imagen = escaparHTML(p.imagen);
-    const nombre = escaparHTML(p.nombre);
-    const descripcion = escaparHTML(p.descripcion);
-    const categoria = escaparHTML(p.categoria);
-    const unidad = escaparHTML(p.unidad);
-    const idSeguro = escaparHTML(p.id);
+  contenedor.innerHTML = productos.map(producto => {
+    // La cantidad se selecciona en la tarjeta.
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidadSeleccionada, 10) || 1
+    );
+
+    const imagen = escaparHTML(producto.imagen || "img/logo.png");
+    const nombre = escaparHTML(producto.nombre);
+    const descripcion = escaparHTML(producto.descripcion);
+    const categoria = escaparHTML(producto.categoria);
+    const unidad = escaparHTML(producto.unidad || "Unidad");
+    const idSeguro = escaparHTML(producto.id);
 
     return `
       <article class="producto-card">
         <div>
           <div class="producto-imagen-container">
-            <img src="${imagen}" alt="${nombre}" loading="lazy"
-              onerror="this.onerror=null;this.src='img/logo.png';">
+            <img
+              src="${imagen}"
+              alt="${nombre}"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='img/logo.png';"
+            >
           </div>
 
           <span class="categoria-tag">${categoria} • ${unidad}</span>
@@ -243,23 +263,30 @@ function renderizarTarjetas(productos, contenedorId) {
 
         <div>
           <div class="precio-y-controles">
-            <span class="precio">$${Number(p.precio).toFixed(2)}</span>
+            <span class="precio">$${Number(producto.precio).toFixed(2)}</span>
 
             <div class="contador-acciones">
-              <button type="button" aria-label="Disminuir cantidad"
-                onclick="cambiarCantCard('${idSeguro}',-1)">−</button>
+              <button
+                type="button"
+                aria-label="Disminuir cantidad de ${nombre}"
+                onclick="cambiarCantCard('${idSeguro}', -1)"
+              >−</button>
 
               <span id="qty-${idSeguro}">${cantidad}</span>
 
-              <button type="button" aria-label="Aumentar cantidad"
-                onclick="cambiarCantCard('${idSeguro}',1)">+</button>
+              <button
+                type="button"
+                aria-label="Aumentar cantidad de ${nombre}"
+                onclick="cambiarCantCard('${idSeguro}', 1)"
+              >+</button>
             </div>
           </div>
 
-          <button type="button" class="btn-principal"
-            onclick="agregarAlCarrito('${idSeguro}')">
-            🛒 Agregar
-          </button>
+          <button
+            type="button"
+            class="btn-principal"
+            onclick="agregarAlCarrito('${idSeguro}')"
+          >🛒 Agregar al carrito</button>
         </div>
       </article>`;
   }).join("");
@@ -269,12 +296,16 @@ function cambiarCantCard(id, delta) {
   const span = document.getElementById(`qty-${CSS.escape(String(id))}`);
   if (!span) return;
 
-  const actual = parseInt(span.textContent, 10) || 1;
-  span.textContent = String(Math.max(1, actual + delta));
+  const cantidadActual = parseInt(span.textContent, 10) || 1;
+  const nuevaCantidad = Math.max(1, cantidadActual + delta);
+
+  span.textContent = String(nuevaCantidad);
 }
 
 function agregarAlCarrito(id) {
-  const producto = productosBusquedaCache.find(p => String(p.id) === String(id));
+  const producto = productosBusquedaCache.find(
+    elemento => String(elemento.id) === String(id)
+  );
 
   if (!producto) {
     alert("No se encontró el producto. Recarga la página e inténtalo de nuevo.");
@@ -282,13 +313,22 @@ function agregarAlCarrito(id) {
   }
 
   const span = document.getElementById(`qty-${CSS.escape(String(id))}`);
-  const cantidad = Math.max(1, parseInt(span?.textContent || "1", 10) || 1);
+  const cantidadSeleccionada = Math.max(
+    1,
+    parseInt(span?.textContent || "1", 10) || 1
+  );
+
   const clave = String(producto.id);
 
   if (carrito[clave]) {
-    carrito[clave].cantidad = (parseInt(carrito[clave].cantidad, 10) || 0) + cantidad;
+    // Si ya existe, suma las unidades nuevas a las que estaban guardadas.
+    carrito[clave].cantidad =
+      (parseInt(carrito[clave].cantidad, 10) || 0) + cantidadSeleccionada;
   } else {
-    carrito[clave] = { ...producto, cantidad };
+    carrito[clave] = {
+      ...producto,
+      cantidad: cantidadSeleccionada
+    };
   }
 
   guardarCarrito();
@@ -319,57 +359,49 @@ function mostrarCarrito() {
 
   const items = Object.values(carrito);
 
-  if (!items.length) {
+  if (items.length === 0) {
     contenedor.innerHTML = `
       <div class="estado-vacio">
         Tu carrito está vacío. Visita las categorías para agregar productos.
       </div>`;
 
-    if (totalElemento) totalElemento.textContent = "0.00";
+    if (totalElemento) {
+      totalElemento.textContent = "0.00";
+    }
+
     return;
   }
 
   let total = 0;
 
-  const filas = items.map(p => {
-    const cantidad = Math.max(1, parseInt(p.cantidad, 10) || 1);
-    const precio = Math.max(0, Number(p.precio) || 0);
+  const filas = items.map(producto => {
+    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
     total += subtotal;
 
-    const idSeguro = escaparHTML(p.id);
-    const nombre = escaparHTML(p.nombre);
-
     return `
       <tr>
         <td>
-          <strong>${nombre}</strong><br>
-          <small>${escaparHTML(p.unidad || "Unidad")}</small>
+          <strong>${escaparHTML(producto.nombre)}</strong><br>
+          <small>${escaparHTML(producto.unidad || "Unidad")}</small>
         </td>
 
         <td>$${precio.toFixed(2)}</td>
 
         <td>
-          <div class="contador-acciones">
-            <button type="button"
-              onclick="cambiarCantidadCarrito('${idSeguro}', -1)"
-              aria-label="Disminuir cantidad">−</button>
-
-            <span>${cantidad}</span>
-
-            <button type="button"
-              onclick="cambiarCantidadCarrito('${idSeguro}', 1)"
-              aria-label="Aumentar cantidad">+</button>
-          </div>
+          <span class="cantidad-carrito">${cantidad}</span>
         </td>
 
         <td>$${subtotal.toFixed(2)}</td>
 
         <td>
-          <button type="button"
-            onclick="eliminarDelCarrito('${idSeguro}')"
-            aria-label="Eliminar ${nombre}">Eliminar</button>
+          <button
+            type="button"
+            onclick="eliminarDelCarrito('${escaparHTML(producto.id)}')"
+            aria-label="Eliminar ${escaparHTML(producto.nombre)}"
+          >Eliminar</button>
         </td>
       </tr>`;
   }).join("");
@@ -390,20 +422,9 @@ function mostrarCarrito() {
       </table>
     </div>`;
 
-  if (totalElemento) totalElemento.textContent = total.toFixed(2);
-}
-
-function cambiarCantidadCarrito(id, cambio) {
-  const clave = String(id);
-  const producto = carrito[clave];
-
-  if (!producto) return;
-
-  const actual = parseInt(producto.cantidad, 10) || 1;
-  producto.cantidad = Math.max(1, actual + cambio);
-
-  guardarCarrito();
-  mostrarCarrito();
+  if (totalElemento) {
+    totalElemento.textContent = total.toFixed(2);
+  }
 }
 
 function eliminarDelCarrito(id) {
@@ -415,26 +436,27 @@ function eliminarDelCarrito(id) {
 function enviarPedidoWhatsApp() {
   const items = Object.values(carrito);
 
-  if (!items.length) {
+  if (items.length === 0) {
     alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
     return;
   }
 
   let total = 0;
+
   const lineas = [
     "Hola, Distribuidora Éxodo. Deseo realizar el siguiente pedido:",
     ""
   ];
 
-  items.forEach((p, indice) => {
-    const cantidad = Math.max(1, parseInt(p.cantidad, 10) || 1);
-    const precio = Math.max(0, Number(p.precio) || 0);
+  items.forEach((producto, indice) => {
+    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
     total += subtotal;
 
     lineas.push(
-      `${indice + 1}. ${p.nombre} (${p.unidad || "Unidad"}) — Cantidad: ${cantidad} × $${precio.toFixed(2)} = $${subtotal.toFixed(2)}`
+      `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"}) — Cantidad: ${cantidad} × $${precio.toFixed(2)} = $${subtotal.toFixed(2)}`
     );
   });
 
@@ -445,7 +467,7 @@ function enviarPedidoWhatsApp() {
     "Solicito entrega a domicilio. Quedo a la espera de su confirmación."
   );
 
-  // Verifica que este sea el número comercial correcto.
+  // Verifica que este sea el número de WhatsApp comercial correcto.
   const telefono = "50363114191";
 
   window.open(
@@ -458,7 +480,7 @@ function enviarPedidoWhatsApp() {
 async function generarPDFPedido() {
   const items = Object.values(carrito);
 
-  if (!items.length) {
+  if (items.length === 0) {
     alert("Tu carrito está vacío. Agrega productos antes de generar el PDF.");
     return;
   }
@@ -484,13 +506,15 @@ async function generarPDFPedido() {
     return;
   }
 
-  if (fecha) fecha.textContent = new Date().toLocaleDateString("es-SV");
+  if (fecha) {
+    fecha.textContent = new Date().toLocaleDateString("es-SV");
+  }
 
   let total = 0;
 
-  tbody.innerHTML = items.map(p => {
-    const cantidad = Math.max(1, parseInt(p.cantidad, 10) || 1);
-    const precio = Math.max(0, Number(p.precio) || 0);
+  tbody.innerHTML = items.map(producto => {
+    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
     total += subtotal;
@@ -498,14 +522,18 @@ async function generarPDFPedido() {
     return `
       <tr>
         <td style="padding:8px;border:1px solid #c8e2ce">
-          ${escaparHTML(p.nombre)} (${escaparHTML(p.unidad || "Unidad")})
+          ${escaparHTML(producto.nombre)}
+          (${escaparHTML(producto.unidad || "Unidad")})
         </td>
+
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:center">
           ${cantidad}
         </td>
+
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:right">
           $${precio.toFixed(2)}
         </td>
+
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:right">
           $${subtotal.toFixed(2)}
         </td>
@@ -543,4 +571,3 @@ document.addEventListener("DOMContentLoaded", () => {
     grid.innerHTML = `<div class="estado-vacio">Cargando productos…</div>`;
   }
 });
-
