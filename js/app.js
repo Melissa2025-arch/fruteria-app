@@ -2,7 +2,7 @@
 "use strict";
 
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FSQU1SIqug_9OGu3L2k";
+const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
 const CLAVE_CARRITO = "carrito_exodo";
 
 let productosBusquedaCache = [];
