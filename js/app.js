@@ -1,3 +1,4 @@
+
 "use strict";
 
 /* =====================================================
@@ -601,54 +602,119 @@ function prepararContenidoPDF() {
 }
 
 /* =====================================================
-   PDF: CREAR ARCHIVO (CORREGIDO)
+   PDF: CREAR ARCHIVO
+   Ajuste: capturar el documento completo y permitir
+   que la tabla y el contenido ocupen varias páginas.
 ===================================================== */
 
 async function crearBlobPDF() {
   const plantilla = prepararContenidoPDF();
   if (!plantilla) return null;
 
-  // Copia temporal: no modifica el diseño visible del carrito.
   const copia = plantilla.cloneNode(true);
 
   copia.removeAttribute("aria-hidden");
   copia.classList.remove("pdf-fuera-pantalla");
 
+  const documentoPDF =
+    copia.querySelector(".pdf-documento") || copia;
+
+  // Evita que los estilos de la plantilla oculta recorten el contenido.
   Object.assign(copia.style, {
     display: "block",
-    position: "fixed",
+    position: "absolute",
     left: "0",
     top: "0",
-    width: "800px",
-    maxWidth: "none",
+    width: "794px",
     height: "auto",
     minHeight: "0",
+    maxWidth: "none",
     margin: "0",
-    padding: "30px",
-    background: "#ffffff",
-    color: "#222222",
+    padding: "0",
     opacity: "1",
     visibility: "visible",
-    zIndex: "999999",
     overflow: "visible",
+    zIndex: "-1",
+    background: "#ffffff",
     boxSizing: "border-box"
+  });
+
+  Object.assign(documentoPDF.style, {
+    display: "block",
+    position: "static",
+    width: "100%",
+    height: "auto",
+    minHeight: "0",
+    maxHeight: "none",
+    maxWidth: "none",
+    margin: "0",
+    padding: "24px",
+    overflow: "visible",
+    boxSizing: "border-box",
+    color: "#222222",
+    background: "#ffffff",
+    opacity: "1",
+    visibility: "visible",
+    transform: "none"
+  });
+
+  // Asegura que la tabla pueda crecer y que sus columnas sean visibles.
+  const tabla = documentoPDF.querySelector(".pdf-tabla");
+
+  if (tabla) {
+    Object.assign(tabla.style, {
+      display: "table",
+      width: "100%",
+      maxWidth: "100%",
+      tableLayout: "fixed",
+      borderCollapse: "collapse",
+      overflow: "visible",
+      boxSizing: "border-box"
+    });
+  }
+
+  documentoPDF.querySelectorAll("th, td").forEach(celda => {
+    Object.assign(celda.style, {
+      overflowWrap: "anywhere",
+      wordBreak: "normal",
+      whiteSpace: "normal",
+      boxSizing: "border-box"
+    });
+  });
+
+  documentoPDF.querySelectorAll("tr").forEach(fila => {
+    fila.style.breakInside = "avoid";
+    fila.style.pageBreakInside = "avoid";
   });
 
   document.body.appendChild(copia);
 
   try {
-    // Esperar a que el navegador renderice la copia.
+    // Esperar al renderizado y al cálculo del tamaño real.
     await new Promise(resolve => {
       requestAnimationFrame(() => {
         requestAnimationFrame(resolve);
       });
     });
 
-    const documentoPDF =
-      copia.querySelector(".pdf-documento") || copia;
+    const anchoReal = Math.ceil(
+      Math.max(
+        documentoPDF.scrollWidth,
+        documentoPDF.offsetWidth,
+        794
+      )
+    );
+
+    const altoReal = Math.ceil(
+      Math.max(
+        documentoPDF.scrollHeight,
+        documentoPDF.offsetHeight,
+        500
+      )
+    );
 
     const opciones = {
-      margin: 10,
+      margin: [10, 10, 10, 10],
       filename: "Pedido-Distribuidora-Exodo.pdf",
       image: {
         type: "jpeg",
@@ -658,18 +724,39 @@ async function crearBlobPDF() {
         scale: 2,
         backgroundColor: "#ffffff",
         useCORS: true,
-        logging: true,
+        logging: false,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 1000
+        width: anchoReal,
+        height: altoReal,
+        windowWidth: Math.max(anchoReal, document.documentElement.clientWidth),
+        windowHeight: Math.max(altoReal, window.innerHeight),
+        onclone: documentoClonado => {
+          const elementoClonado =
+            documentoClonado.querySelector("#plantilla-pdf");
+
+          if (elementoClonado) {
+            elementoClonado.style.display = "block";
+            elementoClonado.style.position = "static";
+            elementoClonado.style.left = "auto";
+            elementoClonado.style.top = "auto";
+            elementoClonado.style.width = `${anchoReal}px`;
+            elementoClonado.style.height = "auto";
+            elementoClonado.style.overflow = "visible";
+            elementoClonado.style.opacity = "1";
+            elementoClonado.style.visibility = "visible";
+          }
+        }
       },
       jsPDF: {
         unit: "mm",
         format: "a4",
-        orientation: "portrait"
+        orientation: "portrait",
+        compress: true
       },
       pagebreak: {
-        mode: ["css", "legacy"]
+        mode: ["css", "legacy"],
+        avoid: ["tr", ".pdf-encabezado", ".pdf-datos", ".pdf-total", ".pdf-pie"]
       }
     };
 
@@ -690,7 +777,6 @@ async function crearBlobPDF() {
     return blob;
 
   } finally {
-    // Retirar la copia temporal, incluso si ocurre un error.
     copia.remove();
   }
 }
