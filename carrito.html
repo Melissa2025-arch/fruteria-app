@@ -1,28 +1,306 @@
 
-<button
-  type="button"
-  class="btn-whatsapp"
-  onclick="enviarPedidoWhatsApp()"
-  style="margin-bottom:12px"
->
-  📲 Enviar pedido por WhatsApp
-</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Revisa, administra y comparte tu pedido de Distribuidora Éxodo.">
+  <title>Mi carrito | Distribuidora Éxodo</title>
 
-<button
-  type="button"
-  class="btn-whatsapp"
-  onclick="compartirPDFWhatsApp()"
-  style="margin-bottom:12px"
->
-  📄 Compartir PDF por WhatsApp
-</button>
+  <link rel="stylesheet" href="css/estilos.css">
 
-<button
-  type="button"
-  class="btn-principal"
-  onclick="generarPDFPedido()"
-  style="background:#344238;padding:12px"
->
-  ⬇️ Descargar Hoja de Pedido (PDF)
-</button>
+  <!-- Biblioteca para generar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+  <style>
+    .carrito-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+      gap: 24px;
+      align-items: start;
+      margin: 24px 0;
+    }
+
+    .carrito-contenido,
+    .resumen-card {
+      background: #fff;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .carrito-contenido {
+      min-width: 0;
+    }
+
+    .carrito-contenido h2,
+    .resumen-card h2 {
+      margin-top: 0;
+      color: #26733a;
+    }
+
+    .resumen-card {
+      position: sticky;
+      top: 20px;
+    }
+
+    .resumen-total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #26733a;
+      margin: 18px 0;
+    }
+
+    .acciones-carrito {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .acciones-carrito button {
+      width: 100%;
+      min-height: 46px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    .tabla-carrito {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tabla-carrito th,
+    .tabla-carrito td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e5e5e5;
+      text-align: left;
+    }
+
+    .tabla-carrito th {
+      background: #eaf6ec;
+      color: #26733a;
+    }
+
+    .carrito-tabla-wrap {
+      overflow-x: auto;
+    }
+
+    .btn-eliminar-producto {
+      background: #b42318;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .carrito-vacio {
+      text-align: center;
+      padding: 30px 15px;
+      color: #666;
+      background: #f7faf7;
+      border-radius: 10px;
+    }
+
+    /* Plantilla que se prepara para el PDF */
+    .pdf-fuera-pantalla {
+      position: fixed !important;
+      left: -10000px !important;
+      top: 0 !important;
+      width: 800px !important;
+      display: block !important;
+      background: #fff !important;
+      color: #222 !important;
+      z-index: -1 !important;
+    }
+
+    @media (max-width: 800px) {
+      .carrito-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .resumen-card {
+        position: static;
+      }
+
+      .carrito-contenido,
+      .resumen-card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="logo">
+      <img
+        src="img/logo.png"
+        alt="Logo de Distribuidora Éxodo"
+        onerror="this.onerror=null;this.src='img/dex-logo.png';"
+      >
+      <span>Distribuidora Éxodo</span>
+    </div>
+
+    <button
+      type="button"
+      class="menu-btn"
+      aria-label="Abrir o cerrar el menú"
+      aria-controls="menu"
+      aria-expanded="false"
+      onclick="toggleMenu()"
+    >☰</button>
+
+    <nav id="menu">
+      <a href="index.html">🏠 Inicio</a>
+      <a href="frutas.html">🍎 Frutas</a>
+      <a href="verduras.html">🥕 Verduras</a>
+      <a href="granos.html">🌽 Granos</a>
+      <a href="harinas.html">🌾 Harinas y Cereales</a>
+      <a href="lacteos.html">🥛 Lácteos</a>
+      <a href="carnes.html">🥩 Carnes y Embutidos</a>
+      <a href="extras.html">✨ Productos Extras</a>
+      <a href="carrito.html" class="carrito-menu activo">
+        🛒 Carrito <span id="cant-carrito-badge">(0)</span>
+      </a>
+    </nav>
+  </header>
+
+  <main class="productos-page">
+    <h1>🛒 Mi Carrito de Compras</h1>
+
+    <p class="descripcion">
+      Revisa los productos, modifica tu pedido y consulta el total
+      antes de enviarlo o generar tu hoja de pedido.
+    </p>
+
+    <div class="carrito-layout">
+
+      <!-- Aquí se muestra la lista de productos -->
+      <section class="carrito-contenido">
+        <h2>Productos de tu pedido</h2>
+        <div id="lista-carrito">
+          <p>Cargando tu carrito...</p>
+        </div>
+      </section>
+
+      <!-- Resumen y acciones -->
+      <aside class="resumen-card">
+        <h2>Resumen del Pedido</h2>
+
+        <p>Productos seleccionados: <strong id="resumen-cantidad">0</strong></p>
+
+        <p class="resumen-total">
+          Total estimado: $<span id="total-carrito-txt">0.00</span>
+        </p>
+
+        <div class="acciones-carrito">
+          <button
+            type="button"
+            class="btn-whatsapp"
+            onclick="enviarPedidoWhatsApp()"
+          >
+            📲 Enviar pedido por WhatsApp
+          </button>
+
+          <button
+            type="button"
+            class="btn-principal"
+            onclick="generarPDFPedido()"
+          >
+            📄 Descargar hoja de pedido PDF
+          </button>
+
+          <button
+            type="button"
+            class="btn-principal"
+            style="background:#26733a"
+            onclick="compartirPDFWhatsApp()"
+          >
+            📤 Compartir PDF
+          </button>
+        </div>
+
+        <p style="font-size:12px;color:#666;margin-top:16px">
+          El pedido es una solicitud de compra y está sujeto a confirmación
+          de disponibilidad y precio.
+        </p>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Plantilla utilizada para crear el PDF -->
+  <div
+    id="plantilla-pdf"
+    class="pdf-fuera-pantalla"
+    style="padding:30px;font-family:Arial,sans-serif"
+    aria-hidden="true"
+  >
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #26733a;padding-bottom:15px;margin-bottom:20px">
+      <div>
+        <h1 style="color:#26733a;margin:0;font-size:24px">
+          DISTRIBUIDORA ÉXODO
+        </h1>
+        <p style="margin:5px 0 0;font-size:13px;color:#555">
+          Surtido y Distribución de Productos Frescos
+        </p>
+      </div>
+
+      <div style="text-align:right;font-size:12px;color:#666">
+        <p><strong>HOJA DE PEDIDO / COTIZACIÓN</strong></p>
+        <p id="pdf-fecha"></p>
+      </div>
+    </div>
+
+    <p style="font-size:13px;margin-bottom:20px">
+      <strong>Condición de pago:</strong> Sujeta a confirmación.
+      <br>
+      <strong>Estado:</strong> Solicitud de pedido en línea.
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
+      <thead>
+        <tr style="background:#eaf6ec;color:#26733a;text-align:left">
+          <th style="padding:10px;border:1px solid #c8e2ce">Producto</th>
+          <th style="padding:10px;border:1px solid #c8e2ce;text-align:center">Cant.</th>
+          <th style="padding:10px;border:1px solid #c8e2ce;text-align:right">P. unitario</th>
+          <th style="padding:10px;border:1px solid #c8e2ce;text-align:right">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="pdf-tabla-body"></tbody>
+    </table>
+
+    <div style="text-align:right;font-size:16px;font-weight:bold;margin-top:15px;color:#26733a">
+      Total estimado: $<span id="pdf-total">0.00</span>
+    </div>
+
+    <div style="margin-top:40px;padding-top:15px;border-top:1px solid #ddd;font-size:11px;color:#777;text-align:center">
+      <p>
+        Gracias por preferir a Distribuidora Éxodo.
+        Este documento es una hoja informativa de pedido y no constituye
+        una factura fiscal.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof mostrarCarrito === "function") {
+        mostrarCarrito();
+      }
+    });
+  </script>
+
+</body>
+</html>
