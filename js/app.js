@@ -2,16 +2,22 @@
 "use strict";
 
 const SUPABASE_URL = "https://kwfqjieynfxxkfycqbom.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FS1SIqug_9OGu3L2k";
+const SUPABASE_ANON_KEY = "sb_publishable_v2RhsMkjIcNdz2FSQU1SIqug_9OGu3L2k";
 const CLAVE_CARRITO = "carrito_exodo";
 
 let productosBusquedaCache = [];
 let cargandoProductos = null;
 let carrito = cargarCarritoGuardado();
 
+/* =====================================================
+   CARRITO: CARGAR Y GUARDAR
+===================================================== */
+
 function cargarCarritoGuardado() {
   try {
-    const guardado = JSON.parse(localStorage.getItem(CLAVE_CARRITO) || "{}");
+    const guardado = JSON.parse(
+      localStorage.getItem(CLAVE_CARRITO) || "{}"
+    );
 
     if (!guardado || typeof guardado !== "object" || Array.isArray(guardado)) {
       return {};
@@ -49,6 +55,18 @@ function guardarCarrito() {
   }
 }
 
+function actualizarBadgeCarrito() {
+  const totalItems = Object.values(carrito).reduce(
+    (suma, producto) =>
+      suma + (parseInt(producto.cantidad, 10) || 0),
+    0
+  );
+
+  document.querySelectorAll("#cant-carrito-badge").forEach(badge => {
+    badge.textContent = `(${totalItems})`;
+  });
+}
+
 function toggleMenu() {
   const nav = document.getElementById("menu");
   const boton = document.querySelector(".menu-btn");
@@ -62,31 +80,22 @@ function toggleMenu() {
   }
 }
 
-function actualizarBadgeCarrito() {
-  const totalItems = Object.values(carrito).reduce(
-    (suma, producto) => suma + (parseInt(producto.cantidad, 10) || 0),
-    0
-  );
-
-  document.querySelectorAll("#cant-carrito-badge").forEach(badge => {
-    badge.textContent = `(${totalItems})`;
-  });
-}
+/* =====================================================
+   PRODUCTOS Y SUPABASE
+===================================================== */
 
 function normalizarProducto(producto) {
   const categoriaOriginal = String(producto.categoria || "")
     .toLowerCase()
     .trim();
 
-  const categoria = categoriaOriginal === "bebidas"
-    ? "extras"
-    : categoriaOriginal;
-
   return {
     ...producto,
     id: String(producto.id),
     nombre: String(producto.nombre || "Producto"),
-    categoria,
+    categoria: categoriaOriginal === "bebidas"
+      ? "extras"
+      : categoriaOriginal,
     unidad: producto.unidad || "Unidad",
     precio: Number(producto.precio) || 0,
     imagen: producto.imagen || "img/logo.png",
@@ -160,6 +169,9 @@ async function inicializarPaginaInicio() {
   const grid = document.getElementById("grid-busqueda");
   if (!grid) return;
 
+  grid.innerHTML = `
+    <div class="estado-vacio">Cargando productos...</div>`;
+
   const productos = await obtenerTodosProductos();
   renderizarTarjetas(productos, "grid-busqueda");
 }
@@ -170,7 +182,9 @@ async function cargarCategoriaEspecifica(categoria) {
   const todos = await obtenerTodosProductos();
   const buscada = String(categoria || "").toLowerCase().trim();
 
-  const filtrados = todos.filter(producto => producto.categoria === buscada);
+  const filtrados = todos.filter(
+    producto => producto.categoria === buscada
+  );
 
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
@@ -208,6 +222,10 @@ function buscarProductosCategoria(categoria) {
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
+/* =====================================================
+   SEGURIDAD HTML
+===================================================== */
+
 function escaparHTML(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, caracter => ({
     "&": "&amp;",
@@ -217,6 +235,10 @@ function escaparHTML(valor) {
     "'": "&#39;"
   }[caracter]));
 }
+
+/* =====================================================
+   TARJETAS DE PRODUCTOS
+===================================================== */
 
 function renderizarTarjetas(productos, contenedorId) {
   const contenedor = document.getElementById(contenedorId);
@@ -231,21 +253,20 @@ function renderizarTarjetas(productos, contenedorId) {
   }
 
   contenedor.innerHTML = productos.map(producto => {
-    // La cantidad se selecciona en la tarjeta.
     const cantidad = Math.max(
       1,
       parseInt(producto.cantidadSeleccionada, 10) || 1
     );
 
-    const imagen = escaparHTML(producto.imagen || "img/logo.png");
+    const imagen = escaparHTML(producto.imagen);
     const nombre = escaparHTML(producto.nombre);
     const descripcion = escaparHTML(producto.descripcion);
     const categoria = escaparHTML(producto.categoria);
-    const unidad = escaparHTML(producto.unidad || "Unidad");
+    const unidad = escaparHTML(producto.unidad);
     const idSeguro = escaparHTML(producto.id);
 
     return `
-      <article class="producto-card">
+      <article class="producto-card" data-producto-id="${idSeguro}">
         <div>
           <div class="producto-imagen-container">
             <img
@@ -268,41 +289,87 @@ function renderizarTarjetas(productos, contenedorId) {
             <div class="contador-acciones">
               <button
                 type="button"
-                aria-label="Disminuir cantidad de ${nombre}"
-                onclick="cambiarCantCard('${idSeguro}', -1)"
+                class="btn-cantidad-menos"
+                aria-label="Disminuir cantidad"
+                data-delta="-1"
               >−</button>
 
-              <span id="qty-${idSeguro}">${cantidad}</span>
+              <span class="cantidad-seleccionada">${cantidad}</span>
 
               <button
                 type="button"
-                aria-label="Aumentar cantidad de ${nombre}"
-                onclick="cambiarCantCard('${idSeguro}', 1)"
+                class="btn-cantidad-mas"
+                aria-label="Aumentar cantidad"
+                data-delta="1"
               >+</button>
             </div>
           </div>
 
           <button
             type="button"
-            class="btn-principal"
-            onclick="agregarAlCarrito('${idSeguro}')"
+            class="btn-principal btn-agregar-carrito"
           >🛒 Agregar al carrito</button>
         </div>
       </article>`;
   }).join("");
+
+  // Asociamos los eventos a cada tarjeta.
+  // Esto evita depender de onclick y de IDs escapados.
+  contenedor.querySelectorAll(".producto-card").forEach(tarjeta => {
+    const id = tarjeta.dataset.productoId;
+    const contador = tarjeta.querySelector(".cantidad-seleccionada");
+    const botonMenos = tarjeta.querySelector(".btn-cantidad-menos");
+    const botonMas = tarjeta.querySelector(".btn-cantidad-mas");
+    const botonAgregar = tarjeta.querySelector(".btn-agregar-carrito");
+
+    botonMenos.addEventListener("click", () => {
+      cambiarCantCard(tarjeta, -1);
+    });
+
+    botonMas.addEventListener("click", () => {
+      cambiarCantCard(tarjeta, 1);
+    });
+
+    botonAgregar.addEventListener("click", () => {
+      agregarAlCarrito(id, tarjeta);
+    });
+  });
 }
 
-function cambiarCantCard(id, delta) {
-  const span = document.getElementById(`qty-${CSS.escape(String(id))}`);
-  if (!span) return;
+/* =====================================================
+   CORRECCIÓN DE CANTIDADES EN LAS TARJETAS
+===================================================== */
 
-  const cantidadActual = parseInt(span.textContent, 10) || 1;
-  const nuevaCantidad = Math.max(1, cantidadActual + delta);
+function cambiarCantCard(tarjetaOId, delta) {
+  let tarjeta = null;
 
-  span.textContent = String(nuevaCantidad);
+  if (tarjetaOId instanceof Element) {
+    tarjeta = tarjetaOId;
+  } else {
+    tarjeta = [...document.querySelectorAll(".producto-card")].find(
+      elemento =>
+        elemento.dataset.productoId === String(tarjetaOId)
+    );
+  }
+
+  if (!tarjeta) {
+    console.warn("No se encontró la tarjeta del producto:", tarjetaOId);
+    return;
+  }
+
+  const contador = tarjeta.querySelector(".cantidad-seleccionada");
+  if (!contador) return;
+
+  const cantidadActual = parseInt(contador.textContent, 10) || 1;
+  const nuevaCantidad = Math.max(
+    1,
+    cantidadActual + (Number(delta) || 0)
+  );
+
+  contador.textContent = String(nuevaCantidad);
 }
 
-function agregarAlCarrito(id) {
+function agregarAlCarrito(id, tarjeta) {
   const producto = productosBusquedaCache.find(
     elemento => String(elemento.id) === String(id)
   );
@@ -312,18 +379,27 @@ function agregarAlCarrito(id) {
     return;
   }
 
-  const span = document.getElementById(`qty-${CSS.escape(String(id))}`);
+  // La cantidad se obtiene de la tarjeta exacta pulsada.
+  const tarjetaProducto = tarjeta ||
+    [...document.querySelectorAll(".producto-card")].find(
+      elemento => elemento.dataset.productoId === String(id)
+    );
+
+  const contador = tarjetaProducto?.querySelector(
+    ".cantidad-seleccionada"
+  );
+
   const cantidadSeleccionada = Math.max(
     1,
-    parseInt(span?.textContent || "1", 10) || 1
+    parseInt(contador?.textContent || "1", 10) || 1
   );
 
   const clave = String(producto.id);
 
   if (carrito[clave]) {
-    // Si ya existe, suma las unidades nuevas a las que estaban guardadas.
     carrito[clave].cantidad =
-      (parseInt(carrito[clave].cantidad, 10) || 0) + cantidadSeleccionada;
+      Math.max(1, parseInt(carrito[clave].cantidad, 10) || 1)
+      + cantidadSeleccionada;
   } else {
     carrito[clave] = {
       ...producto,
@@ -333,7 +409,7 @@ function agregarAlCarrito(id) {
 
   guardarCarrito();
 
-  const boton = span?.closest(".producto-card")?.querySelector(".btn-principal");
+  const boton = tarjetaProducto?.querySelector(".btn-agregar-carrito");
 
   if (boton) {
     const textoOriginal = boton.textContent;
@@ -348,6 +424,10 @@ function agregarAlCarrito(id) {
     }, 900);
   }
 }
+
+/* =====================================================
+   MOSTRAR Y ADMINISTRAR CARRITO
+===================================================== */
 
 function mostrarCarrito() {
   actualizarBadgeCarrito();
@@ -365,17 +445,17 @@ function mostrarCarrito() {
         Tu carrito está vacío. Visita las categorías para agregar productos.
       </div>`;
 
-    if (totalElemento) {
-      totalElemento.textContent = "0.00";
-    }
-
+    if (totalElemento) totalElemento.textContent = "0.00";
     return;
   }
 
   let total = 0;
 
   const filas = items.map(producto => {
-    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
+    );
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
@@ -387,20 +467,14 @@ function mostrarCarrito() {
           <strong>${escaparHTML(producto.nombre)}</strong><br>
           <small>${escaparHTML(producto.unidad || "Unidad")}</small>
         </td>
-
         <td>$${precio.toFixed(2)}</td>
-
-        <td>
-          <span class="cantidad-carrito">${cantidad}</span>
-        </td>
-
+        <td><span class="cantidad-carrito">${cantidad}</span></td>
         <td>$${subtotal.toFixed(2)}</td>
-
         <td>
           <button
             type="button"
-            onclick="eliminarDelCarrito('${escaparHTML(producto.id)}')"
-            aria-label="Eliminar ${escaparHTML(producto.nombre)}"
+            class="btn-eliminar-producto"
+            data-producto-id="${escaparHTML(producto.id)}"
           >Eliminar</button>
         </td>
       </tr>`;
@@ -422,6 +496,12 @@ function mostrarCarrito() {
       </table>
     </div>`;
 
+  contenedor.querySelectorAll(".btn-eliminar-producto").forEach(boton => {
+    boton.addEventListener("click", () => {
+      eliminarDelCarrito(boton.dataset.productoId);
+    });
+  });
+
   if (totalElemento) {
     totalElemento.textContent = total.toFixed(2);
   }
@@ -433,13 +513,13 @@ function eliminarDelCarrito(id) {
   mostrarCarrito();
 }
 
-function enviarPedidoWhatsApp() {
-  const items = Object.values(carrito);
+/* =====================================================
+   PEDIDO POR WHATSAPP
+===================================================== */
 
-  if (items.length === 0) {
-    alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
-    return;
-  }
+function construirTextoPedido() {
+  const items = Object.values(carrito);
+  if (items.length === 0) return null;
 
   let total = 0;
 
@@ -449,7 +529,10 @@ function enviarPedidoWhatsApp() {
   ];
 
   items.forEach((producto, indice) => {
-    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
+    );
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
@@ -467,43 +550,50 @@ function enviarPedidoWhatsApp() {
     "Solicito entrega a domicilio. Quedo a la espera de su confirmación."
   );
 
-  // Verifica que este sea el número de WhatsApp comercial correcto.
-  const telefono = "50363114191";
-
-  window.open(
-    `https://wa.me/${telefono}?text=${encodeURIComponent(lineas.join("\n"))}`,
-    "_blank",
-    "noopener"
-  );
+  return lineas.join("\n");
 }
 
-async function generarPDFPedido() {
+function enviarPedidoWhatsApp() {
+  const mensaje = construirTextoPedido();
+
+  if (!mensaje) {
+    alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
+    return;
+  }
+
+  // Verifica que este sea el número comercial correcto.
+  const telefono = "50363114191";
+
+  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(url, "_blank", "noopener");
+}
+
+/* =====================================================
+   GENERAR PDF
+===================================================== */
+
+function prepararContenidoPDF() {
   const items = Object.values(carrito);
 
   if (items.length === 0) {
     alert("Tu carrito está vacío. Agrega productos antes de generar el PDF.");
-    return;
-  }
-
-  if (typeof html2pdf === "undefined") {
-    alert("No se pudo cargar la herramienta para generar PDF. Revisa tu conexión.");
-    return;
+    return null;
   }
 
   const plantilla = document.getElementById("plantilla-pdf");
-
-  if (!plantilla) {
-    alert("No se encontró la plantilla del PDF en carrito.html.");
-    return;
-  }
-
-  const fecha = document.getElementById("pdf-fecha");
   const tbody = document.getElementById("pdf-tabla-body");
   const totalElemento = document.getElementById("pdf-total");
+  const fecha = document.getElementById("pdf-fecha");
 
-  if (!tbody || !totalElemento) {
-    alert("La plantilla del PDF no tiene todos los elementos requeridos.");
-    return;
+  if (!plantilla || !tbody || !totalElemento) {
+    alert("No se encontró la plantilla completa del PDF.");
+    return null;
+  }
+
+  if (typeof html2pdf === "undefined") {
+    alert("No se pudo cargar la biblioteca PDF. Revisa tu conexión.");
+    return null;
   }
 
   if (fecha) {
@@ -513,7 +603,10 @@ async function generarPDFPedido() {
   let total = 0;
 
   tbody.innerHTML = items.map(producto => {
-    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
+    );
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
 
@@ -525,15 +618,12 @@ async function generarPDFPedido() {
           ${escaparHTML(producto.nombre)}
           (${escaparHTML(producto.unidad || "Unidad")})
         </td>
-
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:center">
           ${cantidad}
         </td>
-
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:right">
           $${precio.toFixed(2)}
         </td>
-
         <td style="padding:8px;border:1px solid #c8e2ce;text-align:right">
           $${subtotal.toFixed(2)}
         </td>
@@ -541,26 +631,138 @@ async function generarPDFPedido() {
   }).join("");
 
   totalElemento.textContent = total.toFixed(2);
+  return plantilla;
+}
 
-  plantilla.classList.add("pdf-fuera-pantalla");
-  plantilla.style.display = "block";
+async function crearBlobPDF() {
+  const plantilla = prepararContenidoPDF();
+  if (!plantilla) return null;
+
+  const estiloOriginal = plantilla.getAttribute("style");
+  const claseOriginal = plantilla.className;
 
   try {
-    await html2pdf().set({
-      margin: 10,
-      filename: `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-    }).from(plantilla).save();
-  } catch (error) {
-    console.error("Error al generar PDF:", error);
-    alert("Ocurrió un error al generar el PDF. Inténtalo nuevamente.");
+    plantilla.classList.remove("pdf-fuera-pantalla");
+
+    Object.assign(plantilla.style, {
+      display: "block",
+      position: "fixed",
+      left: "0",
+      top: "0",
+      width: "800px",
+      maxWidth: "none",
+      background: "#ffffff",
+      color: "#222222",
+      zIndex: "99999",
+      overflow: "visible"
+    });
+
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
+
+    return await html2pdf()
+      .set({
+        margin: 10,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          scrollX: 0,
+          scrollY: 0
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait"
+        }
+      })
+      .from(plantilla)
+      .outputPdf("blob");
   } finally {
-    plantilla.style.display = "block";
-    plantilla.classList.add("pdf-fuera-pantalla");
+    if (estiloOriginal === null) {
+      plantilla.removeAttribute("style");
+    } else {
+      plantilla.setAttribute("style", estiloOriginal);
+    }
+
+    plantilla.className = claseOriginal;
   }
 }
+
+async function generarPDFPedido() {
+  try {
+    const blob = await crearBlobPDF();
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+
+    enlace.href = url;
+    enlace.download =
+      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (error) {
+    console.error("Error al generar PDF:", error);
+    alert("No se pudo generar el PDF. Inténtalo nuevamente.");
+  }
+}
+
+/* =====================================================
+   COMPARTIR PDF
+===================================================== */
+
+async function compartirPDFWhatsApp() {
+  try {
+    if (!navigator.share || !navigator.canShare) {
+      alert(
+        "Este navegador no permite compartir el PDF directamente. " +
+        "Descárgalo y adjúntalo en WhatsApp."
+      );
+      return;
+    }
+
+    const blob = await crearBlobPDF();
+    if (!blob) return;
+
+    const archivo = new File(
+      [blob],
+      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`,
+      { type: "application/pdf" }
+    );
+
+    if (!navigator.canShare({ files: [archivo] })) {
+      alert(
+        "Este dispositivo no admite compartir el PDF directamente. " +
+        "Utiliza la opción de descarga."
+      );
+      return;
+    }
+
+    await navigator.share({
+      files: [archivo],
+      title: "Pedido - Distribuidora Éxodo",
+      text: "Te comparto mi hoja de pedido."
+    });
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      console.error("Error al compartir PDF:", error);
+      alert("No se pudo compartir el PDF. Prueba la opción de descarga.");
+    }
+  }
+}
+
+/* =====================================================
+   INICIALIZACIÓN
+===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   actualizarBadgeCarrito();
@@ -568,6 +770,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("grid-busqueda");
 
   if (grid && grid.children.length === 0) {
-    grid.innerHTML = `<div class="estado-vacio">Cargando productos…</div>`;
+    grid.innerHTML = `
+      <div class="estado-vacio">Cargando productos...</div>`;
   }
 });
+
