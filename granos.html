@@ -1,65 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Granos Básicos | Distribuidora Éxodo</title>
-    <link rel="stylesheet" href="css/estilos.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo de productos de Distribuidora Éxodo con entrega a domicilio.">
+  <title>Granos Básicos | Distribuidora Éxodo</title>
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
-
-    <header class="header">
-        <div class="logo">
-            <img src="img/logo.png" alt="Distribuidora Éxodo" onerror="this.src='img/dex-logo.png'">
-            <span>Distribuidora Éxodo</span>
-        </div>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu">
-            <a href="index.html">🏠 Inicio</a>
-            <a href="frutas.html">🍎 Frutas</a>
-            <a href="verduras.html">🥕 Verduras</a>
-            <a href="granos.html" class="activo">🌽 Granos</a>
-            <a href="harinas.html">🌾 Harinas y Cereales</a>
-            <a href="lacteos.html">🥛 Lácteos</a>
-            <a href="carnes.html">🥩 Embutidos y Carnes</a>
-            <a href="extras.html" class="activo">✨ Productos Extras</a>
-            <a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a>
-        </nav>
-    </header>
-
-    <section class="hero" style="padding: 30px 20px;">
-        <div class="hero-contenido">
-            <span class="etiqueta">🌽 Calidad de Primera</span>
-            <h1>Granos <span>Básicos y Semillas</span></h1>
-            <p>Frijoles, arroz, azúcares y pastas para abastecer tu despensa.</p>
-        </div>
-    </section>
-
-    <main class="productos-page">
-        <div class="buscador-contenedor">
-            <input 
-                type="text" 
-                id="input-busqueda" 
-                placeholder="🔍 Buscar dentro de granos (ej. Frijol Seda, Arroz Precocido, Azúcar)..." 
-                oninput="buscarProductosCategoria('granos')"
-            >
-        </div>
-
-        <div id="grid-busqueda" class="productos-grid"></div>
-    </main>
-
-    <footer>
-        <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof cargarCategoriaEspecifica === "function") {
-                cargarCategoriaEspecifica("granos");
-            }
-        });
-    </script>
+<header class="header">
+  <div class="logo">
+    <img src="img/logo.png" alt="Logo de Distribuidora Éxodo" onerror="this.onerror=null;this.src='img/dex-logo.png';">
+    <span>Distribuidora Éxodo</span>
+  </div>
+  <button type="button" class="menu-btn" aria-label="Abrir o cerrar el menú" aria-controls="menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
+  <nav id="menu"><a href="index.html">🏠 Inicio</a><a href="frutas.html">🍎 Frutas</a><a href="verduras.html">🥕 Verduras</a><a href="granos.html" class="activo">🌽 Granos</a><a href="harinas.html">🌾 Harinas y Cereales</a><a href="lacteos.html">🥛 Lácteos</a><a href="carnes.html">🥩 Carnes y Embutidos</a><a href="extras.html">✨ Productos Extras</a><a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a></nav>
+</header>
+<section class="hero" style="padding:30px 20px">
+  <div class="hero-contenido">
+    <span class="etiqueta">🌽 Calidad de Primera</span>
+    <h1>Granos <span>Básicos y Semillas</span></h1>
+    <p>Frijoles, arroz, azúcares y pastas para abastecer tu despensa.</p>
+  </div>
+</section>
+<main class="productos-page">
+  <div class="buscador-contenedor">
+    <input type="search" id="input-busqueda" placeholder="🔍 Buscar dentro de granos (ej. Frijol Seda, Arroz Precocido, Azúcar)..." oninput="buscarProductosCategoria('granos')">
+  </div>
+  <div id="grid-busqueda" class="productos-grid"><div class="estado-vacio">Cargando productos…</div></div>
+</main>
+<footer><p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p></footer>
+<script src="js/app.js"></script>
+<script>document.addEventListener("DOMContentLoaded", () => { cargarCategoriaEspecifica('granos'); });</script>
 </body>
 </html>

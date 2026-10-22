@@ -1,70 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribuidora Éxodo | Inicio</title>
-    <link rel="stylesheet" href="css/estilos.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo de productos de Distribuidora Éxodo con entrega a domicilio.">
+  <title>Distribuidora Éxodo | Inicio</title>
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
+<header class="header">
+  <div class="logo">
+    <img src="img/logo.png" alt="Logo de Distribuidora Éxodo" onerror="this.onerror=null;this.src='img/dex-logo.png';">
+    <span>Distribuidora Éxodo</span>
+  </div>
+  <button type="button" class="menu-btn" aria-label="Abrir o cerrar el menú" aria-controls="menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
+  <nav id="menu"><a href="index.html" class="activo">🏠 Inicio</a><a href="frutas.html">🍎 Frutas</a><a href="verduras.html">🥕 Verduras</a><a href="granos.html">🌽 Granos</a><a href="harinas.html">🌾 Harinas y Cereales</a><a href="lacteos.html">🥛 Lácteos</a><a href="carnes.html">🥩 Carnes y Embutidos</a><a href="extras.html">✨ Productos Extras</a><a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a></nav>
+</header>
+<!-- Encabezado principal conservado -->
+<section class="hero">
+  <div class="hero-contenido">
+    <span class="etiqueta">🛡️ Distribución &amp; Calidad Garantizada</span>
+    <h1>Productos frescos con crédito de hasta 30 días.</h1>
+    <p>Somos una distribuidora comprometida con la frescura. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
+    <a href="#grid-busqueda" class="btn-ordenar-hero">🚚 Ordenar Ahora</a>
+  </div>
+</section>
+<main class="productos-page">
+  <div class="buscador-contenedor">
+    <input type="text" id="input-busqueda" placeholder="🔍 ¿Qué producto buscas? (ej. Queso, Leche, Manzana)..." oninput="buscarProductosInicio()">
+  </div>
+  <div id="grid-busqueda" class="productos-grid"></div>
+</main>
 
-    <!-- ================= HEADER ================= -->
-    <header class="header">
-        <div class="logo">
-            <img src="img/logo.png" alt="Dex" onerror="this.src='https://placehold.co/120x40/52b71d/ffffff?text=Dex'">
-            <span>Distribuidora Éxodo</span>
-        </div>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <nav id="menu">
-            <a href="index.html" class="activo">🏠 Inicio</a>
-            <a href="frutas.html">🍎 Frutas</a>
-            <a href="verduras.html">🥕 Verduras</a>
-            <a href="granos.html">🌽 Granos</a>
-            <a href="lacteos.html">🥛 Lácteos</a>
-            <a href="extras.html">🧺 Canastas</a>
-            <a href="carrito.html" class="carrito-menu">🛒 Carrito <span id="cant-carrito-badge">(0)</span></a>
-        </nav>
-    </header>
+<section class="informacion-servicio" id="informacion">
+  <div class="informacion-cabecera">
+    <span class="informacion-etiqueta">🤝 Atención personalizada</span>
+    <h2>Nos acoplamos a tus necesidades</h2>
+    <p>Nos diferenciamos porque contamos con entregas a domicilio, permitiéndote hacer pedidos desde donde estés, vía WhatsApp o por correo electrónico.</p>
+  </div>
 
-    <!-- ================= HERO REPARADO E IDENTICO ================= -->
-    <section class="hero">
-        <div class="hero-contenido">
-            <span class="etiqueta">🛡️ Distribución & Calidad Garantizada</span>
-            <h1>Productos frescos con crédito de hasta 30 días.</h1>
-            <p>Somos una distribuidora comprometida con la frescura. Entregamos tu pedido directamente en el lugar y hora indicados, respaldando la operación de tu negocio u hogar.</p>
-            <a href="#grid-busqueda" class="btn-ordenar-hero">🚚 Ordenar Ahora</a>
-        </div>
-    </section>
+  <div class="informacion-columnas">
+    <div class="informacion-detalle">
+      <h3>Características de nuestro servicio</h3>
+      <ul class="lista-servicios">
+        <li><span>✓</span> Crédito de hasta 30 días, según las condiciones acordadas.</li>
+        <li><span>✓</span> Asesoría y comunicación fluida.</li>
+        <li><span>✓</span> Servicio a domicilio.</li>
+      </ul>
 
-    <!-- ================= BUSCADOR Y MUESTRA DIRECTA ================= -->
-    <main class="productos-page">
-        <div class="buscador-contenedor">
-            <input 
-                type="text" 
-                id="input-busqueda" 
-                placeholder="🔍 ¿Qué producto buscas? (ej. Queso, Leche, Manzana)..." 
-                oninput="buscarProductosInicio()"
-            >
-        </div>
+      <p>Somos una distribuidora especializada en atender a nuestros clientes con productos de primera calidad para centros de cuidado diario, públicos y privados.</p>
+      <p>Contamos con precios de contado y al crédito para adaptarnos a tu forma de pago.</p>
+      <p>Ofrecemos variedad de marcas y presentaciones. Si un producto no está en stock, puedes consultarnos para ayudarte a conseguirlo.</p>
+    </div>
 
-        <div id="grid-busqueda" class="productos-grid"></div>
-    </main>
+    <aside class="informacion-contacto" id="contacto">
+      <h3>Contáctanos</h3>
+      <p class="contacto-intro">Estamos para ayudarte con tu pedido.</p>
+      <a href="mailto:distribuidoraexodo23@gmail.com" class="contacto-enlace">
+        <span aria-hidden="true">✉️</span>
+        <span><small>Correo electrónico</small><strong>distribuidoraexodo23@gmail.com</strong></span>
+      </a>
+      <a href="tel:+50325202726" class="contacto-enlace">
+        <span aria-hidden="true">☎️</span>
+        <span><small>Teléfono</small><strong>2520 2726</strong></span>
+      </a>
+      <a href="https://wa.me/50379321963" target="_blank" rel="noopener noreferrer" class="contacto-enlace">
+        <span aria-hidden="true">💬</span>
+        <span><small>WhatsApp</small><strong>7932 1963</strong></span>
+      </a>
+      <p class="contacto-nota">Pedidos personalizados y entregas confiables.</p>
+    </aside>
+  </div>
+</section>
 
-    <!-- ================= FOOTER ================= -->
-    <footer>
-        <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
-    </footer>
-
-    <!-- ================= SCRIPTS ================= -->
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Carga y muestra automáticamente todos los productos al inicio
-            if (typeof inicializarPaginaInicio === "function") {
-                inicializarPaginaInicio();
-            }
-        });
-    </script>
+<footer><p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p></footer>
+<script src="js/app.js"></script>
+<script>document.addEventListener("DOMContentLoaded", () => { inicializarPaginaInicio(); });</script>
 </body>
 </html>
