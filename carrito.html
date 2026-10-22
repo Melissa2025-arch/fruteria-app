@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,138 +9,177 @@
 
     <link rel="stylesheet" href="css/estilos.css">
 
-    <!-- Librería para generar documentos PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
-<body>
-    <header class="encabezado">
-        <div class="contenedor">
-            <h1>🛒 Distribuidora Éxodo</h1>
-            <p>Revisa tus productos antes de realizar tu pedido.</p>
+<body class="pagina-carrito">
 
-            <nav aria-label="Navegación principal">
-                <a href="index.html">Inicio</a>
-                <a href="frutas.html">Frutas</a>
-                <a href="verduras.html">Verduras</a>
-                <a href="granos.html">Granos básicos</a>
-                <a href="harinas.html">Harinas</a>
-                <a href="lacteos.html">Lácteos</a>
-                <a href="carnes.html">Carnes</a>
-                <a href="extras.html">Otros productos</a>
-                <a href="carrito.html" aria-current="page">🛒 Mi carrito</a>
-            </nav>
+    <header class="carrito-header">
+        <div class="carrito-header-interior">
+            <a href="index.html" class="marca-carrito">
+                <span class="marca-icono">🌿</span>
+                <span>
+                    <strong>Distribuidora Éxodo</strong>
+                    <small>Frescura y calidad para tu hogar</small>
+                </span>
+            </a>
+
+            <a href="index.html" class="enlace-volver">
+                ← Seguir comprando
+            </a>
         </div>
     </header>
 
-    <main class="contenedor pagina-carrito">
-        <section aria-labelledby="titulo-carrito">
-            <h2 id="titulo-carrito">Mi carrito de compras</h2>
-            <p>Verifica las cantidades y el precio de tus productos.</p>
+    <main class="carrito-principal">
 
-            <div class="tabla-contenedor">
-                <table class="tabla-carrito">
-                    <thead>
-                        <tr>
-                            <th scope="col">Producto</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Cantidad</th>
-                            <th scope="col">Subtotal</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
+        <div class="carrito-titulo">
+            <span class="carrito-etiqueta">TU COMPRA</span>
+            <h1>Mi carrito</h1>
+            <p>Revisa tus productos y prepara tu pedido.</p>
+        </div>
 
-                    <tbody id="lista-carrito">
-                        <tr>
-                            <td colspan="5">Cargando carrito...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="carrito-columnas">
 
-            <div class="resumen-carrito">
-                <p>
-                    Productos en el carrito:
-                    <strong id="resumen-cantidad">0</strong>
-                </p>
+            <section class="carrito-panel" aria-labelledby="titulo-productos">
+                <div class="carrito-panel-titulo">
+                    <div>
+                        <h2 id="titulo-productos">Productos seleccionados</h2>
+                        <p>Verifica las cantidades antes de continuar.</p>
+                    </div>
+                    <span class="carrito-icono-panel">🛒</span>
+                </div>
 
-                <p class="total-carrito">
-                    Total:
-                    <strong id="total-carrito-txt">$0.00</strong>
-                </p>
-            </div>
+                <div class="carrito-tabla-scroll">
+                    <table class="tabla-carrito">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
 
-            <div class="acciones-carrito">
-                <a href="index.html" class="boton">
-                    ← Seguir comprando
+                        <tbody id="lista-carrito">
+                            <tr>
+                                <td colspan="5" class="carrito-cargando">
+                                    Cargando productos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <a href="index.html" class="carrito-seguir">
+                    <span>＋</span> Agregar más productos
                 </a>
+            </section>
 
-                <button type="button" class="boton" onclick="generarPDFPedido()">
-                    📄 Descargar pedido en PDF
-                </button>
+            <aside class="carrito-resumen" aria-labelledby="titulo-resumen">
+                <div class="resumen-cabecera">
+                    <span class="resumen-icono">📋</span>
+                    <div>
+                        <h2 id="titulo-resumen">Resumen del pedido</h2>
+                        <p>Detalle de tu compra</p>
+                    </div>
+                </div>
 
-                <button type="button" class="boton" onclick="compartirPDFWhatsApp()">
-                    📲 Compartir pedido por WhatsApp
-                </button>
-            </div>
+                <div class="resumen-linea">
+                    <span>Productos seleccionados</span>
+                    <strong id="resumen-cantidad">0</strong>
+                </div>
 
-            <p id="mensaje-carrito" role="status" aria-live="polite"></p>
-        </section>
+                <div class="resumen-linea">
+                    <span>Entrega</span>
+                    <span class="entrega-consultar">Por confirmar</span>
+                </div>
+
+                <div class="resumen-total">
+                    <span>Total de productos</span>
+                    <strong id="total-carrito-txt">$0.00</strong>
+                    <small>El costo de entrega se confirma por WhatsApp.</small>
+                </div>
+
+                <div class="resumen-acciones">
+                    <button
+                        type="button"
+                        class="boton-pedido boton-pdf"
+                        onclick="generarPDFPedido()">
+                        <span class="boton-emoji">📄</span>
+                        <span>
+                            <strong>Descargar pedido PDF</strong>
+                            <small>Guardar el detalle de tu compra</small>
+                        </span>
+                        <span class="boton-flecha">›</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="boton-pedido boton-whatsapp"
+                        onclick="compartirPDFWhatsApp()">
+                        <span class="boton-emoji">💬</span>
+                        <span>
+                            <strong>Continuar por WhatsApp</strong>
+                            <small>Compartir tu pedido</small>
+                        </span>
+                        <span class="boton-flecha">›</span>
+                    </button>
+                </div>
+
+                <p class="resumen-nota">
+                    🔒 Revisa tu pedido antes de enviarlo.
+                </p>
+
+                <p id="mensaje-carrito" class="mensaje-carrito" role="status" aria-live="polite"></p>
+            </aside>
+
+        </div>
     </main>
 
-    <!-- Plantilla utilizada para generar el PDF.
-         Se mantiene fuera de la vista y no modifica la tabla visible. -->
-    <div
-        id="plantilla-pdf"
-        class="pdf-fuera-pantalla"
-        aria-hidden="true"
-    >
-        <h1>Distribuidora Éxodo</h1>
-        <p class="pdf-subtitulo">Detalle del pedido</p>
+    <!-- Plantilla del documento PDF -->
+    <div id="plantilla-pdf" class="pdf-fuera-pantalla" aria-hidden="true">
+        <div class="pdf-documento">
+            <div class="pdf-encabezado">
+                <p class="pdf-marca">DISTRIBUIDORA ÉXODO</p>
+                <h1>Resumen de compra</h1>
+                <p>Detalle de los productos de tu pedido</p>
+            </div>
 
-        <div class="pdf-datos">
-            <p>
-                <strong>Fecha:</strong>
-                <span id="pdf-fecha"></span>
-            </p>
+            <div class="pdf-datos">
+                <p><strong>Fecha del pedido:</strong> <span id="pdf-fecha"></span></p>
+                <p><strong>Documento:</strong> Resumen de compra</p>
+            </div>
 
-            <p>
-                <strong>Documento:</strong>
-                Resumen de compra
-            </p>
+            <table class="pdf-tabla">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-tabla-body"></tbody>
+            </table>
+
+            <div class="pdf-total">
+                <span>Total del pedido</span>
+                <strong id="pdf-total">$0.00</strong>
+            </div>
+
+            <div class="pdf-pie">
+                Gracias por preferir Distribuidora Éxodo.
+                <br>
+                Calidad y frescura para tu hogar.
+            </div>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Precio unitario</th>
-                    <th>Cantidad</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-
-            <tbody id="pdf-tabla-body"></tbody>
-        </table>
-
-        <p class="pdf-total">
-            Total del pedido:
-            <strong id="pdf-total">$0.00</strong>
-        </p>
-
-        <p class="pdf-pie">
-            ¡Gracias por comprar en Distribuidora Éxodo!
-        </p>
     </div>
 
-    <footer class="pie-pagina">
-        <div class="contenedor">
-            <p>&copy; 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
-        </div>
+    <footer class="carrito-footer">
+        <p>© 2026 Distribuidora Éxodo · Gracias por tu preferencia.</p>
     </footer>
 
-    <!-- Cargar el archivo JavaScript una sola vez y al final -->
     <script src="js/app.js"></script>
 </body>
 </html>
-```
