@@ -579,7 +579,7 @@ async function crearBlobWord() {
   });
 
   const celda = (texto, opciones = {}) => new TableCell({
-    width: { size: opciones.width ?? 25, type: WidthType.PERCENTAGE },
+    width: { size: opciones.width ?? 2726, type: WidthType.DXA },
     margins: { top: 45, bottom: 45, left: 65, right: 65 },
     borders: bordes,
     ...(opciones.encabezado ? { shading: { fill: "3F8F25", type: ShadingType.CLEAR } } : {}),
@@ -601,10 +601,10 @@ async function crearBlobWord() {
       tableHeader: true,
       cantSplit: true,
       children: [
-        celda("Producto", { encabezado: true, width: 43 }),
-        celda("Precio", { encabezado: true, width: 18, alignment: AlignmentType.RIGHT }),
-        celda("Cant.", { encabezado: true, width: 15, alignment: AlignmentType.CENTER }),
-        celda("Subtotal", { encabezado: true, width: 24, alignment: AlignmentType.RIGHT })
+        celda("Producto", { encabezado: true, width: 4700 }),
+        celda("Precio", { encabezado: true, width: 1800, alignment: AlignmentType.RIGHT }),
+        celda("Cant.", { encabezado: true, width: 1400, alignment: AlignmentType.CENTER }),
+        celda("Subtotal", { encabezado: true, width: 3006, alignment: AlignmentType.RIGHT })
       ]
     })
   ];
@@ -618,17 +618,17 @@ async function crearBlobWord() {
     filas.push(new TableRow({
       cantSplit: true,
       children: [
-        celda(`${producto.nombre || "Producto"} (${producto.unidad || "Unidad"})`, { width: 43 }),
-        celda(`$${precio.toFixed(2)}`, { width: 18, alignment: AlignmentType.RIGHT }),
-        celda(String(cantidad), { width: 15, alignment: AlignmentType.CENTER }),
-        celda(`$${subtotal.toFixed(2)}`, { width: 24, alignment: AlignmentType.RIGHT })
+        celda(`${producto.nombre || "Producto"} (${producto.unidad || "Unidad"})`, { width: 4700 }),
+        celda(`$${precio.toFixed(2)}`, { width: 1800, alignment: AlignmentType.RIGHT }),
+        celda(String(cantidad), { width: 1400, alignment: AlignmentType.CENTER }),
+        celda(`$${subtotal.toFixed(2)}`, { width: 3006, alignment: AlignmentType.RIGHT })
       ]
     }));
   });
 
   const tabla = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    columnWidths: [43, 18, 15, 24],
+    width: { size: 10906, type: WidthType.DXA },
+    columnWidths: [4700, 1800, 1400, 3006],
     borders: bordes,
     rows: filas
   });
@@ -746,3 +746,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
