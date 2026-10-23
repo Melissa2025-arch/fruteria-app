@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* =====================================================
@@ -536,326 +535,175 @@ function enviarPedidoWhatsApp() {
 }
 
 /* =====================================================
-   PDF: PREPARAR CONTENIDO
+   WORD: GENERAR Y COMPARTIR HOJA DE PEDIDO
 ===================================================== */
 
-function prepararContenidoPDF() {
+async function crearBlobWord() {
   const items = Object.values(carrito);
 
   if (items.length === 0) {
-    alert("Tu carrito está vacío. Agrega productos antes de generar el PDF.");
+    alert("Tu carrito está vacío. Agrega productos antes de preparar el pedido.");
     return null;
   }
 
-  const plantilla = document.getElementById("plantilla-pdf");
-  const tbody = document.getElementById("pdf-tabla-body");
-  const totalElemento = document.getElementById("pdf-total");
-  const fecha = document.getElementById("pdf-fecha");
-
-  if (!plantilla || !tbody || !totalElemento) {
-    alert("Falta la plantilla del PDF o alguno de sus identificadores.");
+  if (!window.docx || !window.docx.Packer) {
+    alert("No se pudo cargar el generador de Word. Revisa tu conexión a internet e inténtalo de nuevo.");
     return null;
   }
 
-  if (typeof html2pdf === "undefined") {
-    alert("No se cargó html2pdf. Comprueba tu conexión a internet.");
-    return null;
-  }
+  const {
+    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+    AlignmentType, WidthType, BorderStyle, ShadingType
+  } = window.docx;
 
-  if (fecha) {
-    fecha.textContent = new Date().toLocaleDateString("es-SV");
-  }
+  const fechaTexto = new Date().toLocaleDateString("es-SV");
+  const bordes = {
+    top: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
+    bottom: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
+    left: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
+    right: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
+    insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
+    insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" }
+  };
+
+  const parrafo = (texto, opciones = {}) => new Paragraph({
+    alignment: opciones.alignment,
+    spacing: { before: 0, after: opciones.after ?? 30, line: 220 },
+    children: [new TextRun({
+      text: String(texto),
+      bold: Boolean(opciones.bold),
+      size: opciones.size ?? 18,
+      color: opciones.color ?? "26372B",
+      font: "Arial"
+    })]
+  });
+
+  const celda = (texto, opciones = {}) => new TableCell({
+    width: { size: opciones.width ?? 25, type: WidthType.PERCENTAGE },
+    margins: { top: 45, bottom: 45, left: 65, right: 65 },
+    borders: bordes,
+    ...(opciones.encabezado ? { shading: { fill: "3F8F25", type: ShadingType.CLEAR } } : {}),
+    children: [new Paragraph({
+      alignment: opciones.alignment ?? AlignmentType.LEFT,
+      spacing: { before: 0, after: 0, line: 200 },
+      children: [new TextRun({
+        text: String(texto),
+        bold: Boolean(opciones.encabezado || opciones.bold),
+        size: opciones.encabezado ? 16 : 16,
+        color: opciones.encabezado ? "FFFFFF" : "26372B",
+        font: "Arial"
+      })]
+    })]
+  });
+
+  const filas = [
+    new TableRow({
+      tableHeader: true,
+      cantSplit: true,
+      children: [
+        celda("Producto", { encabezado: true, width: 43 }),
+        celda("Precio", { encabezado: true, width: 18, alignment: AlignmentType.RIGHT }),
+        celda("Cant.", { encabezado: true, width: 15, alignment: AlignmentType.CENTER }),
+        celda("Subtotal", { encabezado: true, width: 24, alignment: AlignmentType.RIGHT })
+      ]
+    })
+  ];
 
   let total = 0;
-
-  tbody.innerHTML = items.map(producto => {
-    const cantidad = Math.max(
-      1,
-      parseInt(producto.cantidad, 10) || 1
-    );
-
+  items.forEach(producto => {
+    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
     const precio = Math.max(0, Number(producto.precio) || 0);
-    const subtotal = cantidad * precio;
+    const subtotal = precio * cantidad;
     total += subtotal;
-
-    return `
-      <tr>
-        <td style="padding:8px;border:1px solid #ccc;color:#222">
-          ${escaparHTML(producto.nombre)}
-          (${escaparHTML(producto.unidad || "Unidad")})
-        </td>
-        <td style="padding:8px;border:1px solid #ccc;text-align:right;color:#222">
-          $${precio.toFixed(2)}
-        </td>
-        <td style="padding:8px;border:1px solid #ccc;text-align:center;color:#222">
-          ${cantidad}
-        </td>
-        <td style="padding:8px;border:1px solid #ccc;text-align:right;color:#222">
-          $${subtotal.toFixed(2)}
-        </td>
-      </tr>`;
-  }).join("");
-
-  totalElemento.textContent = `$${total.toFixed(2)}`;
-
-  return plantilla;
-}
-
-/* =====================================================
-   PDF: CREAR ARCHIVO
-   Ajuste: capturar el documento completo y permitir
-   que la tabla y el contenido ocupen varias páginas.
-===================================================== */
-
-async function crearBlobPDF() {
-  const plantilla = prepararContenidoPDF();
-  if (!plantilla) return null;
-
-  const copia = plantilla.cloneNode(true);
-
-  copia.removeAttribute("aria-hidden");
-  copia.classList.remove("pdf-fuera-pantalla");
-
-  const documentoPDF =
-    copia.querySelector(".pdf-documento") || copia;
-
-  // Evita que los estilos de la plantilla oculta recorten el contenido.
-  Object.assign(copia.style, {
-    display: "block",
-    position: "absolute",
-    left: "0",
-    top: "0",
-    width: "794px",
-    height: "auto",
-    minHeight: "0",
-    maxWidth: "none",
-    margin: "0",
-    padding: "0",
-    opacity: "1",
-    visibility: "visible",
-    overflow: "visible",
-    zIndex: "-1",
-    background: "#ffffff",
-    boxSizing: "border-box"
+    filas.push(new TableRow({
+      cantSplit: true,
+      children: [
+        celda(`${producto.nombre || "Producto"} (${producto.unidad || "Unidad"})`, { width: 43 }),
+        celda(`$${precio.toFixed(2)}`, { width: 18, alignment: AlignmentType.RIGHT }),
+        celda(String(cantidad), { width: 15, alignment: AlignmentType.CENTER }),
+        celda(`$${subtotal.toFixed(2)}`, { width: 24, alignment: AlignmentType.RIGHT })
+      ]
+    }));
   });
 
-  Object.assign(documentoPDF.style, {
-    display: "block",
-    position: "static",
-    width: "100%",
-    height: "auto",
-    minHeight: "0",
-    maxHeight: "none",
-    maxWidth: "none",
-    margin: "0",
-    padding: "24px",
-    overflow: "visible",
-    boxSizing: "border-box",
-    color: "#222222",
-    background: "#ffffff",
-    opacity: "1",
-    visibility: "visible",
-    transform: "none"
+  const tabla = new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    columnWidths: [43, 18, 15, 24],
+    borders: bordes,
+    rows: filas
   });
 
-  // Asegura que la tabla pueda crecer y que sus columnas sean visibles.
-  const tabla = documentoPDF.querySelector(".pdf-tabla");
-
-  if (tabla) {
-    Object.assign(tabla.style, {
-      display: "table",
-      width: "100%",
-      maxWidth: "100%",
-      tableLayout: "fixed",
-      borderCollapse: "collapse",
-      overflow: "visible",
-      boxSizing: "border-box"
-    });
-  }
-
-  documentoPDF.querySelectorAll("th, td").forEach(celda => {
-    Object.assign(celda.style, {
-      overflowWrap: "anywhere",
-      wordBreak: "normal",
-      whiteSpace: "normal",
-      boxSizing: "border-box"
-    });
-  });
-
-  documentoPDF.querySelectorAll("tr").forEach(fila => {
-    fila.style.breakInside = "avoid";
-    fila.style.pageBreakInside = "avoid";
-  });
-
-  document.body.appendChild(copia);
-
-  try {
-    // Esperar al renderizado y al cálculo del tamaño real.
-    await new Promise(resolve => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(resolve);
-      });
-    });
-
-    const anchoReal = Math.ceil(
-      Math.max(
-        documentoPDF.scrollWidth,
-        documentoPDF.offsetWidth,
-        794
-      )
-    );
-
-    const altoReal = Math.ceil(
-      Math.max(
-        documentoPDF.scrollHeight,
-        documentoPDF.offsetHeight,
-        500
-      )
-    );
-
-    const opciones = {
-      margin: [10, 10, 10, 10],
-      filename: "Pedido-Distribuidora-Exodo.pdf",
-      image: {
-        type: "jpeg",
-        quality: 0.98
-      },
-      html2canvas: {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        width: anchoReal,
-        height: altoReal,
-        windowWidth: Math.max(anchoReal, document.documentElement.clientWidth),
-        windowHeight: Math.max(altoReal, window.innerHeight),
-        onclone: documentoClonado => {
-          const elementoClonado =
-            documentoClonado.querySelector("#plantilla-pdf");
-
-          if (elementoClonado) {
-            elementoClonado.style.display = "block";
-            elementoClonado.style.position = "static";
-            elementoClonado.style.left = "auto";
-            elementoClonado.style.top = "auto";
-            elementoClonado.style.width = `${anchoReal}px`;
-            elementoClonado.style.height = "auto";
-            elementoClonado.style.overflow = "visible";
-            elementoClonado.style.opacity = "1";
-            elementoClonado.style.visibility = "visible";
-          }
+  const documento = new Document({
+    creator: "Distribuidora Éxodo",
+    title: "Hoja de pedido - Distribuidora Éxodo",
+    description: "Detalle de los productos del pedido",
+    sections: [{
+      properties: {
+        page: {
+          size: { width: 11906, height: 16838 },
+          margin: { top: 500, right: 500, bottom: 500, left: 500 }
         }
       },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-        compress: true
-      },
-      pagebreak: {
-        mode: ["css", "legacy"],
-        avoid: ["tr", ".pdf-encabezado", ".pdf-datos", ".pdf-total", ".pdf-pie"]
-      }
-    };
+      children: [
+        parrafo("DISTRIBUIDORA ÉXODO", { bold: true, size: 28, color: "3F8F25", after: 45 }),
+        parrafo("HOJA DE PEDIDO", { bold: true, size: 24, after: 35 }),
+        parrafo("Fecha del pedido: " + fechaTexto, { size: 18, after: 100 }),
+        tabla,
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { before: 100, after: 40 },
+          children: [new TextRun({ text: `TOTAL DEL PEDIDO: $${total.toFixed(2)}`, bold: true, size: 22, color: "32751E", font: "Arial" })]
+        }),
+        parrafo("Gracias por preferir Distribuidora Éxodo. Calidad y frescura para tu hogar.", { size: 16, color: "64748B", after: 0 })
+      ]
+    }]
+  });
 
-    const blob = await html2pdf()
-      .set(opciones)
-      .from(documentoPDF)
-      .toPdf()
-      .get("pdf")
-      .then(pdf => pdf.output("blob"));
-
-    if (!(blob instanceof Blob) || blob.size < 500) {
-      throw new Error(
-        `El PDF generado parece vacío. Tamaño: ${blob?.size ?? 0} bytes.`
-      );
-    }
-
-    console.log("PDF generado correctamente:", blob.size, "bytes");
-    return blob;
-
-  } finally {
-    copia.remove();
-  }
+  return Packer.toBlob(documento);
 }
 
-/* =====================================================
-   PDF: DESCARGAR
-===================================================== */
-
-function descargarBlobPDF(blob) {
+function descargarBlobWord(blob) {
   if (!(blob instanceof Blob) || blob.size === 0) {
-    throw new Error("El archivo PDF está vacío.");
+    throw new Error("El archivo Word está vacío.");
   }
 
   const url = URL.createObjectURL(blob);
   const enlace = document.createElement("a");
-
   enlace.href = url;
-  enlace.download =
-    `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`;
-
+  enlace.download = `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.docx`;
   document.body.appendChild(enlace);
   enlace.click();
   enlace.remove();
-
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-async function generarPDFPedido() {
+async function compartirWordWhatsApp() {
   try {
-    const blob = await crearBlobPDF();
-
-    if (blob) {
-      descargarBlobPDF(blob);
-    }
-  } catch (error) {
-    console.error("Error al generar PDF:", error);
-    alert("No se pudo generar el PDF. Abre F12 → Console para revisar el error.");
-  }
-}
-
-/* =====================================================
-   PDF: COMPARTIR
-===================================================== */
-
-async function compartirPDFWhatsApp() {
-  try {
-    const blob = await crearBlobPDF();
+    const blob = await crearBlobWord();
     if (!blob) return;
 
-    const archivo = new File(
-      [blob],
-      `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.pdf`,
-      { type: "application/pdf" }
-    );
+    const nombreArchivo = `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.docx`;
+    const archivo = new File([blob], nombreArchivo, {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    });
 
-    if (
-      typeof navigator.share === "function" &&
-      typeof navigator.canShare === "function" &&
-      navigator.canShare({ files: [archivo] })
-    ) {
+    if (typeof navigator.share === "function" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [archivo] })) {
       await navigator.share({
         files: [archivo],
         title: "Pedido - Distribuidora Éxodo",
-        text: "Te comparto mi hoja de pedido."
+        text: "Te comparto mi hoja de pedido en Word."
       });
-
       return;
     }
 
-    descargarBlobPDF(blob);
-
-    alert(
-      "El PDF se descargó. Abre WhatsApp y adjunta el archivo descargado."
-    );
+    descargarBlobWord(blob);
+    alert("El documento Word se descargó. Abre WhatsApp y adjunta el archivo .docx descargado.");
   } catch (error) {
-    if (error.name === "AbortError") return;
-
-    console.error("Error al compartir PDF:", error);
-    alert("No se pudo compartir el PDF. Prueba primero la descarga.");
+    if (error && error.name === "AbortError") return;
+    console.error("Error al crear o compartir el Word:", error);
+    alert("No se pudo compartir el Word. Inténtalo de nuevo; si el problema continúa, revisa tu conexión a internet.");
   }
 }
 

@@ -1369,3 +1369,19 @@ body.pagina-carrito .pdf-pie {
     font-size: .66rem;
   }
 }
+/* CAMBIO SOLICITADO: estilo del único botón para enviar pedido Word */
+body.pagina-carrito .boton-whatsapp {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #256629;
+}
+
+body.pagina-carrito .boton-whatsapp:hover {
+  background: #256629;
+  color: #fff;
+}
+
+body.pagina-carrito .boton-whatsapp .boton-emoji {
+  background: rgba(255, 255, 255, .18);
+  color: #fff;
+}
