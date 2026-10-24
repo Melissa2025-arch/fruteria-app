@@ -489,34 +489,37 @@ function construirTextoPedido() {
   if (items.length === 0) return null;
 
   let total = 0;
-
+  const fecha = new Date().toLocaleDateString("es-SV");
   const lineas = [
-    "Hola, Distribuidora Éxodo. Deseo realizar el siguiente pedido:",
+    "DISTRIBUIDORA ÉXODO",
+    "RESUMEN DEL PEDIDO",
+    `Fecha: ${fecha}`,
+    "",
+    "Hola, deseo realizar el siguiente pedido:",
     ""
   ];
 
   items.forEach((producto, indice) => {
-    const cantidad = Math.max(
-      1,
-      parseInt(producto.cantidad, 10) || 1
-    );
-
+    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
     total += subtotal;
-
     lineas.push(
-      `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"}) — Cantidad: ${cantidad} × $${precio.toFixed(2)} = $${subtotal.toFixed(2)}`
+      `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"})`,
+      `   Cantidad: ${cantidad}`,
+      `   Precio unitario: $${precio.toFixed(2)}`,
+      `   Subtotal: $${subtotal.toFixed(2)}`,
+      ""
     );
   });
 
   lineas.push(
+    "--------------------------------",
+    `TOTAL ESTIMADO: $${total.toFixed(2)}`,
     "",
-    `Total estimado: $${total.toFixed(2)}`,
-    "",
-    "Solicito entrega a domicilio. Quedo a la espera de su confirmación."
+    "El costo de entrega está pendiente de confirmación.",
+    "Quedo a la espera de la confirmación del pedido."
   );
-
   return lineas.join("\n");
 }
 
@@ -677,6 +680,50 @@ function descargarBlobWord(blob) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+async function descargarPedidoWord() {
+  try {
+    const blob = await crearBlobWord();
+    if (!blob) return;
+    descargarBlobWord(blob);
+    const estado = document.getElementById("mensaje-carrito");
+    if (estado) estado.textContent = "Tu documento Word se está descargando.";
+  } catch (error) {
+    console.error("Error al descargar el pedido Word:", error);
+    alert("No se pudo descargar el documento Word. Inténtalo de nuevo.");
+  }
+}
+
+async function copiarPedido() {
+  const mensaje = construirTextoPedido();
+  if (!mensaje) {
+    alert("Tu carrito está vacío. Agrega productos antes de copiar el pedido.");
+    return;
+  }
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(mensaje);
+    } else {
+      const area = document.createElement("textarea");
+      area.value = mensaje;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.select();
+      const copiado = document.execCommand("copy");
+      area.remove();
+      if (!copiado) throw new Error("No se pudo copiar el pedido.");
+    }
+    const estado = document.getElementById("mensaje-carrito");
+    if (estado) estado.textContent = "¡Pedido copiado! Ya puedes pegarlo en WhatsApp.";
+    else alert("¡Pedido copiado! Ya puedes pegarlo donde quieras.");
+  } catch (error) {
+    console.error("Error al copiar el pedido:", error);
+    alert("No se pudo copiar automáticamente. Inténtalo de nuevo.");
+  }
+}
+
 async function compartirWordWhatsApp() {
   try {
     const blob = await crearBlobWord();
@@ -746,4 +793,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
 

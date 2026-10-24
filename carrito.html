@@ -61,9 +61,19 @@
                     <small>El costo de entrega se confirma por WhatsApp.</small>
                 </div>
                 <div class="resumen-acciones">
-                    <button type="button" class="boton-pedido boton-whatsapp" onclick="compartirWordWhatsApp()">
+                    <button type="button" class="boton-pedido boton-pdf" onclick="descargarPedidoWord()">
+                        <span class="boton-emoji">📄</span>
+                        <span><strong>Descargar pedido en Word</strong><small>Guardar el documento .docx</small></span>
+                        <span class="boton-flecha">›</span>
+                    </button>
+                    <button type="button" class="boton-pedido boton-whatsapp" onclick="enviarPedidoWhatsApp()">
                         <span class="boton-emoji">📲</span>
-                        <span><strong>Enviar pedido por WhatsApp</strong><small>Generar y compartir hoja de pedido Word</small></span>
+                        <span><strong>Enviar pedido por WhatsApp</strong><small>Enviar el pedido como texto, sin adjunto</small></span>
+                        <span class="boton-flecha">›</span>
+                    </button>
+                    <button type="button" class="boton-pedido boton-pdf" onclick="copiarPedido()">
+                        <span class="boton-emoji">📋</span>
+                        <span><strong>Copiar pedido</strong><small>Copiar el resumen para pegarlo donde quieras</small></span>
                         <span class="boton-flecha">›</span>
                     </button>
                 </div>
