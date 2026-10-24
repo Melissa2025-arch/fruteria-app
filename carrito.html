@@ -60,13 +60,47 @@
                     <strong id="total-carrito-txt">$0.00</strong>
                     <small>El costo de entrega se confirma por WhatsApp.</small>
                 </div>
-                <div class="resumen-acciones">
-                    <button type="button" class="boton-pedido boton-whatsapp" onclick="compartirWordWhatsApp()">
-                        <span class="boton-emoji">📲</span>
-                        <span><strong>Enviar pedido por WhatsApp</strong><small>Generar y compartir hoja de pedido Word</small></span>
-                        <span class="boton-flecha">›</span>
-                    </button>
-                </div>
+              
+<div class="resumen-acciones">
+
+    <!-- OPCIÓN 1: DESCARGAR WORD -->
+    <button type="button"
+        class="boton-pedido boton-pdf"
+        onclick="descargarPedidoWord()">
+        <span class="boton-emoji">📄</span>
+        <span>
+            <strong>Descargar pedido en Word</strong>
+            <small>Guardar documento .docx en tu teléfono</small>
+        </span>
+        <span class="boton-flecha">›</span>
+    </button>
+
+    <!-- OPCIÓN 2: WHATSAPP COMO TEXTO -->
+    <button type="button"
+        class="boton-pedido boton-whatsapp"
+        onclick="enviarPedidoWhatsApp()">
+        <span class="boton-emoji">📲</span>
+        <span>
+            <strong>Enviar pedido por WhatsApp</strong>
+            <small>Compartir el pedido como mensaje de texto</small>
+        </span>
+        <span class="boton-flecha">›</span>
+    </button>
+
+    <!-- OPCIÓN 3: COPIAR PEDIDO -->
+    <button type="button"
+        class="boton-pedido boton-pdf"
+        onclick="copiarPedido()">
+        <span class="boton-emoji">📋</span>
+        <span>
+            <strong>Copiar pedido</strong>
+            <small>Copiar el resumen para pegarlo donde quieras</small>
+        </span>
+        <span class="boton-flecha">›</span>
+    </button>
+
+</div>
+
                 <p class="resumen-nota">🔒 Revisa tu pedido antes de enviarlo.</p>
                 <p id="mensaje-carrito" class="mensaje-carrito" role="status" aria-live="polite"></p>
             </aside>

@@ -485,39 +485,55 @@ function eliminarDelCarrito(id) {
 ===================================================== */
 
 function construirTextoPedido() {
-  const items = Object.values(carrito);
-  if (items.length === 0) return null;
+    const items = Object.values(carrito);
 
-  let total = 0;
+    if (items.length === 0) return null;
 
-  const lineas = [
-    "Hola, Distribuidora Éxodo. Deseo realizar el siguiente pedido:",
-    ""
-  ];
+    let total = 0;
 
-  items.forEach((producto, indice) => {
-    const cantidad = Math.max(
-      1,
-      parseInt(producto.cantidad, 10) || 1
-    );
+    const fecha = new Date().toLocaleDateString("es-SV");
 
-    const precio = Math.max(0, Number(producto.precio) || 0);
-    const subtotal = precio * cantidad;
-    total += subtotal;
+    const lineas = [
+        "DISTRIBUIDORA ÉXODO",
+        "RESUMEN DEL PEDIDO",
+        `Fecha: ${fecha}`,
+        "",
+        "Hola, deseo realizar el siguiente pedido:",
+        ""
+    ];
+
+    items.forEach((producto, indice) => {
+        const cantidad = Math.max(
+            1,
+            parseInt(producto.cantidad, 10) || 1
+        );
+
+        const precio = Math.max(
+            0,
+            Number(producto.precio) || 0
+        );
+
+        const subtotal = precio * cantidad;
+        total += subtotal;
+
+        lineas.push(
+            `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"})`,
+            `   Cantidad: ${cantidad}`,
+            `   Precio unitario: $${precio.toFixed(2)}`,
+            `   Subtotal: $${subtotal.toFixed(2)}`,
+            ""
+        );
+    });
 
     lineas.push(
-      `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"}) — Cantidad: ${cantidad} × $${precio.toFixed(2)} = $${subtotal.toFixed(2)}`
+        "--------------------------------",
+        `TOTAL DE PRODUCTOS: $${total.toFixed(2)}`,
+        "",
+        "El costo de entrega está pendiente de confirmación.",
+        "Quedo a la espera de la confirmación del pedido."
     );
-  });
 
-  lineas.push(
-    "",
-    `Total estimado: $${total.toFixed(2)}`,
-    "",
-    "Solicito entrega a domicilio. Quedo a la espera de su confirmación."
-  );
-
-  return lineas.join("\n");
+    return lineas.join("\n");
 }
 
 function enviarPedidoWhatsApp() {
@@ -705,6 +721,73 @@ async function compartirWordWhatsApp() {
     console.error("Error al crear o compartir el Word:", error);
     alert("No se pudo compartir el Word. Inténtalo de nuevo; si el problema continúa, revisa tu conexión a internet.");
   }
+}
+
+/* OPCIÓN 1: ENVIAR DOCUMENTO WORD POR WHATSAPP */
+// Conserva la función compartirWordWhatsApp() que ya tienes.
+// Esta función genera el archivo y permite compartirlo como adjunto.
+
+/* OPCIÓN 2: DESCARGAR DOCUMENTO WORD */
+async function descargarPedidoWord() {
+    try {
+        const blob = await crearBlobWord();
+
+        if (!blob) return;
+
+        descargarBlobWord(blob);
+
+        const estado = document.getElementById("mensaje-carrito");
+        if (estado) {
+            estado.textContent = "Tu documento Word se está descargando.";
+        }
+    } catch (error) {
+        console.error("Error al descargar el pedido Word:", error);
+        alert("No se pudo descargar el documento Word. Inténtalo de nuevo.");
+    }
+}
+
+/* OPCIÓN 3: COPIAR RESUMEN Y PEGARLO EN WHATSAPP */
+async function copiarPedido() {
+    const mensaje = construirTextoPedido();
+
+    if (!mensaje) {
+        alert("Tu carrito está vacío. Agrega productos antes de copiar el pedido.");
+        return;
+    }
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(mensaje);
+        } else {
+            const area = document.createElement("textarea");
+            area.value = mensaje;
+            area.setAttribute("readonly", "");
+            area.style.position = "fixed";
+            area.style.left = "-9999px";
+
+            document.body.appendChild(area);
+            area.select();
+
+            const copiado = document.execCommand("copy");
+            area.remove();
+
+            if (!copiado) {
+                throw new Error("No se pudo copiar el pedido.");
+            }
+        }
+
+        const estado = document.getElementById("mensaje-carrito");
+
+        if (estado) {
+            estado.textContent =
+                "¡Pedido copiado! Abre WhatsApp y pega el texto en el chat.";
+        } else {
+            alert("¡Pedido copiado! Ya puedes pegarlo en WhatsApp.");
+        }
+    } catch (error) {
+        console.error("Error al copiar el pedido:", error);
+        alert("No se pudo copiar automáticamente. Inténtalo de nuevo.");
+    }
 }
 
 /* =====================================================
