@@ -69,9 +69,205 @@ function actualizarBadgeCarrito() {
   document.querySelectorAll("#cant-carrito-badge").forEach(badge => {
     badge.textContent = `(${totalItems})`;
   });
+    actualizarBurbujaCarrito();
+}
+function toggleMenu() {
+  /* =====================================================
+   BURBUJA FLOTANTE DEL CARRITO
+===================================================== */
+
+const CLAVE_POSICION_BURBUJA = "exodo_posicion_burbuja";
+
+function actualizarBurbujaCarrito() {
+  const burbuja = document.getElementById("burbuja-carrito");
+  if (!burbuja) return;
+
+  const total = Object.values(carrito).reduce(
+    (suma, producto) =>
+      suma + (parseInt(producto.cantidad, 10) || 0),
+    0
+  );
+
+  const contador = burbuja.querySelector(".burbuja-contador");
+
+  if (contador) {
+    contador.textContent = total > 99 ? "99+" : String(total);
+  }
 }
 
-function toggleMenu() {
+function limitarPosicionBurbuja(x, y, burbuja) {
+  const margen = 8;
+
+  return {
+    x: Math.max(
+      margen,
+      Math.min(x, window.innerWidth - burbuja.offsetWidth - margen)
+    ),
+    y: Math.max(
+      margen,
+      Math.min(y, window.innerHeight - burbuja.offsetHeight - margen)
+    )
+  };
+}
+
+function guardarPosicionBurbuja(x, y) {
+  try {
+    localStorage.setItem(
+      CLAVE_POSICION_BURBUJA,
+      JSON.stringify({ x, y })
+    );
+  } catch (error) {
+    console.warn("No se pudo guardar la posición de la burbuja.", error);
+  }
+}
+
+function iniciarBurbujaCarrito() {
+  // La burbuja solo aparecerá en páginas que muestran productos.
+  if (!document.getElementById("grid-busqueda")) return;
+  if (document.getElementById("burbuja-carrito")) return;
+
+  const burbuja = document.createElement("button");
+
+  burbuja.type = "button";
+  burbuja.id = "burbuja-carrito";
+  burbuja.className = "burbuja-carrito";
+  burbuja.setAttribute("aria-label", "Abrir carrito de compras");
+  burbuja.title = "Arrastra para mover o pulsa para abrir el carrito";
+
+  burbuja.innerHTML = `
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+    </svg>
+    <span class="burbuja-contador">0</span>
+  `;
+
+  document.body.appendChild(burbuja);
+
+  let posicion = null;
+
+  try {
+    posicion = JSON.parse(
+      localStorage.getItem(CLAVE_POSICION_BURBUJA) || "null"
+    );
+  } catch (error) {
+    posicion = null;
+  }
+
+  let x = posicion && Number.isFinite(posicion.x)
+    ? posicion.x
+    : window.innerWidth - burbuja.offsetWidth - 22;
+
+  let y = posicion && Number.isFinite(posicion.y)
+    ? posicion.y
+    : window.innerHeight - burbuja.offsetHeight - 24;
+
+  function aplicarPosicion(nuevoX, nuevoY, guardar = false) {
+    const limitada = limitarPosicionBurbuja(
+      nuevoX,
+      nuevoY,
+      burbuja
+    );
+
+    x = limitada.x;
+    y = limitada.y;
+
+    burbuja.style.left = `${x}px`;
+    burbuja.style.top = `${y}px`;
+    burbuja.style.right = "auto";
+    burbuja.style.bottom = "auto";
+
+    if (guardar) {
+      guardarPosicionBurbuja(x, y);
+    }
+  }
+
+  aplicarPosicion(x, y);
+  actualizarBurbujaCarrito();
+
+  let arrastrando = false;
+  let seMovio = false;
+  let inicioX = 0;
+  let inicioY = 0;
+  let posicionInicialX = 0;
+  let posicionInicialY = 0;
+  let punteroActivo = null;
+
+  burbuja.addEventListener("pointerdown", event => {
+    if (event.button !== 0 && event.pointerType === "mouse") return;
+
+    arrastrando = true;
+    seMovio = false;
+    punteroActivo = event.pointerId;
+
+    inicioX = event.clientX;
+    inicioY = event.clientY;
+    posicionInicialX = x;
+    posicionInicialY = y;
+
+    burbuja.setPointerCapture(event.pointerId);
+    burbuja.style.cursor = "grabbing";
+
+    event.preventDefault();
+  });
+
+  burbuja.addEventListener("pointermove", event => {
+    if (!arrastrando || event.pointerId !== punteroActivo) return;
+
+    const deltaX = event.clientX - inicioX;
+    const deltaY = event.clientY - inicioY;
+
+    if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+      seMovio = true;
+    }
+
+    if (seMovio) {
+      aplicarPosicion(
+        posicionInicialX + deltaX,
+        posicionInicialY + deltaY
+      );
+    }
+  });
+
+  function terminarArrastre(event) {
+    if (!arrastrando || event.pointerId !== punteroActivo) return;
+
+    arrastrando = false;
+    punteroActivo = null;
+    burbuja.style.cursor = "grab";
+
+    if (seMovio) {
+      guardarPosicionBurbuja(x, y);
+    }
+  }
+
+  burbuja.addEventListener("pointerup", terminarArrastre);
+  burbuja.addEventListener("pointercancel", terminarArrastre);
+
+  burbuja.addEventListener("click", event => {
+    if (seMovio) {
+      event.preventDefault();
+      event.stopPropagation();
+      seMovio = false;
+      return;
+    }
+
+    window.location.href = "carrito.html";
+  });
+
+  window.addEventListener("resize", () => {
+    aplicarPosicion(x, y, true);
+  });
+}
   const nav = document.getElementById("menu");
   const boton = document.querySelector(".menu-btn");
 
@@ -796,6 +992,8 @@ async function copiarPedido() {
 
 document.addEventListener("DOMContentLoaded", () => {
   actualizarBadgeCarrito();
+
+  inicializarBurbujaCarrito();
 
   // Página del carrito
   if (document.getElementById("lista-carrito")) {
