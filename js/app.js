@@ -72,6 +72,17 @@ function actualizarBadgeCarrito() {
     actualizarBurbujaCarrito();
 }
 function toggleMenu() {
+  const nav = document.getElementById("menu");
+  const boton = document.querySelector(".menu-btn");
+
+  if (!nav) return;
+
+  const abierto = nav.classList.toggle("menu-abierto");
+
+  if (boton) {
+    boton.setAttribute("aria-expanded", String(abierto));
+  }
+}
   /* =====================================================
    BURBUJA FLOTANTE DEL CARRITO
 ===================================================== */
@@ -268,18 +279,6 @@ function iniciarBurbujaCarrito() {
     aplicarPosicion(x, y, true);
   });
 }
-  const nav = document.getElementById("menu");
-  const boton = document.querySelector(".menu-btn");
-
-  if (!nav) return;
-
-  const abierto = nav.classList.toggle("menu-abierto");
-
-  if (boton) {
-    boton.setAttribute("aria-expanded", String(abierto));
-  }
-}
-
 /* =====================================================
    PRODUCTOS Y SUPABASE
 ===================================================== */
@@ -993,7 +992,7 @@ async function copiarPedido() {
 document.addEventListener("DOMContentLoaded", () => {
   actualizarBadgeCarrito();
 
-  inicializarBurbujaCarrito();
+  iniciarBurbujaCarrito();
 
   // Página del carrito
   if (document.getElementById("lista-carrito")) {
