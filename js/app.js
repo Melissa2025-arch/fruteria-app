@@ -923,35 +923,68 @@ function descargarBlobWord(blob) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+
 async function compartirWordWhatsApp() {
-  try {
-    const blob = await crearBlobWord();
-    if (!blob) return;
+    try {
+        const blob = await crearBlobWord();
 
-    const nombreArchivo = `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.docx`;
-    const archivo = new File([blob], nombreArchivo, {
-      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    });
+        if (!blob) return;
 
-    if (typeof navigator.share === "function" &&
-        typeof navigator.canShare === "function" &&
-        navigator.canShare({ files: [archivo] })) {
-      await navigator.share({
-        files: [archivo],
-        title: "Pedido - Distribuidora Éxodo",
-        text: "Te comparto mi hoja de pedido en Word."
-      });
-      return;
+        const fecha = new Date().toLocaleDateString("en-CA");
+        const nombreArchivo =
+            `Pedido-Distribuidora-Exodo-${fecha}.docx`;
+
+        const archivo = new File(
+            [blob],
+            nombreArchivo,
+            {
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+        );
+
+        // Intentar compartir el archivo Word desde el teléfono.
+        if (
+            typeof navigator.share === "function" &&
+            typeof navigator.canShare === "function" &&
+            navigator.canShare({ files: [archivo] })
+        ) {
+            try {
+                await navigator.share({
+                    files: [archivo],
+                    title: "Pedido - Distribuidora Éxodo",
+                    text: "Adjunto mi hoja de pedido en Word."
+                });
+
+                return;
+            } catch (errorCompartir) {
+                // Si el usuario cancela, no descargar otro archivo.
+                if (errorCompartir.name === "AbortError") return;
+
+                console.warn(
+                    "No se pudo compartir directamente:",
+                    errorCompartir
+                );
+            }
+        }
+
+        // Alternativa para teléfonos que no admiten compartir archivos.
+        descargarBlobWord(blob);
+
+        alert(
+            "Tu pedido Word se ha descargado. Abre WhatsApp, " +
+            "entra al chat de Distribuidora Éxodo y adjunta el archivo .docx."
+        );
+
+    } catch (error) {
+        console.error("Error al generar el pedido Word:", error);
+
+        alert(
+            "No se pudo generar el documento Word. " +
+            "Comprueba tu conexión e inténtalo nuevamente."
+        );
     }
-
-    descargarBlobWord(blob);
-    alert("El documento Word se descargó. Abre WhatsApp y adjunta el archivo .docx descargado.");
-  } catch (error) {
-    if (error && error.name === "AbortError") return;
-    console.error("Error al crear o compartir el Word:", error);
-    alert("No se pudo compartir el Word. Inténtalo de nuevo; si el problema continúa, revisa tu conexión a internet.");
-  }
 }
+
 
 /* OPCIÓN 1: ENVIAR DOCUMENTO WORD POR WHATSAPP */
 // Conserva la función compartirWordWhatsApp() que ya tienes.

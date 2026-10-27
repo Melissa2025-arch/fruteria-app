@@ -1483,3 +1483,54 @@ body.pagina-carrito .boton-whatsapp .boton-emoji {
     }
 }
 
+/* Adaptar el resumen del carrito a teléfonos */
+.carrito-tabla-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.tabla-carrito th,
+.tabla-carrito td {
+    padding: 10px 8px;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.tabla-carrito th {
+    background-color: #f0fdf2;
+    color: #1b2e11;
+}
+
+@media (max-width: 600px) {
+    .carrito-tabla-wrap {
+        overflow-x: visible;
+    }
+
+    .tabla-carrito {
+        font-size: 12px;
+    }
+
+    .tabla-carrito th,
+    .tabla-carrito td {
+        padding: 8px 4px;
+    }
+
+    .tabla-carrito th {
+        white-space: normal;
+    }
+
+    .tabla-carrito td button {
+        max-width: 100%;
+        padding: 6px;
+        font-size: 11px;
+    }
+}
+
