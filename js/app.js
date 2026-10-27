@@ -745,6 +745,41 @@ function enviarPedidoWhatsApp() {
   window.open(url, "_blank", "noopener");
 }
 
+function limpiarCarrito() {
+    if (!carrito || Object.keys(carrito).length === 0) {
+        alert("El carrito ya está vacío.");
+        return;
+    }
+
+    const confirmar = confirm(
+        "¿Estás seguro de que deseas eliminar todos los productos del carrito?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    // Vaciar el carrito actual DESDE ACA 
+    Object.keys(carrito).forEach(clave => delete carrito[clave]);
+
+    // Actualizar el almacenamiento y la pantalla
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+    if (typeof mostrarCarrito === "function") {
+        mostrarCarrito();
+    }
+
+    if (typeof actualizarBadgeCarrito === "function") {
+        actualizarBadgeCarrito();
+    }
+
+    const estado = document.getElementById("mensaje-carrito");
+
+    if (estado) {
+        estado.textContent = "Carrito limpiado. Ya puedes comenzar un nuevo pedido.";
+    }
+}
+
 /* =====================================================
    WORD: GENERAR Y COMPARTIR HOJA DE PEDIDO
 ===================================================== */
