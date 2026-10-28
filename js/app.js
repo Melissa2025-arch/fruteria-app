@@ -731,6 +731,7 @@ function construirTextoPedido() {
     return lineas.join("\n");
 }
 
+
 function enviarPedidoWhatsApp() {
     const mensaje = construirTextoPedido();
 
@@ -739,14 +740,14 @@ function enviarPedidoWhatsApp() {
         return;
     }
 
-    const telefono = "50363114191";
-    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-
+    const url = `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
     window.open(url, "_blank");
 }
 
+
+
 function limpiarCarrito() {
-    if (!carrito || Object.keys(carrito).length === 0) {
+    if (Object.keys(carrito).length === 0) {
         alert("El carrito ya está vacío.");
         return;
     }
@@ -755,30 +756,20 @@ function limpiarCarrito() {
         "¿Estás seguro de que deseas eliminar todos los productos del carrito?"
     );
 
-    if (!confirmar) {
-        return;
-    }
+    if (!confirmar) return;
 
-    // Vaciar el carrito actual DESDE ACA 
-    Object.keys(carrito).forEach(clave => delete carrito[clave]);
-
-    // Actualizar el almacenamiento y la pantalla
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-
-    if (typeof mostrarCarrito === "function") {
-        mostrarCarrito();
-    }
-
-    if (typeof actualizarBadgeCarrito === "function") {
-        actualizarBadgeCarrito();
-    }
+    carrito = {};
+    guardarCarrito();
+    mostrarCarrito();
 
     const estado = document.getElementById("mensaje-carrito");
 
     if (estado) {
-        estado.textContent = "Carrito limpiado. Ya puedes comenzar un nuevo pedido.";
+        estado.textContent =
+            "Carrito limpiado. Ya puedes comenzar un nuevo pedido.";
     }
 }
+
 
 /* =====================================================
    WORD: GENERAR Y COMPARTIR HOJA DE PEDIDO
@@ -1093,4 +1084,216 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+function generarPDFPedido() {
+    const items = Object.values(carrito);
+
+    if (items.length === 0) {
+        alert("Tu carrito está vacío. Agrega productos para ver el pedido.");
+        return;
+    }
+
+    // Evitar abrir varias ventanas del pedido.
+    document.getElementById("modal-pedido-completo")?.remove();
+
+    let total = 0;
+
+    const filas = items.map(producto => {
+        const cantidad = Math.max(
+            1,
+            parseInt(producto.cantidad, 10) || 1
+        );
+
+        const precio = Math.max(0, Number(producto.precio) || 0);
+        const subtotal = precio * cantidad;
+        total += subtotal;
+
+        return `
+            <tr>
+                <td>
+                    <strong>${escaparHTML(producto.nombre)}</strong>
+                    <br>
+                    <small>${escaparHTML(producto.unidad || "Unidad")}</small>
+                </td>
+                <td>$${precio.toFixed(2)}</td>
+                <td>${cantidad}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+            </tr>
+        `;
+    }).join("");
+
+    const modal = document.createElement("div");
+    modal.id = "modal-pedido-completo";
+
+    modal.innerHTML = `
+        <div class="pedido-ventana" role="dialog"
+             aria-modal="true" aria-labelledby="titulo-pedido">
+            <button type="button" class="pedido-cerrar"
+                    aria-label="Cerrar">×</button>
+
+            <div class="pedido-contenido">
+                <h2 id="titulo-pedido">Distribuidora Éxodo</h2>
+                <p>Detalle completo del pedido</p>
+                <p><strong>Fecha:</strong> ${new Date().toLocaleDateString("es-SV")}</p>
+
+                <div class="pedido-tabla-contenedor">
+                    <table class="pedido-tabla">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cant.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>${filas}</tbody>
+                    </table>
+                </div>
+
+                <div class="pedido-total">
+                    <span>Total de productos</span>
+                    <strong>$${total.toFixed(2)}</strong>
+                </div>
+
+                <p class="pedido-entrega">
+                    El costo de entrega se confirma por WhatsApp.
+                </p>
+
+                <button type="button" class="pedido-boton-cerrar">
+                    Volver al carrito
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const cerrar = () => modal.remove();
+
+    modal.querySelector(".pedido-cerrar").addEventListener("click", cerrar);
+    modal.querySelector(".pedido-boton-cerrar").addEventListener("click", cerrar);
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) cerrar();
+    });
+
+    const estilo = document.createElement("style");
+    estilo.id = "estilo-pedido-completo";
+
+    if (!document.getElementById(estilo.id)) {
+        estilo.textContent = `
+            #modal-pedido-completo {
+                position: fixed;
+                inset: 0;
+                z-index: 99999;
+                background: rgba(15, 23, 42, .65);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+                box-sizing: border-box;
+            }
+
+            .pedido-ventana {
+                position: relative;
+                background: #fff;
+                color: #334155;
+                width: 100%;
+                max-width: 760px;
+                max-height: 90vh;
+                overflow-y: auto;
+                border-radius: 18px;
+                box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            }
+
+            .pedido-contenido {
+                padding: 28px;
+            }
+
+            .pedido-contenido h2 {
+                color: #3f8f25;
+                margin: 0 40px 6px 0;
+            }
+
+            .pedido-cerrar {
+                position: absolute;
+                right: 14px;
+                top: 12px;
+                width: 40px;
+                height: 40px;
+                border: 0;
+                border-radius: 50%;
+                background: #f1f5f9;
+                color: #334155;
+                font-size: 28px;
+                cursor: pointer;
+            }
+
+            .pedido-tabla-contenedor {
+                overflow-x: auto;
+                margin-top: 22px;
+            }
+
+            .pedido-tabla {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+
+            .pedido-tabla th {
+                background: #3f8f25;
+                color: white;
+                text-align: left;
+            }
+
+            .pedido-tabla th,
+            .pedido-tabla td {
+                padding: 12px 9px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .pedido-total {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                align-items: center;
+                margin-top: 22px;
+                padding: 18px;
+                border-radius: 12px;
+                background: #f0fdf2;
+            }
+
+            .pedido-total strong {
+                color: #287c32;
+                font-size: 25px;
+            }
+
+            .pedido-entrega {
+                color: #64748b;
+                font-size: 14px;
+            }
+
+            .pedido-boton-cerrar {
+                width: 100%;
+                margin-top: 12px;
+                padding: 13px;
+                background: #3f8f25;
+                color: white;
+                border: 0;
+                border-radius: 10px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            @media (max-width: 480px) {
+                .pedido-contenido { padding: 20px 14px; }
+                .pedido-tabla { font-size: 12px; }
+                .pedido-tabla th,
+                .pedido-tabla td { padding: 9px 6px; }
+            }
+        `;
+
+        document.head.appendChild(estilo);
+    }
+}
 
