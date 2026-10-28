@@ -731,18 +731,9 @@ function construirTextoPedido() {
     return lineas.join("\n");
 }
 
+
 function enviarPedidoWhatsApp() {
-  const mensaje = construirTextoPedido();
-
-  if (!mensaje) {
-    alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
-    return;
-  }
-
-  const url =
-    `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
-
-  window.open(url, "_blank", "noopener");
+    compartirWordWhatsApp();
 }
 
 function limpiarCarrito() {
