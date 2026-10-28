@@ -72,49 +72,27 @@
         <small>Eliminar todos los productos y comenzar otro pedido</small>
     </span>
 </button>
+           
 
-
-              
-<div class="resumen-acciones">
-
-
-    <!-- OPCIÓN 1: DESCARGAR WORD -->
-    <button type="button"
-        class="boton-pedido boton-pdf"
-        onclick="descargarPedidoWord()">
-        <span class="boton-emoji">📄</span>
-        <span>
-            <strong>Descargar pedido en Word</strong>
-            <small>Guardar documento .docx en tu teléfono</small>
-        </span>
-        <span class="boton-flecha">›</span>
+<div class="acciones-carrito">
+    <button type="button" onclick="descargarPedidoWord()">
+        Descargar pedido en Word
     </button>
 
-   <!-- OPCIÓN 2: WHATSAPP COMO DOCUMENTO WORD -->
-<button type="button"
-    class="boton-pedido boton-whatsapp"
-    onclick="compartirWordWhatsApp()">
-    <span class="boton-emoji">📲</span>
-    <span>
-        <strong>Enviar pedido por WhatsApp como Word</strong>
-        <small>Compartir el pedido como documento .docx</small>
-    </span>
-    <span class="boton-flecha">›</span>
-</button>
+    <button type="button" onclick="generarPDFPedido()">
+        Descargar pedido en formato PDF
+    </button>
 
-    <!-- OPCIÓN 3: COPIAR PEDIDO -->
-    <button type="button"
-        class="boton-pedido boton-pdf"
-        onclick="copiarPedido()">
-        <span class="boton-emoji">📋</span>
-        <span>
-            <strong>Copiar pedido</strong>
-            <small>Copiar el resumen para pegarlo donde quieras</small>
-        </span>
-        <span class="boton-flecha">›</span>
+    <button type="button" onclick="enviarPedidoWhatsApp()">
+        Enviar pedido a WhatsApp como texto
+    </button>
+
+    <button type="button" onclick="copiarPedido()">
+        Copiar pedido
     </button>
 
 </div>
+
 
                 <p class="resumen-nota">🔒 Revisa tu pedido antes de enviarlo.</p>
                 <p id="mensaje-carrito" class="mensaje-carrito" role="status" aria-live="polite"></p>
