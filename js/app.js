@@ -958,13 +958,11 @@ async function compartirWordWhatsApp() {
             }
         }
 
-        // Alternativa para teléfonos que no admiten compartir archivos.
-        descargarBlobWord(blob);
-
-        alert(
-            "Tu pedido Word se ha descargado. Abre WhatsApp, " +
-            "entra al chat de Distribuidora Éxodo y adjunta el archivo .docx."
-        );
+      // No descargar automáticamente si el navegador no permite compartir.
+alert(
+    "No se pudo compartir el Word directamente. " +
+    "Prueba desde Google Chrome en tu teléfono."
+);
 
     } catch (error) {
         console.error("Error al generar el pedido Word:", error);
