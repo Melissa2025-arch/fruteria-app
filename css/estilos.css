@@ -1534,3 +1534,87 @@ body.pagina-carrito .boton-whatsapp .boton-emoji {
     }
 }
 
+/* ==========================================
+   BOTONES DE ACCIONES DEL CARRITO
+   Distribuidora Éxodo
+========================================== */
+
+button[onclick="descargarPedidoWord()"],
+button[onclick="generarPDFPedido()"],
+button[onclick="enviarPedidoWhatsApp()"],
+button[onclick="copiarPedido()"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    margin: 10px 0;
+    padding: 13px 18px;
+    border: 1px solid #dce8d7;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #263d20;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+/* Word */
+button[onclick="descargarPedidoWord()"] {
+    background: #eef5ff;
+    border-color: #c9dcff;
+    color: #2457a7;
+}
+
+/* PDF */
+button[onclick="generarPDFPedido()"] {
+    background: #fff0ef;
+    border-color: #ffd3cf;
+    color: #bd2929;
+}
+
+/* WhatsApp */
+button[onclick="enviarPedidoWhatsApp()"] {
+    background: #eaf9ef;
+    border-color: #bce8c9;
+    color: #16753a;
+}
+
+/* Copiar pedido */
+button[onclick="copiarPedido()"] {
+    background: #f3efff;
+    border-color: #ddd0ff;
+    color: #6541a5;
+}
+
+/* Efecto al pasar el cursor */
+button[onclick="descargarPedidoWord()"]:hover,
+button[onclick="generarPDFPedido()"]:hover,
+button[onclick="enviarPedidoWhatsApp()"]:hover,
+button[onclick="copiarPedido()"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Adaptación para teléfonos */
+@media (max-width: 600px) {
+    button[onclick="descargarPedidoWord()"],
+    button[onclick="generarPDFPedido()"],
+    button[onclick="enviarPedidoWhatsApp()"],
+    button[onclick="copiarPedido()"] {
+        width: 100%;
+        min-height: 48px;
+        font-size: 14px;
+        padding: 12px;
+    }
+}
+
