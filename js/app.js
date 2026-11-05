@@ -669,11 +669,31 @@ function mostrarCarrito() {
   }
 }
 
+
 function eliminarDelCarrito(id) {
+  const producto = carrito[String(id)];
+
+  if (!producto) return;
+
+  const confirmar = confirm(
+    `¿Estás seguro de que deseas eliminar "${producto.nombre}" del carrito?`
+  );
+
+  // Si el usuario cancela, no se elimina el producto.
+  if (!confirmar) return;
+
   delete carrito[String(id)];
+
   guardarCarrito();
   mostrarCarrito();
+
+  const estado = document.getElementById("mensaje-carrito");
+
+  if (estado) {
+    estado.textContent = `"${producto.nombre}" se eliminó del carrito.`;
+  }
 }
+
 
 /* =====================================================
    PEDIDO POR WHATSAPP
