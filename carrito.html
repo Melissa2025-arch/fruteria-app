@@ -6,6 +6,7 @@
     <title>Mi carrito | Distribuidora Éxodo</title>
     <link rel="stylesheet" href="css/estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="pagina-carrito">
     <header class="carrito-header">
@@ -75,22 +76,37 @@
            
 
 <div class="acciones-carrito">
-    <button type="button" onclick="descargarPedidoWord()">
-        Descargar pedido en Word
+
+    <!-- ENVIAR PEDIDO EN PDF -->
+    <button
+        type="button"
+        class="boton-pedido boton-pdf"
+        onclick="enviarPedidoPDFWhatsApp()"
+    >
+        <span class="boton-emoji">📄</span>
+
+        <span>
+            <strong>Enviar pedido por WhatsApp (PDF)</strong>
+            <small>Compartir el pedido completo en documento PDF</small>
+        </span>
+
+        <span class="boton-flecha">›</span>
     </button>
 
-  
-<button type="button" onclick="generarPDFPedido()">
-    Ver pedido completo
-</button>
+    <!-- ENVIAR PEDIDO EN TEXTO -->
+    <button
+        type="button"
+        class="boton-pedido boton-whatsapp"
+        onclick="enviarPedidoWhatsApp()"
+    >
+        <span class="boton-emoji">💬</span>
 
+        <span>
+            <strong>Enviar pedido por WhatsApp (Texto)</strong>
+            <small>Enviar productos, cantidades y precios ordenados</small>
+        </span>
 
-    <button type="button" onclick="enviarPedidoWhatsApp()">
-        Enviar pedido a WhatsApp como texto
-    </button>
-
-    <button type="button" onclick="copiarPedido()">
-        Copiar pedido
+        <span class="boton-flecha">›</span>
     </button>
 
 </div>

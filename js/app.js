@@ -744,7 +744,206 @@ function enviarPedidoWhatsApp() {
     window.open(url, "_blank");
 }
 
+/* =====================================================
+   ENVIAR PEDIDO EN PDF POR WHATSAPP
+===================================================== */
 
+async function enviarPedidoPDFWhatsApp() {
+
+    const items = Object.values(carrito);
+
+    if (items.length === 0) {
+        alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
+        return;
+    }
+
+    if (typeof html2pdf === "undefined") {
+        alert("No se pudo cargar el generador PDF. Revisa tu conexión e inténtalo nuevamente.");
+        return;
+    }
+
+    let total = 0;
+
+    const fecha = new Date().toLocaleDateString("es-SV");
+
+    const filas = items.map((producto, indice) => {
+
+        const cantidad = Math.max(
+            1,
+            parseInt(producto.cantidad, 10) || 1
+        );
+
+        const precio = Math.max(
+            0,
+            Number(producto.precio) || 0
+        );
+
+        const subtotal = cantidad * precio;
+
+        total += subtotal;
+
+        return `
+            <tr>
+                <td>${indice + 1}. ${escaparHTML(producto.nombre)}</td>
+                <td>${escaparHTML(producto.unidad || "Unidad")}</td>
+                <td>${cantidad}</td>
+                <td>$${precio.toFixed(2)}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+            </tr>
+        `;
+
+    }).join("");
+
+    const documento = document.createElement("div");
+
+    documento.style.cssText = `
+        position: fixed;
+        left: -10000px;
+        top: 0;
+        width: 750px;
+        padding: 30px;
+        background: white;
+        color: #334155;
+        font-family: Arial, sans-serif;
+    `;
+
+    documento.innerHTML = `
+        <h1 style="color:#3f8f25;text-align:center;">
+            DISTRIBUIDORA ÉXODO
+        </h1>
+
+        <h2 style="text-align:center;">
+            DETALLE DEL PEDIDO
+        </h2>
+
+        <p><strong>Fecha:</strong> ${fecha}</p>
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            font-size:13px;
+        ">
+            <thead>
+                <tr style="background:#3f8f25;color:white;">
+                    <th style="padding:10px;border:1px solid #ddd;">Producto</th>
+                    <th style="padding:10px;border:1px solid #ddd;">Unidad</th>
+                    <th style="padding:10px;border:1px solid #ddd;">Cantidad</th>
+                    <th style="padding:10px;border:1px solid #ddd;">Precio</th>
+                    <th style="padding:10px;border:1px solid #ddd;">Subtotal</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                ${filas}
+            </tbody>
+        </table>
+
+        <h2 style="text-align:right;color:#287c32;margin-top:25px;">
+            TOTAL: $${total.toFixed(2)}
+        </h2>
+
+        <p style="margin-top:20px;">
+            El costo de entrega se confirma por WhatsApp.
+        </p>
+
+        <p style="text-align:center;color:#64748b;">
+            Gracias por preferir Distribuidora Éxodo.
+        </p>
+    `;
+
+    document.body.appendChild(documento);
+
+    try {
+
+        const opciones = {
+            margin: 10,
+            filename: "Pedido-Distribuidora-Exodo.pdf",
+
+            image: {
+                type: "jpeg",
+                quality: 0.98
+            },
+
+            html2canvas: {
+                scale: 2,
+                useCORS: true
+            },
+
+            jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait"
+            }
+        };
+
+        const blob = await html2pdf()
+            .set(opciones)
+            .from(documento)
+            .outputPdf("blob");
+
+        const archivo = new File(
+            [blob],
+            "Pedido-Distribuidora-Exodo.pdf",
+            {
+                type: "application/pdf"
+            }
+        );
+
+        // Compartir directamente si el navegador lo permite.
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({ files: [archivo] })
+        ) {
+
+            await navigator.share({
+                files: [archivo],
+                title: "Pedido - Distribuidora Éxodo",
+                text: "Adjunto mi pedido en PDF."
+            });
+
+        } else {
+
+            // Alternativa para navegadores sin compartir archivos.
+            const url = URL.createObjectURL(blob);
+
+            const enlace = document.createElement("a");
+
+            enlace.href = url;
+            enlace.download = "Pedido-Distribuidora-Exodo.pdf";
+
+            document.body.appendChild(enlace);
+            enlace.click();
+            enlace.remove();
+
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+            alert(
+                "Tu pedido PDF se descargó correctamente. " +
+                "Ahora puedes adjuntarlo manualmente en WhatsApp."
+            );
+        }
+
+    } catch (error) {
+
+        if (error.name === "AbortError") {
+            return;
+        }
+
+        console.error("Error al generar o compartir el PDF:", error);
+
+        alert(
+            "No se pudo preparar el pedido PDF. " +
+            "Comprueba tu conexión e inténtalo nuevamente."
+        );
+
+    } finally {
+
+        documento.remove();
+
+    }
+}
 
 function limpiarCarrito() {
     if (Object.keys(carrito).length === 0) {
