@@ -2148,7 +2148,7 @@ header nav {
     body.pagina-carrito .tabla-carrito tbody tr {
         position: relative;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+       grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
         gap: 5px;
         width: 100%;
         padding: 9px 9px 7px;
@@ -2244,5 +2244,89 @@ header nav {
 
     body.pagina-carrito .tabla-carrito tbody td {
         font-size: 11px;
+    }
+}
+
+/* =====================================================
+   CORRECCIÓN DEFINITIVA DE CANTIDADES EN EL CARRITO
+   DISTRIBUIDORA ÉXODO
+===================================================== */
+
+@media (max-width: 760px) {
+
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(2),
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(3),
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(4) {
+        min-width: 0;
+        width: auto;
+        vertical-align: top;
+    }
+
+    /* Controles de cantidad */
+    body.pagina-carrito .contador-acciones {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 5px;
+        width: max-content;
+        max-width: 100%;
+        padding: 3px;
+        background: #f1f5f9;
+        border-radius: 8px;
+    }
+
+    /* Botón menos y botón más */
+    body.pagina-carrito .contador-acciones button {
+        display: inline-flex;
+        flex: 0 0 30px;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        min-height: 30px;
+        padding: 0;
+        margin: 0;
+        background: #fff;
+        color: #245b18;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 19px;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    /* Número de unidades */
+    body.pagina-carrito .contador-acciones .cantidad-seleccionada {
+        display: inline-block;
+        min-width: 20px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--dark);
+    }
+
+    /* Evitar que los precios se monten sobre los controles */
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(2),
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(3),
+    body.pagina-carrito .tabla-carrito tbody td:nth-child(4) {
+        overflow: visible;
+        overflow-wrap: normal;
+    }
+}
+
+@media (max-width: 380px) {
+
+    body.pagina-carrito .contador-acciones {
+        gap: 3px;
+    }
+
+    body.pagina-carrito .contador-acciones button {
+        flex-basis: 27px;
+        width: 27px;
+        min-width: 27px;
+        height: 27px;
+        min-height: 27px;
     }
 }
