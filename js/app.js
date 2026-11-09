@@ -671,11 +671,8 @@ function mostrarCarrito() {
 
   if (cantidadElemento) {
     cantidadElemento.textContent = String(
-      items.reduce(
-        (suma, producto) =>
-          suma + (parseInt(producto.cantidad, 10) || 0),
-        0
-      )
+      items.reduce((suma, producto) =>
+        suma + (parseInt(producto.cantidad, 10) || 0), 0)
     );
   }
 
@@ -687,10 +684,7 @@ function mostrarCarrito() {
         </td>
       </tr>`;
 
-    if (totalElemento) {
-      totalElemento.textContent = "$0.00";
-    }
-
+    if (totalElemento) totalElemento.textContent = "$0.00";
     return;
   }
 
@@ -704,7 +698,6 @@ function mostrarCarrito() {
 
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
-
     total += subtotal;
 
     return `
@@ -713,9 +706,27 @@ function mostrarCarrito() {
           <strong>${escaparHTML(producto.nombre)}</strong><br>
           <small>${escaparHTML(producto.unidad || "Unidad")}</small>
         </td>
+
         <td>$${precio.toFixed(2)}</td>
-        <td>${cantidad}</td>
+
+        <td>
+          <div class="contador-acciones">
+            <button type="button"
+              class="btn-cantidad-menos"
+              data-id="${escaparHTML(producto.id)}"
+              aria-label="Disminuir cantidad">−</button>
+
+            <span class="cantidad-seleccionada">${cantidad}</span>
+
+            <button type="button"
+              class="btn-cantidad-mas"
+              data-id="${escaparHTML(producto.id)}"
+              aria-label="Aumentar cantidad">+</button>
+          </div>
+        </td>
+
         <td>$${subtotal.toFixed(2)}</td>
+
         <td>
           <button type="button"
             class="btn-eliminar-producto"
@@ -726,6 +737,18 @@ function mostrarCarrito() {
       </tr>`;
   }).join("");
 
+  contenedor.querySelectorAll(".btn-cantidad-menos").forEach(boton => {
+    boton.addEventListener("click", () => {
+      cambiarCantidadCarrito(boton.dataset.id, -1);
+    });
+  });
+
+  contenedor.querySelectorAll(".btn-cantidad-mas").forEach(boton => {
+    boton.addEventListener("click", () => {
+      cambiarCantidadCarrito(boton.dataset.id, 1);
+    });
+  });
+
   contenedor.querySelectorAll(".btn-eliminar-producto").forEach(boton => {
     boton.addEventListener("click", () => {
       eliminarDelCarrito(boton.dataset.productoId);
@@ -735,6 +758,31 @@ function mostrarCarrito() {
   if (totalElemento) {
     totalElemento.textContent = `$${total.toFixed(2)}`;
   }
+}
+
+/* =====================================================
+   CAMBIAR CANTIDAD DESDE EL CARRITO
+===================================================== */
+
+function cambiarCantidadCarrito(id, cambio) {
+  const producto = carrito[String(id)];
+
+  if (!producto) return;
+
+  const cantidadActual = Math.max(
+    1,
+    parseInt(producto.cantidad, 10) || 1
+  );
+
+  const nuevaCantidad = cantidadActual + cambio;
+
+  // No permitir cantidades menores que 1.
+  if (nuevaCantidad < 1) return;
+
+  producto.cantidad = nuevaCantidad;
+
+  guardarCarrito();
+  mostrarCarrito();
 }
 
 function eliminarDelCarrito(id) {
