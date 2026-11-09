@@ -10,6 +10,7 @@
 </head>
 <body>
 
+  <!-- ENCABEZADO -->
   <header class="header">
     <div class="logo">
       <img src="img/logo.png" alt="Logo de Distribuidora Éxodo"
@@ -59,32 +60,16 @@
     </div>
   </section>
 
-  <!-- CATÁLOGO Y BUSCADOR GENERAL -->
-  <main class="productos-page" id="catalogo">
-
-    <h1>🛒 Nuestro catálogo de productos</h1>
-
-    <p class="descripcion">
-      Encuentra fácilmente los productos que necesitas.
-      Puedes buscar frutas, verduras, granos, lácteos,
-      carnes, harinas y productos extras.
-    </p>
-
-    <div class="buscador-contenedor">
-      <input
-        type="search"
-        id="input-busqueda"
-        placeholder="🔎 Buscar productos de todas las categorías..."
-        aria-label="Buscar productos de todas las categorías"
-        oninput="buscarProductosInicio()"
-      >
-    </div>
-
-    <div id="grid-busqueda" class="productos-grid">
-      <p class="estado-vacio">Cargando productos...</p>
-    </div>
-
-  </main>
+  <!-- BUSCADOR GENERAL -->
+  <section class="buscador-contenedor">
+    <input
+      type="search"
+      id="input-busqueda"
+      placeholder="🔎 Buscar un producto..."
+      aria-label="Buscar productos de todas las categorías"
+      oninput="buscarProductosInicio()"
+    >
+  </section>
 
   <!-- INFORMACIÓN DEL SERVICIO -->
   <section class="informacion-servicio" id="informacion">
@@ -129,6 +114,7 @@
         </p>
       </div>
 
+      <!-- CONTACTO -->
       <aside class="informacion-contacto" id="contacto">
         <h3>Contáctanos</h3>
 
@@ -172,6 +158,7 @@
     </div>
   </section>
 
+  <!-- PIE DE PÁGINA -->
   <footer>
     <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
   </footer>

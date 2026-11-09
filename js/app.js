@@ -362,17 +362,25 @@ function mostrarErrorCarga() {
   }
 }
 
+function obtenerContenedorResultadosInicio() {
+  let contenedor = document.getElementById("grid-busqueda");
+  if (contenedor) return contenedor;
+
+  const buscador = document.querySelector(".buscador-contenedor");
+  if (!buscador) return null;
+
+  contenedor = document.createElement("div");
+  contenedor.id = "grid-busqueda";
+  contenedor.className = "productos-grid";
+  contenedor.setAttribute("aria-live", "polite");
+  buscador.insertAdjacentElement("afterend", contenedor);
+  return contenedor;
+}
+
 async function inicializarPaginaInicio() {
+  // En el inicio no se muestran productos automáticamente.
+  // Los resultados se crean únicamente cuando el usuario busca.
   actualizarBadgeCarrito();
-
-  const grid = document.getElementById("grid-busqueda");
-  if (!grid) return;
-
-  grid.innerHTML = `
-    <div class="estado-vacio">Cargando productos...</div>`;
-
-  const productos = await obtenerTodosProductos();
-  renderizarTarjetas(productos, "grid-busqueda");
 }
 
 async function cargarCategoriaEspecifica(categoria) {
@@ -395,16 +403,44 @@ async function cargarCategoriaEspecifica(categoria) {
   renderizarTarjetas(filtrados, "grid-busqueda");
 }
 
-function buscarProductosInicio() {
+async function buscarProductosInicio() {
   const input = document.getElementById("input-busqueda");
   if (!input) return;
 
-  const texto = input.value.toLowerCase().trim();
+  const textoInicial = input.value.trim();
+  let contenedor = document.getElementById("grid-busqueda");
 
-  const filtrados = productosBusquedaCache.filter(producto =>
-    producto.nombre.toLowerCase().includes(texto) ||
-    producto.categoria.toLowerCase().includes(texto) ||
-    producto.descripcion.toLowerCase().includes(texto)
+  // Si el campo está vacío, quitar los resultados y dejar solo el buscador.
+  if (!textoInicial) {
+    contenedor?.remove();
+    return;
+  }
+
+  contenedor = obtenerContenedorResultadosInicio();
+  if (!contenedor) return;
+
+  contenedor.innerHTML = '<div class="estado-vacio">Buscando productos...</div>';
+
+  const productos = await obtenerTodosProductos();
+
+  // Si el usuario borró el texto mientras se cargaban los productos,
+  // no mostrar resultados.
+  const texto = input.value.trim().toLocaleLowerCase("es");
+  if (!texto) {
+    contenedor.remove();
+    return;
+  }
+
+  const normalizar = valor => String(valor || "")
+    .toLocaleLowerCase("es")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const termino = normalizar(texto);
+
+  const filtrados = productos.filter(producto =>
+    normalizar(producto.nombre).includes(termino) ||
+    normalizar(producto.categoria).includes(termino) ||
+    normalizar(producto.descripcion).includes(termino)
   );
 
   renderizarTarjetas(filtrados, "grid-busqueda");
@@ -1303,8 +1339,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (categoria) {
       cargarCategoriaEspecifica(categoria);
-    } else {
-      inicializarPaginaInicio();
     }
   }
 });
