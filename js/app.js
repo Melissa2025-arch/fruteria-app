@@ -69,8 +69,10 @@ function actualizarBadgeCarrito() {
   document.querySelectorAll("#cant-carrito-badge").forEach(badge => {
     badge.textContent = `(${totalItems})`;
   });
-    actualizarBurbujaCarrito();
+
+  actualizarBurbujaCarrito();
 }
+
 function toggleMenu() {
   const nav = document.getElementById("menu");
   const boton = document.querySelector(".menu-btn");
@@ -83,7 +85,8 @@ function toggleMenu() {
     boton.setAttribute("aria-expanded", String(abierto));
   }
 }
-  /* =====================================================
+
+/* =====================================================
    BURBUJA FLOTANTE DEL CARRITO
 ===================================================== */
 
@@ -133,7 +136,6 @@ function guardarPosicionBurbuja(x, y) {
 }
 
 function iniciarBurbujaCarrito() {
-  // La burbuja solo aparecerá en páginas que muestran productos.
   if (!document.getElementById("grid-busqueda")) return;
   if (document.getElementById("burbuja-carrito")) return;
 
@@ -279,6 +281,7 @@ function iniciarBurbujaCarrito() {
     aplicarPosicion(x, y, true);
   });
 }
+
 /* =====================================================
    PRODUCTOS Y SUPABASE
 ===================================================== */
@@ -287,6 +290,24 @@ function normalizarProducto(producto) {
   const categoriaOriginal = String(producto.categoria || "")
     .toLowerCase()
     .trim();
+
+  const imagenOriginal = String(producto.imagen || "").trim();
+
+  let imagenFinal = "img/logo.png";
+
+  if (imagenOriginal) {
+    if (
+      imagenOriginal.startsWith("http://") ||
+      imagenOriginal.startsWith("https://") ||
+      imagenOriginal.startsWith("img/") ||
+      imagenOriginal.startsWith("/") ||
+      imagenOriginal.startsWith("data:")
+    ) {
+      imagenFinal = imagenOriginal;
+    } else {
+      imagenFinal = `img/${imagenOriginal}`;
+    }
+  }
 
   return {
     ...producto,
@@ -297,7 +318,7 @@ function normalizarProducto(producto) {
       : categoriaOriginal,
     unidad: producto.unidad || "Unidad",
     precio: Number(producto.precio) || 0,
-    imagen: producto.imagen || "img/logo.png",
+    imagen: imagenFinal,
     descripcion: producto.descripcion || ""
   };
 }
@@ -373,13 +394,13 @@ function obtenerContenedorResultadosInicio() {
   contenedor.id = "grid-busqueda";
   contenedor.className = "productos-grid";
   contenedor.setAttribute("aria-live", "polite");
+
   buscador.insertAdjacentElement("afterend", contenedor);
+
   return contenedor;
 }
 
 async function inicializarPaginaInicio() {
-  // En el inicio no se muestran productos automáticamente.
-  // Los resultados se crean únicamente cuando el usuario busca.
   actualizarBadgeCarrito();
 }
 
@@ -410,7 +431,6 @@ async function buscarProductosInicio() {
   const textoInicial = input.value.trim();
   let contenedor = document.getElementById("grid-busqueda");
 
-  // Si el campo está vacío, quitar los resultados y dejar solo el buscador.
   if (!textoInicial) {
     contenedor?.remove();
     return;
@@ -419,13 +439,13 @@ async function buscarProductosInicio() {
   contenedor = obtenerContenedorResultadosInicio();
   if (!contenedor) return;
 
-  contenedor.innerHTML = '<div class="estado-vacio">Buscando productos...</div>';
+  contenedor.innerHTML = `
+    <div class="estado-vacio">Buscando productos...</div>`;
 
   const productos = await obtenerTodosProductos();
 
-  // Si el usuario borró el texto mientras se cargaban los productos,
-  // no mostrar resultados.
   const texto = input.value.trim().toLocaleLowerCase("es");
+
   if (!texto) {
     contenedor.remove();
     return;
@@ -435,6 +455,7 @@ async function buscarProductosInicio() {
     .toLocaleLowerCase("es")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+
   const termino = normalizar(texto);
 
   const filtrados = productos.filter(producto =>
@@ -450,14 +471,14 @@ function buscarProductosCategoria(categoria) {
   const input = document.getElementById("input-busqueda");
   if (!input) return;
 
-  const texto = input.value.toLowerCase().trim();
+  const texto = input.value.toLocaleLowerCase("es").trim();
   const cat = String(categoria || "").toLowerCase().trim();
 
   const filtrados = productosBusquedaCache.filter(producto =>
     producto.categoria === cat &&
     (
-      producto.nombre.toLowerCase().includes(texto) ||
-      producto.descripcion.toLowerCase().includes(texto)
+      producto.nombre.toLocaleLowerCase("es").includes(texto) ||
+      producto.descripcion.toLocaleLowerCase("es").includes(texto)
     )
   );
 
@@ -583,7 +604,10 @@ function cambiarCantCard(tarjetaOId, delta) {
   if (!contador) return;
 
   const actual = parseInt(contador.textContent, 10) || 1;
-  contador.textContent = String(Math.max(1, actual + Number(delta || 0)));
+
+  contador.textContent = String(
+    Math.max(1, actual + Number(delta || 0))
+  );
 }
 
 function agregarAlCarrito(id, tarjeta) {
@@ -597,6 +621,7 @@ function agregarAlCarrito(id, tarjeta) {
   }
 
   const contador = tarjeta?.querySelector(".cantidad-seleccionada");
+
   const cantidad = Math.max(
     1,
     parseInt(contador?.textContent || "1", 10) || 1
@@ -617,6 +642,7 @@ function agregarAlCarrito(id, tarjeta) {
 
   if (boton) {
     const textoOriginal = boton.textContent;
+
     boton.textContent = "✓ Agregado";
     boton.disabled = true;
 
@@ -628,7 +654,6 @@ function agregarAlCarrito(id, tarjeta) {
     }, 900);
   }
 }
-
 /* =====================================================
    MOSTRAR Y ADMINISTRAR CARRITO
 ===================================================== */
@@ -646,8 +671,11 @@ function mostrarCarrito() {
 
   if (cantidadElemento) {
     cantidadElemento.textContent = String(
-      items.reduce((suma, producto) =>
-        suma + (parseInt(producto.cantidad, 10) || 0), 0)
+      items.reduce(
+        (suma, producto) =>
+          suma + (parseInt(producto.cantidad, 10) || 0),
+        0
+      )
     );
   }
 
@@ -659,7 +687,10 @@ function mostrarCarrito() {
         </td>
       </tr>`;
 
-    if (totalElemento) totalElemento.textContent = "$0.00";
+    if (totalElemento) {
+      totalElemento.textContent = "$0.00";
+    }
+
     return;
   }
 
@@ -673,6 +704,7 @@ function mostrarCarrito() {
 
     const precio = Math.max(0, Number(producto.precio) || 0);
     const subtotal = precio * cantidad;
+
     total += subtotal;
 
     return `
@@ -705,7 +737,6 @@ function mostrarCarrito() {
   }
 }
 
-
 function eliminarDelCarrito(id) {
   const producto = carrito[String(id)];
 
@@ -715,7 +746,6 @@ function eliminarDelCarrito(id) {
     `¿Estás seguro de que deseas eliminar "${producto.nombre}" del carrito?`
   );
 
-  // Si el usuario cancela, no se elimina el producto.
   if (!confirmar) return;
 
   delete carrito[String(id)];
@@ -730,308 +760,302 @@ function eliminarDelCarrito(id) {
   }
 }
 
+function limpiarCarrito() {
+  if (Object.keys(carrito).length === 0) {
+    alert("El carrito ya está vacío.");
+    return;
+  }
+
+  const confirmar = confirm(
+    "¿Estás seguro de que deseas eliminar todos los productos del carrito?"
+  );
+
+  if (!confirmar) return;
+
+  carrito = {};
+
+  guardarCarrito();
+  mostrarCarrito();
+
+  const estado = document.getElementById("mensaje-carrito");
+
+  if (estado) {
+    estado.textContent =
+      "Carrito limpiado. Ya puedes comenzar un nuevo pedido.";
+  }
+}
 
 /* =====================================================
    PEDIDO POR WHATSAPP
 ===================================================== */
 
 function construirTextoPedido() {
-    const items = Object.values(carrito);
+  const items = Object.values(carrito);
 
-    if (items.length === 0) return null;
+  if (items.length === 0) return null;
 
-    let total = 0;
+  let total = 0;
 
-    const fecha = new Date().toLocaleDateString("es-SV");
+  const fecha = new Date().toLocaleDateString("es-SV");
 
-    const lineas = [
-        "DISTRIBUIDORA ÉXODO",
-        "RESUMEN DEL PEDIDO",
-        `Fecha: ${fecha}`,
-        "",
-        "Hola, deseo realizar el siguiente pedido:",
-        ""
-    ];
+  const lineas = [
+    "DISTRIBUIDORA ÉXODO",
+    "RESUMEN DEL PEDIDO",
+    `Fecha: ${fecha}`,
+    "",
+    "Hola, deseo realizar el siguiente pedido:",
+    ""
+  ];
 
-    items.forEach((producto, indice) => {
-        const cantidad = Math.max(
-            1,
-            parseInt(producto.cantidad, 10) || 1
-        );
-
-        const precio = Math.max(
-            0,
-            Number(producto.precio) || 0
-        );
-
-        const subtotal = precio * cantidad;
-        total += subtotal;
-
-        lineas.push(
-            `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"})`,
-            `   Cantidad: ${cantidad}`,
-            `   Precio unitario: $${precio.toFixed(2)}`,
-            `   Subtotal: $${subtotal.toFixed(2)}`,
-            ""
-        );
-    });
-
-    lineas.push(
-        "--------------------------------",
-        `TOTAL DE PRODUCTOS: $${total.toFixed(2)}`,
-        "",
-        "El costo de entrega está pendiente de confirmación.",
-        "Quedo a la espera de la confirmación del pedido."
+  items.forEach((producto, indice) => {
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
     );
 
-    return lineas.join("\n");
+    const precio = Math.max(
+      0,
+      Number(producto.precio) || 0
+    );
+
+    const subtotal = precio * cantidad;
+
+    total += subtotal;
+
+    lineas.push(
+      `${indice + 1}. ${producto.nombre} (${producto.unidad || "Unidad"})`,
+      `   Cantidad: ${cantidad}`,
+      `   Precio unitario: $${precio.toFixed(2)}`,
+      `   Subtotal: $${subtotal.toFixed(2)}`,
+      ""
+    );
+  });
+
+  lineas.push(
+    "--------------------------------",
+    `TOTAL DE PRODUCTOS: $${total.toFixed(2)}`,
+    "",
+    "El costo de entrega está pendiente de confirmación.",
+    "Quedo a la espera de la confirmación del pedido."
+  );
+
+  return lineas.join("\n");
 }
 
-
 function enviarPedidoWhatsApp() {
-    const mensaje = construirTextoPedido();
+  const mensaje = construirTextoPedido();
 
-    if (!mensaje) {
-        alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
-        return;
-    }
+  if (!mensaje) {
+    alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
+    return;
+  }
 
-    const url = `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, "_blank");
+  const url =
+    `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(url, "_blank");
 }
 
 /* =====================================================
    ENVIAR PEDIDO EN PDF POR WHATSAPP
 ===================================================== */
 
-
 async function enviarPedidoPDFWhatsApp() {
-    const items = Object.values(carrito);
+  const items = Object.values(carrito);
 
-    if (items.length === 0) {
-        alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
-        return;
+  if (items.length === 0) {
+    alert("Tu carrito está vacío. Agrega productos antes de enviar el pedido.");
+    return;
+  }
+
+  if (typeof html2pdf === "undefined") {
+    alert("No se pudo cargar el generador PDF. Revisa tu conexión e inténtalo nuevamente.");
+    return;
+  }
+
+  let documento = null;
+  let urlTemporal = null;
+
+  function descargarPDF(blob) {
+    urlTemporal = URL.createObjectURL(blob);
+
+    const enlace = document.createElement("a");
+
+    enlace.href = urlTemporal;
+    enlace.download = "Pedido-Distribuidora-Exodo.pdf";
+
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+
+    setTimeout(() => {
+      if (urlTemporal) {
+        URL.revokeObjectURL(urlTemporal);
+        urlTemporal = null;
+      }
+    }, 60000);
+  }
+
+  try {
+    let total = 0;
+
+    const fecha = new Date().toLocaleDateString("es-SV");
+
+    const filas = items.map((producto, indice) => {
+      const cantidad = Math.max(
+        1,
+        parseInt(producto.cantidad, 10) || 1
+      );
+
+      const precio = Math.max(
+        0,
+        Number(producto.precio) || 0
+      );
+
+      const subtotal = cantidad * precio;
+
+      total += subtotal;
+
+      return `
+        <tr>
+          <td>${indice + 1}. ${escaparHTML(producto.nombre)}</td>
+          <td>${escaparHTML(producto.unidad || "Unidad")}</td>
+          <td>${cantidad}</td>
+          <td>$${precio.toFixed(2)}</td>
+          <td>$${subtotal.toFixed(2)}</td>
+        </tr>`;
+    }).join("");
+
+    documento = document.createElement("div");
+
+    documento.style.cssText = `
+      position: fixed;
+      left: -10000px;
+      top: 0;
+      width: 750px;
+      padding: 30px;
+      background: white;
+      color: #334155;
+      font-family: Arial, sans-serif;
+    `;
+
+    documento.innerHTML = `
+      <h1 style="color:#3f8f25;text-align:center;">
+        DISTRIBUIDORA ÉXODO
+      </h1>
+
+      <h2 style="text-align:center;">DETALLE DEL PEDIDO</h2>
+
+      <p><strong>Fecha:</strong> ${fecha}</p>
+
+      <table style="width:100%;border-collapse:collapse;margin-top:20px;font-size:13px;">
+        <thead>
+          <tr style="background:#3f8f25;color:white;">
+            <th style="padding:10px;border:1px solid #ddd;">Producto</th>
+            <th style="padding:10px;border:1px solid #ddd;">Unidad</th>
+            <th style="padding:10px;border:1px solid #ddd;">Cantidad</th>
+            <th style="padding:10px;border:1px solid #ddd;">Precio</th>
+            <th style="padding:10px;border:1px solid #ddd;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>${filas}</tbody>
+      </table>
+
+      <h2 style="text-align:right;color:#287c32;margin-top:25px;">
+        TOTAL: $${total.toFixed(2)}
+      </h2>
+
+      <p style="margin-top:20px;">
+        El costo de entrega se confirma por WhatsApp.
+      </p>
+
+      <p style="text-align:center;color:#64748b;">
+        Gracias por preferir Distribuidora Éxodo.
+      </p>
+    `;
+
+    document.body.appendChild(documento);
+
+    const opciones = {
+      margin: 10,
+      filename: "Pedido-Distribuidora-Exodo.pdf",
+      image: {
+        type: "jpeg",
+        quality: 0.98
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
+      }
+    };
+
+    const blob = await html2pdf()
+      .set(opciones)
+      .from(documento)
+      .outputPdf("blob");
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error("El PDF generado está vacío.");
     }
 
-    if (typeof html2pdf === "undefined") {
-        alert("No se pudo cargar el generador PDF. Revisa tu conexión e inténtalo nuevamente.");
-        return;
-    }
-
-    let documento = null;
-    let urlTemporal = null;
-
-    // Alternativa: guardar el PDF en el dispositivo.
-    function descargarPDF(blob) {
-        urlTemporal = URL.createObjectURL(blob);
-
-        const enlace = document.createElement("a");
-        enlace.href = urlTemporal;
-        enlace.download = "Pedido-Distribuidora-Exodo.pdf";
-
-        document.body.appendChild(enlace);
-        enlace.click();
-        enlace.remove();
-
-        setTimeout(() => {
-            if (urlTemporal) {
-                URL.revokeObjectURL(urlTemporal);
-                urlTemporal = null;
-            }
-        }, 60000);
-    }
-
-    try {
-        let total = 0;
-        const fecha = new Date().toLocaleDateString("es-SV");
-
-        const filas = items.map((producto, indice) => {
-            const cantidad = Math.max(
-                1,
-                parseInt(producto.cantidad, 10) || 1
-            );
-
-            const precio = Math.max(
-                0,
-                Number(producto.precio) || 0
-            );
-
-            const subtotal = cantidad * precio;
-            total += subtotal;
-
-            return `
-                <tr>
-                    <td>${indice + 1}. ${escaparHTML(producto.nombre)}</td>
-                    <td>${escaparHTML(producto.unidad || "Unidad")}</td>
-                    <td>${cantidad}</td>
-                    <td>$${precio.toFixed(2)}</td>
-                    <td>$${subtotal.toFixed(2)}</td>
-                </tr>
-            `;
-        }).join("");
-
-        documento = document.createElement("div");
-
-        documento.style.cssText = `
-            position: fixed;
-            left: -10000px;
-            top: 0;
-            width: 750px;
-            padding: 30px;
-            background: white;
-            color: #334155;
-            font-family: Arial, sans-serif;
-        `;
-
-        documento.innerHTML = `
-            <h1 style="color:#3f8f25;text-align:center;">
-                DISTRIBUIDORA ÉXODO
-            </h1>
-
-            <h2 style="text-align:center;">DETALLE DEL PEDIDO</h2>
-
-            <p><strong>Fecha:</strong> ${fecha}</p>
-
-            <table style="width:100%;border-collapse:collapse;margin-top:20px;font-size:13px;">
-                <thead>
-                    <tr style="background:#3f8f25;color:white;">
-                        <th style="padding:10px;border:1px solid #ddd;">Producto</th>
-                        <th style="padding:10px;border:1px solid #ddd;">Unidad</th>
-                        <th style="padding:10px;border:1px solid #ddd;">Cantidad</th>
-                        <th style="padding:10px;border:1px solid #ddd;">Precio</th>
-                        <th style="padding:10px;border:1px solid #ddd;">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>${filas}</tbody>
-            </table>
-
-            <h2 style="text-align:right;color:#287c32;margin-top:25px;">
-                TOTAL: $${total.toFixed(2)}
-            </h2>
-
-            <p style="margin-top:20px;">
-                El costo de entrega se confirma por WhatsApp.
-            </p>
-
-            <p style="text-align:center;color:#64748b;">
-                Gracias por preferir Distribuidora Éxodo.
-            </p>
-        `;
-
-        document.body.appendChild(documento);
-
-        const opciones = {
-            margin: 10,
-            filename: "Pedido-Distribuidora-Exodo.pdf",
-            image: {
-                type: "jpeg",
-                quality: 0.98
-            },
-            html2canvas: {
-                scale: 2,
-                useCORS: true
-            },
-            jsPDF: {
-                unit: "mm",
-                format: "a4",
-                orientation: "portrait"
-            }
-        };
-
-        const blob = await html2pdf()
-            .set(opciones)
-            .from(documento)
-            .outputPdf("blob");
-
-        if (!(blob instanceof Blob) || blob.size === 0) {
-            throw new Error("El PDF generado está vacío.");
-        }
-
-        const archivo = new File(
-            [blob],
-            "Pedido-Distribuidora-Exodo.pdf",
-            { type: "application/pdf" }
-        );
-
-        // Intentar compartir el PDF directamente.
-        const permiteCompartir =
-            typeof navigator.share === "function" &&
-            typeof navigator.canShare === "function" &&
-            navigator.canShare({ files: [archivo] });
-
-        if (permiteCompartir) {
-            try {
-                await navigator.share({
-                    files: [archivo],
-                    title: "Pedido - Distribuidora Éxodo",
-                    text: "Adjunto mi pedido en PDF."
-                });
-
-                return;
-
-            } catch (errorCompartir) {
-                // Si el usuario cancela, no descargar el archivo.
-                if (errorCompartir.name === "AbortError") {
-                    return;
-                }
-
-                console.warn(
-                    "No se pudo compartir el PDF. Se intentará descargar.",
-                    errorCompartir
-                );
-            }
-        }
-
-        // Si el dispositivo no permite compartir o ocurre un error,
-        // ofrecer la descarga como alternativa.
-        descargarPDF(blob);
-
-        alert(
-            "El PDF está preparado. Si no se abre automáticamente, " +
-            "revisa las descargas de tu dispositivo y adjúntalo en WhatsApp."
-        );
-
-    } catch (error) {
-        console.error("Error al generar o compartir el PDF:", error);
-
-        alert(
-            "No se pudo preparar el pedido PDF. " +
-            "Comprueba tu conexión e inténtalo nuevamente."
-        );
-
-    } finally {
-        if (documento) {
-            documento.remove();
-        }
-    }
-}
-
-
-function limpiarCarrito() {
-    if (Object.keys(carrito).length === 0) {
-        alert("El carrito ya está vacío.");
-        return;
-    }
-
-    const confirmar = confirm(
-        "¿Estás seguro de que deseas eliminar todos los productos del carrito?"
+    const archivo = new File(
+      [blob],
+      "Pedido-Distribuidora-Exodo.pdf",
+      { type: "application/pdf" }
     );
 
-    if (!confirmar) return;
+    const permiteCompartir =
+      typeof navigator.share === "function" &&
+      typeof navigator.canShare === "function" &&
+      navigator.canShare({ files: [archivo] });
 
-    carrito = {};
-    guardarCarrito();
-    mostrarCarrito();
+    if (permiteCompartir) {
+      try {
+        await navigator.share({
+          files: [archivo],
+          title: "Pedido - Distribuidora Éxodo",
+          text: "Adjunto mi pedido en PDF."
+        });
 
-    const estado = document.getElementById("mensaje-carrito");
+        return;
+      } catch (errorCompartir) {
+        if (errorCompartir.name === "AbortError") {
+          return;
+        }
 
-    if (estado) {
-        estado.textContent =
-            "Carrito limpiado. Ya puedes comenzar un nuevo pedido.";
+        console.warn(
+          "No se pudo compartir el PDF. Se intentará descargar.",
+          errorCompartir
+        );
+      }
     }
+
+    descargarPDF(blob);
+
+    alert(
+      "El PDF está preparado. Si no se abre automáticamente, " +
+      "revisa las descargas de tu dispositivo y adjúntalo en WhatsApp."
+    );
+
+  } catch (error) {
+    console.error("Error al generar o compartir el PDF:", error);
+
+    alert(
+      "No se pudo preparar el pedido PDF. " +
+      "Comprueba tu conexión e inténtalo nuevamente."
+    );
+
+  } finally {
+    if (documento) {
+      documento.remove();
+    }
+  }
 }
-
-
 /* =====================================================
    WORD: GENERAR Y COMPARTIR HOJA DE PEDIDO
 ===================================================== */
@@ -1050,11 +1074,21 @@ async function crearBlobWord() {
   }
 
   const {
-    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-    AlignmentType, WidthType, BorderStyle, ShadingType
+    Document,
+    Packer,
+    Paragraph,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    AlignmentType,
+    WidthType,
+    BorderStyle,
+    ShadingType
   } = window.docx;
 
   const fechaTexto = new Date().toLocaleDateString("es-SV");
+
   const bordes = {
     top: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
     bottom: { style: BorderStyle.SINGLE, size: 1, color: "D8E2D5" },
@@ -1066,32 +1100,61 @@ async function crearBlobWord() {
 
   const parrafo = (texto, opciones = {}) => new Paragraph({
     alignment: opciones.alignment,
-    spacing: { before: 0, after: opciones.after ?? 30, line: 220 },
-    children: [new TextRun({
-      text: String(texto),
-      bold: Boolean(opciones.bold),
-      size: opciones.size ?? 18,
-      color: opciones.color ?? "26372B",
-      font: "Arial"
-    })]
+    spacing: {
+      before: 0,
+      after: opciones.after ?? 30,
+      line: 220
+    },
+    children: [
+      new TextRun({
+        text: String(texto),
+        bold: Boolean(opciones.bold),
+        size: opciones.size ?? 18,
+        color: opciones.color ?? "26372B",
+        font: "Arial"
+      })
+    ]
   });
 
   const celda = (texto, opciones = {}) => new TableCell({
-    width: { size: opciones.width ?? 2726, type: WidthType.DXA },
-    margins: { top: 45, bottom: 45, left: 65, right: 65 },
+    width: {
+      size: opciones.width ?? 2726,
+      type: WidthType.DXA
+    },
+    margins: {
+      top: 45,
+      bottom: 45,
+      left: 65,
+      right: 65
+    },
     borders: bordes,
-    ...(opciones.encabezado ? { shading: { fill: "3F8F25", type: ShadingType.CLEAR } } : {}),
-    children: [new Paragraph({
-      alignment: opciones.alignment ?? AlignmentType.LEFT,
-      spacing: { before: 0, after: 0, line: 200 },
-      children: [new TextRun({
-        text: String(texto),
-        bold: Boolean(opciones.encabezado || opciones.bold),
-        size: opciones.encabezado ? 16 : 16,
-        color: opciones.encabezado ? "FFFFFF" : "26372B",
-        font: "Arial"
-      })]
-    })]
+    ...(opciones.encabezado
+      ? {
+          shading: {
+            fill: "3F8F25",
+            type: ShadingType.CLEAR
+          }
+        }
+      : {}),
+    children: [
+      new Paragraph({
+        alignment: opciones.alignment ?? AlignmentType.LEFT,
+        spacing: {
+          before: 0,
+          after: 0,
+          line: 200
+        },
+        children: [
+          new TextRun({
+            text: String(texto),
+            bold: Boolean(opciones.encabezado || opciones.bold),
+            size: 16,
+            color: opciones.encabezado ? "FFFFFF" : "26372B",
+            font: "Arial"
+          })
+        ]
+      })
+    ]
   });
 
   const filas = [
@@ -1099,33 +1162,76 @@ async function crearBlobWord() {
       tableHeader: true,
       cantSplit: true,
       children: [
-        celda("Producto", { encabezado: true, width: 4700 }),
-        celda("Precio", { encabezado: true, width: 1800, alignment: AlignmentType.RIGHT }),
-        celda("Cant.", { encabezado: true, width: 1400, alignment: AlignmentType.CENTER }),
-        celda("Subtotal", { encabezado: true, width: 3006, alignment: AlignmentType.RIGHT })
+        celda("Producto", {
+          encabezado: true,
+          width: 4700
+        }),
+        celda("Precio", {
+          encabezado: true,
+          width: 1800,
+          alignment: AlignmentType.RIGHT
+        }),
+        celda("Cant.", {
+          encabezado: true,
+          width: 1400,
+          alignment: AlignmentType.CENTER
+        }),
+        celda("Subtotal", {
+          encabezado: true,
+          width: 3006,
+          alignment: AlignmentType.RIGHT
+        })
       ]
     })
   ];
 
   let total = 0;
+
   items.forEach(producto => {
-    const cantidad = Math.max(1, parseInt(producto.cantidad, 10) || 1);
-    const precio = Math.max(0, Number(producto.precio) || 0);
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
+    );
+
+    const precio = Math.max(
+      0,
+      Number(producto.precio) || 0
+    );
+
     const subtotal = precio * cantidad;
+
     total += subtotal;
-    filas.push(new TableRow({
-      cantSplit: true,
-      children: [
-        celda(`${producto.nombre || "Producto"} (${producto.unidad || "Unidad"})`, { width: 4700 }),
-        celda(`$${precio.toFixed(2)}`, { width: 1800, alignment: AlignmentType.RIGHT }),
-        celda(String(cantidad), { width: 1400, alignment: AlignmentType.CENTER }),
-        celda(`$${subtotal.toFixed(2)}`, { width: 3006, alignment: AlignmentType.RIGHT })
-      ]
-    }));
+
+    filas.push(
+      new TableRow({
+        cantSplit: true,
+        children: [
+          celda(
+            `${producto.nombre || "Producto"} (${producto.unidad || "Unidad"})`,
+            { width: 4700 }
+          ),
+          celda(`$${precio.toFixed(2)}`, {
+            width: 1800,
+            alignment: AlignmentType.RIGHT
+          }),
+          celda(String(cantidad), {
+            width: 1400,
+            alignment: AlignmentType.CENTER
+          }),
+          celda(`$${subtotal.toFixed(2)}`, {
+            width: 3006,
+            alignment: AlignmentType.RIGHT
+          })
+        ]
+      })
+    );
   });
 
   const tabla = new Table({
-    width: { size: 10906, type: WidthType.DXA },
+    width: {
+      size: 10906,
+      type: WidthType.DXA
+    },
     columnWidths: [4700, 1800, 1400, 3006],
     borders: bordes,
     rows: filas
@@ -1135,26 +1241,71 @@ async function crearBlobWord() {
     creator: "Distribuidora Éxodo",
     title: "Hoja de pedido - Distribuidora Éxodo",
     description: "Detalle de los productos del pedido",
-    sections: [{
-      properties: {
-        page: {
-          size: { width: 11906, height: 16838 },
-          margin: { top: 500, right: 500, bottom: 500, left: 500 }
-        }
-      },
-      children: [
-        parrafo("DISTRIBUIDORA ÉXODO", { bold: true, size: 28, color: "3F8F25", after: 45 }),
-        parrafo("HOJA DE PEDIDO", { bold: true, size: 24, after: 35 }),
-        parrafo("Fecha del pedido: " + fechaTexto, { size: 18, after: 100 }),
-        tabla,
-        new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          spacing: { before: 100, after: 40 },
-          children: [new TextRun({ text: `TOTAL DEL PEDIDO: $${total.toFixed(2)}`, bold: true, size: 22, color: "32751E", font: "Arial" })]
-        }),
-        parrafo("Gracias por preferir Distribuidora Éxodo. Calidad y frescura para tu hogar.", { size: 16, color: "64748B", after: 0 })
-      ]
-    }]
+    sections: [
+      {
+        properties: {
+          page: {
+            size: {
+              width: 11906,
+              height: 16838
+            },
+            margin: {
+              top: 500,
+              right: 500,
+              bottom: 500,
+              left: 500
+            }
+          }
+        },
+        children: [
+          parrafo("DISTRIBUIDORA ÉXODO", {
+            bold: true,
+            size: 28,
+            color: "3F8F25",
+            after: 45
+          }),
+
+          parrafo("HOJA DE PEDIDO", {
+            bold: true,
+            size: 24,
+            after: 35
+          }),
+
+          parrafo("Fecha del pedido: " + fechaTexto, {
+            size: 18,
+            after: 100
+          }),
+
+          tabla,
+
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            spacing: {
+              before: 100,
+              after: 40
+            },
+            children: [
+              new TextRun({
+                text: `TOTAL DEL PEDIDO: $${total.toFixed(2)}`,
+                bold: true,
+                size: 22,
+                color: "32751E",
+                font: "Arial"
+              })
+            ]
+          }),
+
+          parrafo(
+            "Gracias por preferir Distribuidora Éxodo. Calidad y frescura para tu hogar.",
+            {
+              size: 16,
+              color: "64748B",
+              after: 0
+            }
+          )
+        ]
+      }
+    ]
   });
 
   return Packer.toBlob(documento);
@@ -1166,143 +1317,158 @@ function descargarBlobWord(blob) {
   }
 
   const url = URL.createObjectURL(blob);
+
   const enlace = document.createElement("a");
+
   enlace.href = url;
-  enlace.download = `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.docx`;
+  enlace.download =
+    `Pedido-Distribuidora-Exodo-${new Date().toISOString().slice(0, 10)}.docx`;
+
   document.body.appendChild(enlace);
   enlace.click();
   enlace.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-}
 
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 60000);
+}
 
 async function compartirWordWhatsApp() {
-    try {
-        const blob = await crearBlobWord();
+  try {
+    const blob = await crearBlobWord();
 
-        if (!blob) return;
+    if (!blob) return;
 
-        const fecha = new Date().toLocaleDateString("en-CA");
-        const nombreArchivo =
-            `Pedido-Distribuidora-Exodo-${fecha}.docx`;
+    const fecha = new Date().toLocaleDateString("en-CA");
 
-        const archivo = new File(
-            [blob],
-            nombreArchivo,
-            {
-                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            }
-        );
+    const nombreArchivo =
+      `Pedido-Distribuidora-Exodo-${fecha}.docx`;
 
-        // Intentar compartir el archivo Word desde el teléfono.
-        if (
-            typeof navigator.share === "function" &&
-            typeof navigator.canShare === "function" &&
-            navigator.canShare({ files: [archivo] })
-        ) {
-            try {
-                await navigator.share({
-                    files: [archivo],
-                    title: "Pedido - Distribuidora Éxodo",
-                    text: "Adjunto mi hoja de pedido en Word."
-                });
+    const archivo = new File(
+      [blob],
+      nombreArchivo,
+      {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      }
+    );
 
-                return;
-            } catch (errorCompartir) {
-                // Si el usuario cancela, no descargar otro archivo.
-                if (errorCompartir.name === "AbortError") return;
+    if (
+      typeof navigator.share === "function" &&
+      typeof navigator.canShare === "function" &&
+      navigator.canShare({ files: [archivo] })
+    ) {
+      try {
+        await navigator.share({
+          files: [archivo],
+          title: "Pedido - Distribuidora Éxodo",
+          text: "Adjunto mi hoja de pedido en Word."
+        });
 
-                console.warn(
-                    "No se pudo compartir directamente:",
-                    errorCompartir
-                );
-            }
-        }
-
-      // No descargar automáticamente si el navegador no permite compartir.
-alert(
-    "No se pudo compartir el Word directamente. " +
-    "Prueba desde Google Chrome en tu teléfono."
-);
-
-    } catch (error) {
-        console.error("Error al generar el pedido Word:", error);
-
-        alert(
-            "No se pudo generar el documento Word. " +
-            "Comprueba tu conexión e inténtalo nuevamente."
-        );
-    }
-}
-
-
-/* OPCIÓN 1: ENVIAR DOCUMENTO WORD POR WHATSAPP */
-// Conserva la función compartirWordWhatsApp() que ya tienes.
-// Esta función genera el archivo y permite compartirlo como adjunto.
-
-/* OPCIÓN 2: DESCARGAR DOCUMENTO WORD */
-async function descargarPedidoWord() {
-    try {
-        const blob = await crearBlobWord();
-
-        if (!blob) return;
-
-        descargarBlobWord(blob);
-
-        const estado = document.getElementById("mensaje-carrito");
-        if (estado) {
-            estado.textContent = "Tu documento Word se está descargando.";
-        }
-    } catch (error) {
-        console.error("Error al descargar el pedido Word:", error);
-        alert("No se pudo descargar el documento Word. Inténtalo de nuevo.");
-    }
-}
-
-/* OPCIÓN 3: COPIAR RESUMEN Y PEGARLO EN WHATSAPP */
-async function copiarPedido() {
-    const mensaje = construirTextoPedido();
-
-    if (!mensaje) {
-        alert("Tu carrito está vacío. Agrega productos antes de copiar el pedido.");
         return;
+
+      } catch (errorCompartir) {
+        if (errorCompartir.name === "AbortError") return;
+
+        console.warn(
+          "No se pudo compartir directamente:",
+          errorCompartir
+        );
+      }
     }
 
-    try {
-        if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(mensaje);
-        } else {
-            const area = document.createElement("textarea");
-            area.value = mensaje;
-            area.setAttribute("readonly", "");
-            area.style.position = "fixed";
-            area.style.left = "-9999px";
+    alert(
+      "No se pudo compartir el Word directamente. " +
+      "Prueba desde Google Chrome en tu teléfono."
+    );
 
-            document.body.appendChild(area);
-            area.select();
+  } catch (error) {
+    console.error("Error al generar el pedido Word:", error);
 
-            const copiado = document.execCommand("copy");
-            area.remove();
-
-            if (!copiado) {
-                throw new Error("No se pudo copiar el pedido.");
-            }
-        }
-
-        const estado = document.getElementById("mensaje-carrito");
-
-        if (estado) {
-            estado.textContent =
-                "¡Pedido copiado! Abre WhatsApp y pega el texto en el chat.";
-        } else {
-            alert("¡Pedido copiado! Ya puedes pegarlo en WhatsApp.");
-        }
-    } catch (error) {
-        console.error("Error al copiar el pedido:", error);
-        alert("No se pudo copiar automáticamente. Inténtalo de nuevo.");
-    }
+    alert(
+      "No se pudo generar el documento Word. " +
+      "Comprueba tu conexión e inténtalo nuevamente."
+    );
+  }
 }
 
+/* =====================================================
+   DESCARGAR DOCUMENTO WORD
+===================================================== */
+
+async function descargarPedidoWord() {
+  try {
+    const blob = await crearBlobWord();
+
+    if (!blob) return;
+
+    descargarBlobWord(blob);
+
+    const estado = document.getElementById("mensaje-carrito");
+
+    if (estado) {
+      estado.textContent = "Tu documento Word se está descargando.";
+    }
+
+  } catch (error) {
+    console.error("Error al descargar el pedido Word:", error);
+
+    alert(
+      "No se pudo descargar el documento Word. Inténtalo de nuevo."
+    );
+  }
+}
+
+/* =====================================================
+   COPIAR RESUMEN DEL PEDIDO
+===================================================== */
+
+async function copiarPedido() {
+  const mensaje = construirTextoPedido();
+
+  if (!mensaje) {
+    alert("Tu carrito está vacío. Agrega productos antes de copiar el pedido.");
+    return;
+  }
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(mensaje);
+
+    } else {
+      const area = document.createElement("textarea");
+
+      area.value = mensaje;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+
+      document.body.appendChild(area);
+      area.select();
+
+      const copiado = document.execCommand("copy");
+
+      area.remove();
+
+      if (!copiado) {
+        throw new Error("No se pudo copiar el pedido.");
+      }
+    }
+
+    const estado = document.getElementById("mensaje-carrito");
+
+    if (estado) {
+      estado.textContent =
+        "¡Pedido copiado! Abre WhatsApp y pega el texto en el chat.";
+    } else {
+      alert("¡Pedido copiado! Ya puedes pegarlo en WhatsApp.");
+    }
+
+  } catch (error) {
+    console.error("Error al copiar el pedido:", error);
+
+    alert("No se pudo copiar automáticamente. Inténtalo de nuevo.");
+  }
+}
 /* =====================================================
    INICIALIZACIÓN AUTOMÁTICA DE PÁGINAS
 ===================================================== */
@@ -1332,6 +1498,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "harinas.html": "harinas",
       "lacteos.html": "lacteos",
       "carnes.html": "carnes",
+      "embutidos.html": "carnes",
       "extras.html": "extras"
     };
 
@@ -1343,216 +1510,245 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+/* =====================================================
+   VER PEDIDO COMPLETO
+===================================================== */
 
 function generarPDFPedido() {
-    const items = Object.values(carrito);
+  const items = Object.values(carrito);
 
-    if (items.length === 0) {
-        alert("Tu carrito está vacío. Agrega productos para ver el pedido.");
-        return;
-    }
+  if (items.length === 0) {
+    alert("Tu carrito está vacío. Agrega productos para ver el pedido.");
+    return;
+  }
 
-    // Evitar abrir varias ventanas del pedido.
-    document.getElementById("modal-pedido-completo")?.remove();
+  document.getElementById("modal-pedido-completo")?.remove();
 
-    let total = 0;
+  let total = 0;
 
-    const filas = items.map(producto => {
-        const cantidad = Math.max(
-            1,
-            parseInt(producto.cantidad, 10) || 1
-        );
+  const filas = items.map(producto => {
+    const cantidad = Math.max(
+      1,
+      parseInt(producto.cantidad, 10) || 1
+    );
 
-        const precio = Math.max(0, Number(producto.precio) || 0);
-        const subtotal = precio * cantidad;
-        total += subtotal;
+    const precio = Math.max(
+      0,
+      Number(producto.precio) || 0
+    );
 
-        return `
-            <tr>
-                <td>
-                    <strong>${escaparHTML(producto.nombre)}</strong>
-                    <br>
-                    <small>${escaparHTML(producto.unidad || "Unidad")}</small>
-                </td>
-                <td>$${precio.toFixed(2)}</td>
-                <td>${cantidad}</td>
-                <td>$${subtotal.toFixed(2)}</td>
-            </tr>
-        `;
-    }).join("");
+    const subtotal = precio * cantidad;
 
-    const modal = document.createElement("div");
-    modal.id = "modal-pedido-completo";
+    total += subtotal;
 
-    modal.innerHTML = `
-        <div class="pedido-ventana" role="dialog"
-             aria-modal="true" aria-labelledby="titulo-pedido">
-            <button type="button" class="pedido-cerrar"
-                    aria-label="Cerrar">×</button>
+    return `
+      <tr>
+        <td>
+          <strong>${escaparHTML(producto.nombre)}</strong>
+          <br>
+          <small>${escaparHTML(producto.unidad || "Unidad")}</small>
+        </td>
+        <td>$${precio.toFixed(2)}</td>
+        <td>${cantidad}</td>
+        <td>$${subtotal.toFixed(2)}</td>
+      </tr>`;
+  }).join("");
 
-            <div class="pedido-contenido">
-                <h2 id="titulo-pedido">Distribuidora Éxodo</h2>
-                <p>Detalle completo del pedido</p>
-                <p><strong>Fecha:</strong> ${new Date().toLocaleDateString("es-SV")}</p>
+  const modal = document.createElement("div");
 
-                <div class="pedido-tabla-contenedor">
-                    <table class="pedido-tabla">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Precio</th>
-                                <th>Cant.</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>${filas}</tbody>
-                    </table>
-                </div>
+  modal.id = "modal-pedido-completo";
 
-                <div class="pedido-total">
-                    <span>Total de productos</span>
-                    <strong>$${total.toFixed(2)}</strong>
-                </div>
+  modal.innerHTML = `
+    <div class="pedido-ventana"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="titulo-pedido">
 
-                <p class="pedido-entrega">
-                    El costo de entrega se confirma por WhatsApp.
-                </p>
+      <button type="button"
+              class="pedido-cerrar"
+              aria-label="Cerrar">×</button>
 
-                <button type="button" class="pedido-boton-cerrar">
-                    Volver al carrito
-                </button>
-            </div>
+      <div class="pedido-contenido">
+        <h2 id="titulo-pedido">Distribuidora Éxodo</h2>
+
+        <p>Detalle completo del pedido</p>
+
+        <p>
+          <strong>Fecha:</strong>
+          ${new Date().toLocaleDateString("es-SV")}
+        </p>
+
+        <div class="pedido-tabla-contenedor">
+          <table class="pedido-tabla">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cant.</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody>${filas}</tbody>
+          </table>
         </div>
+
+        <div class="pedido-total">
+          <span>Total de productos</span>
+          <strong>$${total.toFixed(2)}</strong>
+        </div>
+
+        <p class="pedido-entrega">
+          El costo de entrega se confirma por WhatsApp.
+        </p>
+
+        <button type="button" class="pedido-boton-cerrar">
+          Volver al carrito
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const cerrar = () => modal.remove();
+
+  modal.querySelector(".pedido-cerrar")
+    .addEventListener("click", cerrar);
+
+  modal.querySelector(".pedido-boton-cerrar")
+    .addEventListener("click", cerrar);
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      cerrar();
+    }
+  });
+
+  const estilo = document.createElement("style");
+  estilo.id = "estilo-pedido-completo";
+
+  if (!document.getElementById(estilo.id)) {
+    estilo.textContent = `
+      #modal-pedido-completo {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(15, 23, 42, .65);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        box-sizing: border-box;
+      }
+
+      .pedido-ventana {
+        position: relative;
+        background: #fff;
+        color: #334155;
+        width: 100%;
+        max-width: 760px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      }
+
+      .pedido-contenido {
+        padding: 28px;
+      }
+
+      .pedido-contenido h2 {
+        color: #3f8f25;
+        margin: 0 40px 6px 0;
+      }
+
+      .pedido-cerrar {
+        position: absolute;
+        right: 14px;
+        top: 12px;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .pedido-tabla-contenedor {
+        overflow-x: auto;
+        margin-top: 22px;
+      }
+
+      .pedido-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .pedido-tabla th {
+        background: #3f8f25;
+        color: white;
+        text-align: left;
+      }
+
+      .pedido-tabla th,
+      .pedido-tabla td {
+        padding: 12px 9px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .pedido-total {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 12px;
+        background: #f0fdf2;
+      }
+
+      .pedido-total strong {
+        color: #287c32;
+        font-size: 25px;
+      }
+
+      .pedido-entrega {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .pedido-boton-cerrar {
+        width: 100%;
+        margin-top: 12px;
+        padding: 13px;
+        background: #3f8f25;
+        color: white;
+        border: 0;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      @media (max-width: 480px) {
+        .pedido-contenido {
+          padding: 20px 14px;
+        }
+
+        .pedido-tabla {
+          font-size: 12px;
+        }
+
+        .pedido-tabla th,
+        .pedido-tabla td {
+          padding: 9px 6px;
+        }
+      }
     `;
 
-    document.body.appendChild(modal);
-
-    const cerrar = () => modal.remove();
-
-    modal.querySelector(".pedido-cerrar").addEventListener("click", cerrar);
-    modal.querySelector(".pedido-boton-cerrar").addEventListener("click", cerrar);
-
-    modal.addEventListener("click", event => {
-        if (event.target === modal) cerrar();
-    });
-
-    const estilo = document.createElement("style");
-    estilo.id = "estilo-pedido-completo";
-
-    if (!document.getElementById(estilo.id)) {
-        estilo.textContent = `
-            #modal-pedido-completo {
-                position: fixed;
-                inset: 0;
-                z-index: 99999;
-                background: rgba(15, 23, 42, .65);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 16px;
-                box-sizing: border-box;
-            }
-
-            .pedido-ventana {
-                position: relative;
-                background: #fff;
-                color: #334155;
-                width: 100%;
-                max-width: 760px;
-                max-height: 90vh;
-                overflow-y: auto;
-                border-radius: 18px;
-                box-shadow: 0 20px 60px rgba(0,0,0,.25);
-            }
-
-            .pedido-contenido {
-                padding: 28px;
-            }
-
-            .pedido-contenido h2 {
-                color: #3f8f25;
-                margin: 0 40px 6px 0;
-            }
-
-            .pedido-cerrar {
-                position: absolute;
-                right: 14px;
-                top: 12px;
-                width: 40px;
-                height: 40px;
-                border: 0;
-                border-radius: 50%;
-                background: #f1f5f9;
-                color: #334155;
-                font-size: 28px;
-                cursor: pointer;
-            }
-
-            .pedido-tabla-contenedor {
-                overflow-x: auto;
-                margin-top: 22px;
-            }
-
-            .pedido-tabla {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 14px;
-            }
-
-            .pedido-tabla th {
-                background: #3f8f25;
-                color: white;
-                text-align: left;
-            }
-
-            .pedido-tabla th,
-            .pedido-tabla td {
-                padding: 12px 9px;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-            .pedido-total {
-                display: flex;
-                justify-content: space-between;
-                gap: 12px;
-                align-items: center;
-                margin-top: 22px;
-                padding: 18px;
-                border-radius: 12px;
-                background: #f0fdf2;
-            }
-
-            .pedido-total strong {
-                color: #287c32;
-                font-size: 25px;
-            }
-
-            .pedido-entrega {
-                color: #64748b;
-                font-size: 14px;
-            }
-
-            .pedido-boton-cerrar {
-                width: 100%;
-                margin-top: 12px;
-                padding: 13px;
-                background: #3f8f25;
-                color: white;
-                border: 0;
-                border-radius: 10px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            @media (max-width: 480px) {
-                .pedido-contenido { padding: 20px 14px; }
-                .pedido-tabla { font-size: 12px; }
-                .pedido-tabla th,
-                .pedido-tabla td { padding: 9px 6px; }
-            }
-        `;
-
-        document.head.appendChild(estilo);
-    }
+    document.head.appendChild(estilo);
+  }
 }
-
