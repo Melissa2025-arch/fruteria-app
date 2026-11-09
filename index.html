@@ -8,29 +8,20 @@
   <title>Distribuidora Éxodo | Inicio</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
-
 <body>
 
-  <!-- ENCABEZADO Y MENÚ DE NAVEGACIÓN -->
   <header class="header">
-
     <div class="logo">
-      <img
-        src="img/logo.png"
-        alt="Logo de Distribuidora Éxodo"
-        onerror="this.onerror=null;this.src='img/dex-logo.png';"
-      >
+      <img src="img/logo.png" alt="Logo de Distribuidora Éxodo"
+        onerror="this.onerror=null;this.src='img/dex-logo.png';">
       <span>Distribuidora Éxodo</span>
     </div>
 
-    <button
-      type="button"
-      class="menu-btn"
+    <button type="button" class="menu-btn"
       aria-label="Abrir o cerrar el menú"
       aria-controls="menu"
       aria-expanded="false"
-      onclick="toggleMenu()"
-    >☰</button>
+      onclick="toggleMenu()">☰</button>
 
     <nav id="menu">
       <a href="index.html" class="activo">🏠 Inicio</a>
@@ -45,39 +36,61 @@
         🛒 Carrito <span id="cant-carrito-badge">(0)</span>
       </a>
     </nav>
-
   </header>
 
-  <!-- BANNER PRINCIPAL -->
+  <!-- PORTADA PRINCIPAL -->
   <section class="hero">
-
     <div class="hero-contenido">
-      <span class="etiqueta">
-        🛡️ Distribución &amp; Calidad Garantizada
-      </span>
+      <span class="etiqueta">🛡️ Distribución &amp; Calidad Garantizada</span>
 
       <h1>Productos frescos con crédito de hasta 30 días.</h1>
 
       <p>
-       En Distribuidora Éxodo, estamos comprometidos con ofrecer productos frescos y de calidad. Nos encargamos de entregar tu pedido en el lugar y horario acordados, brindándote un servicio confiable, responsable y oportuno.
-
-                                             ¡Calidad y frescura en cada entrega!
+        En Distribuidora Éxodo, estamos comprometidos con ofrecer
+        productos frescos y de calidad. Nos encargamos de entregar
+        tu pedido en el lugar y horario acordados, brindándote un
+        servicio confiable, responsable y oportuno.
+        ¡Calidad y frescura en cada entrega!
       </p>
 
       <a href="#informacion" class="btn-ordenar-hero">
         🚚 Conoce nuestro servicio
       </a>
     </div>
-
   </section>
+
+  <!-- CATÁLOGO Y BUSCADOR GENERAL -->
+  <main class="productos-page" id="catalogo">
+
+    <h1>🛒 Nuestro catálogo de productos</h1>
+
+    <p class="descripcion">
+      Encuentra fácilmente los productos que necesitas.
+      Puedes buscar frutas, verduras, granos, lácteos,
+      carnes, harinas y productos extras.
+    </p>
+
+    <div class="buscador-contenedor">
+      <input
+        type="search"
+        id="input-busqueda"
+        placeholder="🔎 Buscar productos de todas las categorías..."
+        aria-label="Buscar productos de todas las categorías"
+        oninput="buscarProductosInicio()"
+      >
+    </div>
+
+    <div id="grid-busqueda" class="productos-grid">
+      <p class="estado-vacio">Cargando productos...</p>
+    </div>
+
+  </main>
 
   <!-- INFORMACIÓN DEL SERVICIO -->
   <section class="informacion-servicio" id="informacion">
 
     <div class="informacion-cabecera">
-      <span class="informacion-etiqueta">
-        🤝 Atención personalizada
-      </span>
+      <span class="informacion-etiqueta">🤝 Atención personalizada</span>
 
       <h2>Nos acoplamos a tus necesidades</h2>
 
@@ -91,24 +104,12 @@
     <div class="informacion-columnas">
 
       <div class="informacion-detalle">
-
         <h3>Características de nuestro servicio</h3>
 
         <ul class="lista-servicios">
-          <li>
-            <span>✓</span>
-            Crédito de hasta 30 días, según las condiciones acordadas.
-          </li>
-
-          <li>
-            <span>✓</span>
-            Asesoría y comunicación fluida.
-          </li>
-
-          <li>
-            <span>✓</span>
-            Servicio a domicilio.
-          </li>
+          <li><span>✓</span>Crédito de hasta 30 días, según las condiciones acordadas.</li>
+          <li><span>✓</span>Asesoría y comunicación fluida.</li>
+          <li><span>✓</span>Servicio a domicilio.</li>
         </ul>
 
         <p>
@@ -126,22 +127,17 @@
           Ofrecemos variedad de marcas y presentaciones. Si un producto
           no está en stock, puedes consultarnos para ayudarte a conseguirlo.
         </p>
-
       </div>
 
-      <!-- INFORMACIÓN DE CONTACTO -->
       <aside class="informacion-contacto" id="contacto">
-
         <h3>Contáctanos</h3>
 
         <p class="contacto-intro">
           Estamos para ayudarte con tu pedido.
         </p>
 
-        <a
-          href="mailto:distribuidoraexodo23@gmail.com"
-          class="contacto-enlace"
-        >
+        <a href="mailto:distribuidoraexodo23@gmail.com"
+          class="contacto-enlace">
           <span aria-hidden="true">✉️</span>
           <span>
             <small>Correo electrónico</small>
@@ -149,10 +145,7 @@
           </span>
         </a>
 
-        <a
-          href="tel:+50325202726"
-          class="contacto-enlace"
-        >
+        <a href="tel:+50325202726" class="contacto-enlace">
           <span aria-hidden="true">☎️</span>
           <span>
             <small>Teléfono</small>
@@ -160,12 +153,10 @@
           </span>
         </a>
 
-        <a
-          href="https://wa.me/50379321963"
+        <a href="https://wa.me/50379321963"
           target="_blank"
           rel="noopener noreferrer"
-          class="contacto-enlace"
-        >
+          class="contacto-enlace">
           <span aria-hidden="true">💬</span>
           <span>
             <small>WhatsApp</small>
@@ -176,19 +167,15 @@
         <p class="contacto-nota">
           Pedidos personalizados y entregas confiables.
         </p>
-
       </aside>
 
     </div>
-
   </section>
 
-  <!-- PIE DE PÁGINA -->
   <footer>
     <p>© 2026 Distribuidora Éxodo. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- ARCHIVO JAVASCRIPT -->
   <script src="js/app.js"></script>
 
 </body>
